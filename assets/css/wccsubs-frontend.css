@@ -1,0 +1,4 @@
+table.cart ul.wccsubs-convert, table.cart ul.wccsubs-convert li, #order_review ul.wccsubs-convert, #order_review ul.wccsubs-convert li {
+	margin: 0;
+	list-style: none;
+}
