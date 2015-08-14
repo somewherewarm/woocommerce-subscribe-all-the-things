@@ -10,22 +10,22 @@ class WCCSubs_Cart {
 
 	public static function init() {
 
-		// allow subs to recognize a cart item of any product type as a subscription
+		// Allow subs to recognize a cart item of any product type as a subscription
 		add_filter( 'woocommerce_is_subscription', __CLASS__ . '::is_converted_to_sub', 10, 3 );
 
-		// add convert-to-sub configuration data to cart items that can be converted
+		// Add convert-to-sub configuration data to cart items that can be converted
 		add_filter( 'woocommerce_add_cart_item', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 2 );
 
-		// load convert-to-sub cart item session data
+		// Load convert-to-sub cart item session data
 		add_filter( 'woocommerce_get_cart_item_from_session', __CLASS__ . '::load_convert_to_sub_session_data', 10, 2 );
 
-		// remove the subs price string suffix from cart items that can be converted
+		// Remove the subs price string suffix from cart items that can be converted
 		add_filter( 'woocommerce_subscriptions_product_price_string_inclusions', __CLASS__ . '::convertible_sub_price_string', 10, 2 );
 
-		// use radio buttons to mark a cart item as a one-time sale or as a subscription
+		// Use radio buttons to mark a cart item as a one-time sale or as a subscription
 		add_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::convert_to_sub_options', 1000, 3 );
 
-		// save the convert to sub radio button setting when clicking the 'update cart' button
+		// Save the convert to sub radio button setting when clicking the 'update cart' button
 		add_filter( 'woocommerce_update_cart_action_cart_updated', __CLASS__ . '::update_convert_to_sub_options', 10 );
 	}
 
@@ -39,9 +39,9 @@ class WCCSubs_Cart {
 
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 
-			if ( ! empty( $cart_item[ 'wccsub_data' ] ) && ! empty( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ) {
+			if ( ! empty( $cart_item[ 'wccsub_data' ] ) && isset( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ) {
 
-				WC()->cart->cart_contents[ $cart_item_key ][ 'wccsub_data' ][ 'is_converted' ] = $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ];
+				WC()->cart->cart_contents[ $cart_item_key ][ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ];
 
 				$updated = true;
 			}
@@ -84,57 +84,72 @@ class WCCSubs_Cart {
 	 */
 	public static function convert_to_sub_options( $subtotal, $cart_item, $cart_item_key ) {
 
-		$show_convert_to_sub_options = apply_filters( 'wccsub_show_cart_item_options', isset( $cart_item[ 'wccsub_data' ] ), $cart_item, $cart_item_key );
+		$subscription_schemes        = WCCSubs_Schemes::get_subscription_schemes( $cart_item );
+		$show_convert_to_sub_options = apply_filters( 'wccsub_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
 		// currently show options only in cart
 		if ( ! is_cart() || ! $show_convert_to_sub_options ) {
 			return $subtotal;
 		}
 
-		$sub_checked = ( isset( $cart_item[ 'wccsub_data' ][ 'is_converted' ] ) && $cart_item[ 'wccsub_data' ][ 'is_converted' ] === 'yes' ) ? 'yes' : 'no';
+		$options                       = array();
+		$active_subscription_scheme    = WCCSubs_Schemes::get_active_subscription_scheme( $cart_item );
+		$active_subscription_scheme_id = false !== $active_subscription_scheme ? $active_subscription_scheme[ 'id' ] : '0';
 
-		if ( $sub_checked === 'yes' ) {
+		$options[] = array(
+			'id'          => '0',
+			'description' => __( 'only this time', WCCSubs::TEXT_DOMAIN ),
+			'selected'    => $active_subscription_scheme_id === '0',
+		);
 
-			// if the cart item has been converted to a sub, create the subscription price suffix using the already-populated subscription properties
-			$cart_item[ 'data' ]->delete_subscription_price_suffix = 'no';
-			$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false ) );
-			$cart_item[ 'data' ]->delete_subscription_price_suffix = 'yes';
+		foreach ( $subscription_schemes as $subscription_scheme_id => $subscription_scheme ) {
 
-		} else {
+			if ( $cart_item[ 'data' ]->is_converted_to_sub === 'yes' && $subscription_scheme_id === $active_subscription_scheme_id ) {
 
-			// if the cart item has not been converted to a sub, populate the product with the subscription properties, generate the suffix and reset
-			$cart_item[ 'data' ]->is_converted_to_sub          = 'yes';
-			$cart_item[ 'data' ]->subscription_period          = $cart_item[ 'wccsub_data' ][ 'subscription_period' ];
-			$cart_item[ 'data' ]->subscription_period_interval = $cart_item[ 'wccsub_data' ][ 'subscription_period_interval' ];
-			$cart_item[ 'data' ]->subscription_length          = $cart_item[ 'wccsub_data' ][ 'subscription_length' ];
+				// if the cart item is converted to a sub, create the subscription price suffix using the already-populated subscription properties
+				$cart_item[ 'data' ]->delete_subscription_price_suffix = 'no';
+				$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false ) );
+				$cart_item[ 'data' ]->delete_subscription_price_suffix = 'yes';
 
-			$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false ) );
+			} else {
 
-			$cart_item[ 'data' ]->is_converted_to_sub = 'no';
-			unset( $cart_item[ 'data' ]->subscription_period );
-			unset( $cart_item[ 'data' ]->subscription_period_interval );
-			unset( $cart_item[ 'data' ]->subscription_length );
+				// if the cart item has not been converted to a sub, populate the product with the subscription properties, generate the suffix and reset
+				$_cloned = clone $cart_item[ 'data' ];
 
+				$_cloned->is_converted_to_sub              = 'yes';
+				$_cloned->delete_subscription_price_suffix = 'no';
+				$_cloned->subscription_period              = $subscription_scheme[ 'subscription_period' ];
+				$_cloned->subscription_period_interval     = $subscription_scheme[ 'subscription_period_interval' ];
+				$_cloned->subscription_length              = $subscription_scheme[ 'subscription_length' ];
+
+				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
+			}
+
+			$options[] = array(
+				'id'          => $subscription_scheme_id,
+				'description' => $sub_suffix,
+				'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
+			);
+		}
+
+		if ( empty( $options ) ) {
+			return $subtotal;
 		}
 
 		ob_start();
 
-		?>
-		<ul class="wccsubs-convert">
-			<li>
-				<label>
-					<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="no" <?php checked( $sub_checked, 'no', true ); ?> />
-					<?php echo 'only this time'; ?>
-				</label>
-			</li>
-			<li>
-				<label>
-					<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="yes" <?php checked( $sub_checked, 'yes', true ); ?> />
-					<?php echo $sub_suffix; ?>
-				</label>
-			</li>
-		</ul>
-		<?php
+		?><ul class="wccsubs-convert"><?php
+
+			foreach ( $options as $option ) {
+				?><li>
+					<label>
+						<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo $option[ 'id' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+						<?php echo $option[ 'description' ]; ?>
+					</label>
+				</li><?php
+			}
+
+		?></ul><?php
 
 		$convert_to_sub_options = ob_get_clean();
 
@@ -144,8 +159,7 @@ class WCCSubs_Cart {
 	}
 
 	/**
-	 * Add convert-to-sub data to cart items that can be converted.
-	 * Sub parameters are still hardcoded, but can be easily loaded from metadata or other sources.
+	 * Add convert-to-sub subscription data to cart items that can be converted.
 	 *
 	 * @param array $cart_item
 	 * @param int   $product_id
@@ -153,11 +167,9 @@ class WCCSubs_Cart {
 	public static function add_cart_item_convert_to_sub_data( $cart_item, $product_id ) {
 
 		if ( self::is_convertible_to_sub( $cart_item ) ) {
+
 			$cart_item[ 'wccsub_data' ] = array(
-				'is_converted'                 => 'no',
-				'subscription_period'          => 'month',
-				'subscription_period_interval' => 2,
-				'subscription_length'          => 6,
+				'active_subscription_scheme_id' => WCCSubs_Schemes::get_default_subscription_scheme_id( $cart_item ),
 			);
 		}
 
@@ -178,11 +190,18 @@ class WCCSubs_Cart {
 
 			$cart_item[ 'wccsub_data' ] = $item_session_values[ 'wccsub_data' ];
 
-			$cart_item[ 'data' ]->is_converted_to_sub              = $item_session_values[ 'wccsub_data' ][ 'is_converted' ];
-			$cart_item[ 'data' ]->subscription_period              = $item_session_values[ 'wccsub_data' ][ 'subscription_period' ];
-			$cart_item[ 'data' ]->subscription_period_interval     = $item_session_values[ 'wccsub_data' ][ 'subscription_period_interval' ];
-			$cart_item[ 'data' ]->subscription_length              = $item_session_values[ 'wccsub_data' ][ 'subscription_length' ];
-			$cart_item[ 'data' ]->delete_subscription_price_suffix = $item_session_values[ 'wccsub_data' ][ 'is_converted' ];
+			if ( $active_subscription_scheme = WCCSubs_Schemes::get_active_subscription_scheme( $cart_item ) ) {
+
+				$cart_item[ 'data' ]->is_converted_to_sub = $cart_item[ 'data' ]->delete_subscription_price_suffix = 'yes';
+
+				$cart_item[ 'data' ]->subscription_period          = $active_subscription_scheme[ 'subscription_period' ];
+				$cart_item[ 'data' ]->subscription_period_interval = $active_subscription_scheme[ 'subscription_period_interval' ];
+				$cart_item[ 'data' ]->subscription_length          = $active_subscription_scheme[ 'subscription_length' ];
+
+			} else {
+
+				$cart_item[ 'data' ]->is_converted_to_sub = $cart_item[ 'data' ]->delete_subscription_price_suffix = 'no';
+			}
 		}
 
 		return $cart_item;
@@ -203,7 +222,7 @@ class WCCSubs_Cart {
 			return $is;
 		}
 
-		if ( $product->is_converted_to_sub === 'yes' ) {
+		if ( isset( $product->is_converted_to_sub ) && $product->is_converted_to_sub === 'yes' ) {
 			$is = true;
 		}
 
@@ -226,9 +245,15 @@ class WCCSubs_Cart {
 			$is_convertible = false;
 		}
 
+		// Must have subscription schemes created at product level to be convertible
+		$subscription_schemes = get_post_meta( $product_id, '_wccsubs_schemes', true );
+
+		if ( ! $subscription_schemes ) {
+			$is_convertible = false;
+		}
+
 		return $is_convertible;
 	}
-
 }
 
 WCCSubs_Cart::init();

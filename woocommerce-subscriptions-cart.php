@@ -109,6 +109,7 @@ class WCCSubs {
 			return false;
 		}
 
+		require_once( 'includes/class-wccsubs-schemes.php' );
 		require_once( 'includes/class-wccsubs-cart.php' );
 		require_once( 'includes/class-wccsubs-display.php' );
 
@@ -126,7 +127,7 @@ class WCCSubs {
 	 */
 	public function admin_includes() {
 
-		//require_once( 'includes/admin/class-wccsp-admin.php' );
+		require_once( 'includes/admin/class-wccsubs-admin.php' );
 	}
 
 	/**
