@@ -29,8 +29,20 @@ class WCCSubs_Display {
 
 		wp_register_style( 'wccsubs-css', WCCSubs()->plugin_url() . '/assets/css/wccsubs-frontend.css', false, WCCSubs::VERSION, 'all' );
 		wp_enqueue_style( 'wccsubs-css' );
-	}
 
+		if ( is_cart() ) {
+			wp_register_script( 'wccsubs-cart', WCCSubs()->plugin_url() . '/assets/js/wccsubs-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCCSubs::VERSION, true );
+		}
+
+		wp_enqueue_script( 'wccsubs-cart' );
+
+		$params = array(
+			'update_cart_option_nonce' => wp_create_nonce( 'wccsubs_update_cart_option' ),
+			'wc_ajax_url'              => WCCSubs_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+		);
+
+		wp_localize_script( 'wccsubs-cart', 'wccsubs_cart_params', $params );
+	}
 
 	/**
 	 * Displays an option to purchase the item once or create a subscription from it.
@@ -46,13 +58,21 @@ class WCCSubs_Display {
 		$show_convert_to_sub_options = apply_filters( 'wccsub_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
 		// currently show options only in cart
-		if ( ! is_cart() || ! $show_convert_to_sub_options ) {
+		if ( ! is_cart() ) {
 			return $subtotal;
 		}
 
+		if ( ! $show_convert_to_sub_options ) {
+			return $subtotal;
+		}
+
+		// Grab subtotal without Subs formatting
+		remove_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+		$subtotal = WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] );
+		add_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+
 		$options                       = array();
-		$active_subscription_scheme    = WCCSubs_Schemes::get_active_subscription_scheme( $cart_item );
-		$active_subscription_scheme_id = false !== $active_subscription_scheme ? $active_subscription_scheme[ 'id' ] : '0';
+		$active_subscription_scheme_id = WCCSubs_Schemes::get_active_subscription_scheme_id( $cart_item );
 
 		$options[] = array(
 			'id'          => '0',
@@ -60,14 +80,14 @@ class WCCSubs_Display {
 			'selected'    => $active_subscription_scheme_id === '0',
 		);
 
-		foreach ( $subscription_schemes as $subscription_scheme_id => $subscription_scheme ) {
+		foreach ( $subscription_schemes as $subscription_scheme ) {
+
+			$subscription_scheme_id = $subscription_scheme[ 'id' ];
 
 			if ( $cart_item[ 'data' ]->is_converted_to_sub === 'yes' && $subscription_scheme_id === $active_subscription_scheme_id ) {
 
 				// if the cart item is converted to a sub, create the subscription price suffix using the already-populated subscription properties
-				$cart_item[ 'data' ]->delete_subscription_price_suffix = 'no';
 				$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false ) );
-				$cart_item[ 'data' ]->delete_subscription_price_suffix = 'yes';
 
 			} else {
 
@@ -75,7 +95,6 @@ class WCCSubs_Display {
 				$_cloned = clone $cart_item[ 'data' ];
 
 				$_cloned->is_converted_to_sub              = 'yes';
-				$_cloned->delete_subscription_price_suffix = 'no';
 				$_cloned->subscription_period              = $subscription_scheme[ 'subscription_period' ];
 				$_cloned->subscription_period_interval     = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length              = $subscription_scheme[ 'subscription_length' ];
@@ -125,10 +144,51 @@ class WCCSubs_Display {
 	public static function show_subscribe_to_cart_prompt() {
 
 		// Show cart/order level options only if all cart items share a common cart/order level subscription scheme.
-		if ( WCCSubs_Schemes::get_cart_subscription_schemes() ) {
+		if ( $subscription_schemes = WCCSubs_Schemes::get_cart_subscription_schemes() ) {
 
 			?>
-			<h2><?php _e( 'Subscribe to Cart', WCCSubs::TEXT_DOMAIN ); ?></h2>
+			<h2><?php _e( 'Cart Subscription', WCCSubs::TEXT_DOMAIN ); ?></h2>
+			<p><?php _e( 'Interested in subscribing to these items?', WCCSubs::TEXT_DOMAIN ); ?></h2>
+			<ul class="wccsubs-convert-cart"><?php
+
+				$options                       = array();
+				$active_subscription_scheme_id = WCCSubs_Schemes::get_active_cart_subscription_scheme_id();
+
+				$options[] = array(
+					'id'          => '0',
+					'description' => __( 'No &mdash; I will purchase again, if needed.', WCCSubs::TEXT_DOMAIN ),
+					'selected'    => $active_subscription_scheme_id === '0',
+				);
+
+				foreach ( $subscription_schemes as $subscription_scheme ) {
+
+					$subscription_scheme_id = $subscription_scheme[ 'id' ];
+
+					$dummy_product                               = new WC_Product( '1' );
+					$dummy_product->is_converted_to_sub          = 'yes';
+					$dummy_product->subscription_period          = $subscription_scheme[ 'subscription_period' ];
+					$dummy_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
+					$dummy_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+
+					$sub_suffix  = WC_Subscriptions_Product::get_price_string( $dummy_product, array( 'subscription_price' => false ) );
+
+					$options[] = array(
+						'id'          => $subscription_scheme[ 'id' ],
+						'description' => sprintf( __( 'Yes &mdash; Bill me %s.', WCCSubs::TEXT_DOMAIN ), $sub_suffix ),
+						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
+					);
+				}
+
+				foreach ( $options as $option ) {
+					?><li>
+						<label>
+							<input type="radio" name="convert_to_sub" value="<?php echo $option[ 'id' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+							<?php echo $option[ 'description' ]; ?>
+						</label>
+					</li><?php
+				}
+
+			?></ul>
 			<?php
 		}
 	}
