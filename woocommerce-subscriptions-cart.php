@@ -177,6 +177,25 @@ class WCCSubs {
 
 		delete_option( 'wccsubs_version' );
 	}
+
+	/**
+	 * True if the product corresponding to a cart item is one of the types supported by the plugin.
+	 *
+	 * @param  array  $cart_item
+	 * @return boolean
+	 */
+	public function is_supported_product_type( $cart_item ) {
+
+		$product         = $cart_item[ 'data' ];
+		$product_type    = $cart_item[ 'data' ]->product_type;
+		$supported_types = array( 'simple', 'variable', 'subscription', 'bundle', 'composite', 'mix-and-match', 'subscription_variation' );
+
+		if ( in_array( $product_type, $supported_types ) ) {
+			return true;
+		}
+
+		return false;
+	}
 }
 
 endif; // end class_exists check

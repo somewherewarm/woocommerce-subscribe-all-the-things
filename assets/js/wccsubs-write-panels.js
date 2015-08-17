@@ -5,7 +5,7 @@ jQuery( function($) {
 	wccsubs_block_params = {
 			message:    null,
 			overlayCSS: {
-				background: '#fff',
+				background: wccsubs_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
 				opacity:    0.6
 			}
 		};
@@ -17,10 +17,10 @@ jQuery( function($) {
 	$.fn.wccsubs_scripts = function() {
 
 		$( this ).find( '.help_tip, .tips' ).tipTip( {
-			'attribute' : 'data-tip',
-			'fadeIn' : 50,
-			'fadeOut' : 50,
-			'delay' : 200
+			'attribute': 'data-tip',
+			'fadeIn':    50,
+			'fadeOut':   50,
+			'delay':     200
 		} );
 	};
 
@@ -99,6 +99,8 @@ jQuery( function($) {
 
 			added.wccsubs_scripts();
 
+			subscription_schemes_row_indexes();
+
 			$wccsubs_data_tab.unblock();
 			$wccsubs_data_tab.trigger( 'woocommerce_subscription_scheme_added', response );
 
@@ -111,7 +113,7 @@ jQuery( function($) {
 	init_subscription_schemes_metaboxes();
 
 	function subscription_schemes_row_indexes() {
-		$wccsubs_schemes.find( '.subscription_scheme' ).each( function( index, el ){
+		$wccsubs_schemes.find( '.subscription_scheme' ).each( function( index, el ) {
 			$( '.position', el ).val( parseInt( $(el).index( '.subscription_schemes .subscription_scheme' ) ) );
 		} );
 	}

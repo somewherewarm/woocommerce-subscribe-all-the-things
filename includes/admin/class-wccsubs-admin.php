@@ -13,6 +13,13 @@ class WCCSubs_Admin {
 		// Admin scripts and styles
 		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_scripts' );
 
+		// Ajax add subscription scheme
+		add_action( 'wp_ajax_wccsubs_add_subscription_scheme', __CLASS__ . '::ajax_add_subscription_scheme' );
+
+		/**
+		 * WC Product Metaboxes
+		 */
+
 		// Creates the admin panel tab
 		add_action( 'woocommerce_product_write_panel_tabs', __CLASS__ . '::product_write_panel_tab' );
 
@@ -22,10 +29,172 @@ class WCCSubs_Admin {
 		// Processes and saves the necessary post meta
 		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta' );
 
-		// Ajax add subscription scheme
-		add_action( 'wp_ajax_wccsubs_add_subscription_scheme', __CLASS__ . '::ajax_add_subscription_scheme' );
 
+		/**
+		 * WC Admin Settings
+		 */
+
+		// Subscription scheme options displayed on the 'wccsubs_subscription_scheme_content' action
 		add_action( 'wccsubs_subscription_scheme_content',  __CLASS__ . '::subscription_scheme_content', 10, 4 );
+
+		// Append "Subscribe to Cart/Order" section in the Subscriptions settings tab
+		add_filter( 'woocommerce_subscription_settings', __CLASS__ . '::cart_level_admin_settings' );
+
+		// Display subscription scheme admin metaboxes in the "Subscribe to Cart/Order" section
+		add_action( 'woocommerce_admin_field_subscription_schemes_metaboxes', __CLASS__ . '::subscription_schemes_metaboxes_content' );
+
+		// Process posted subscription scheme admin metaboxes
+		add_action( 'woocommerce_update_options_' . WC_Subscriptions_Admin::$tab_name, __CLASS__ . '::process_subscription_schemes_metaboxes_content', 9 );
+
+	}
+
+	/**
+	 * Preprocess posted admin subscription scheme settings.
+	 *
+	 * @return void
+	 */
+	public static function process_subscription_schemes_metaboxes_content() {
+
+		if ( empty( $_POST[ '_wcsnonce' ] ) || ! wp_verify_nonce( $_POST[ '_wcsnonce' ], 'wcs_subscription_settings' ) ) {
+			return;
+		}
+
+		// Save subscription scheme options
+
+		// Posted variable name must be the same as the field id so that WC can pick it up and save it
+		$field_name = WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_schemes';
+
+		if ( isset( $_POST[ 'wccsubs_schemes' ] ) ) {
+
+			$posted_schemes = stripslashes_deep( $_POST[ 'wccsubs_schemes' ] );
+			$scheme_ids     = array();
+			$clean_schemes  = array();
+
+			foreach ( $posted_schemes as $posted_scheme ) {
+
+				$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+
+				if ( in_array( $scheme_id, $scheme_ids ) ) {
+					continue;
+				}
+
+				$posted_scheme[ 'id' ] = $scheme_id;
+				$scheme_ids[]          = $scheme_id;
+				$clean_schemes[]       = $posted_scheme;
+			}
+
+			$_POST[ $field_name ] = $clean_schemes;
+		}
+	}
+
+	/**
+	 * Subscriptions schemes admin metaboxes.
+	 *
+	 * @param  array $values
+	 * @return void
+	 */
+	public static function subscription_schemes_metaboxes_content( $values ) {
+
+		$field_name           = WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_schemes';
+		$subscription_schemes = get_option( $field_name, false );
+
+		if ( ! $subscription_schemes ) {
+			$subscription_schemes = array(
+				array(
+					'subscription_period_interval' => 1,
+					'subscription_period'          => 'month',
+					'subscription_length'          => 0,
+					'id'                           => '1_month_0',
+					'position'                     => 0,
+				)
+			);
+		}
+
+		?><tr valign="top">
+			<th scope="row" class="titledesc"><?php echo esc_html( $values['title'] ) ?></th>
+			<td class="forminp forminp-subscription_schemes_metaboxes">
+				<p class="description"><?php echo esc_html( $values['desc'] ) ?></p>
+				<div id="cart_subscriptions_data" class="wc-metaboxes-wrapper">
+					<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
+
+						if ( $subscription_schemes ) {
+
+							$i = 0;
+
+							foreach ( $subscription_schemes as $subscription_scheme ) {
+
+								$subscription_scheme_id = $subscription_scheme[ 'id' ];
+
+								?><div class="subscription_scheme wc-metabox closed" rel="<?php echo $subscription_scheme[ 'position' ]; ?>">
+									<h3>
+										<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
+										<div class="subscription_scheme_data">
+											<?php do_action( 'wccsubs_subscription_scheme_content', $i, $subscription_scheme, '', false ); ?>
+										</div>
+										<input type="hidden" name="wccsubs_schemes[<?php echo $i; ?>][id]" class="scheme_id" value="<?php echo $subscription_scheme_id; ?>" />
+										<input type="hidden" name="wccsubs_schemes[<?php echo $i; ?>][position]" class="position" value="<?php echo $i; ?>"/>
+									</h3>
+								</div><?php
+
+								$i++;
+							}
+						}
+
+					?></div>
+					<p class="toolbar">
+						<button type="button" class="button add_subscription_scheme"><?php _e( 'Add Option', WCCSubs::TEXT_DOMAIN ); ?></button>
+					</p>
+				</div>
+			</td>
+		</tr><?php
+	}
+
+	/**
+	 * Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
+	 *
+	 * @param  array $settings
+	 * @return array
+	 */
+	public static function cart_level_admin_settings( $settings ) {
+
+		$new_settings = array();
+
+		foreach ( $settings as $setting ) {
+
+			$new_settings[] = $setting;
+
+			if ( $setting[ 'type' ] === 'sectionend' && $setting[ 'id' ] === WC_Subscriptions_Admin::$option_prefix . '_miscellaneous' ) {
+
+				$new_settings[] = array(
+					'name'     => __( 'Subscribe to Cart/Order', WCCSubs::TEXT_DOMAIN ),
+					'type'     => 'title',
+					'desc'     => '',
+					'id'       => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_options',
+				);
+
+				$new_settings[] = array(
+					'name'            => __( 'Cart/Order Subscriptions', WCCSubs::TEXT_DOMAIN ),
+					'desc'            => __( 'Enable Cart/Order Subscriptions', WCCSubs::TEXT_DOMAIN ),
+					'id'              => WC_Subscriptions_Admin::$option_prefix . '_enable_cart_subscriptions',
+					'default'         => 'no',
+					'type'            => 'checkbox',
+					'desc_tip'        => __( 'Enabling this option will allow customers to purchase their entire cart/order content as a Subscription.', WCCSubs::TEXT_DOMAIN ),
+				);
+
+				$new_settings[] = array(
+					'name'            => __( 'Subscription Options', WCCSubs::TEXT_DOMAIN ),
+					'desc'            => __( 'Configure the subscription options available for purchasing an entire cart/order content as a Subscription.', WCCSubs::TEXT_DOMAIN ),
+					'id'              => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_schemes',
+					'type'            => 'subscription_schemes_metaboxes',
+					'desc_tip'        => __( 'Test.', WCCSubs::TEXT_DOMAIN ),
+				);
+
+				$new_settings[] = array( 'type' => 'sectionend', 'id' => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_options' );
+
+			}
+		}
+
+		return $new_settings;
 	}
 
 	/**
@@ -78,14 +247,20 @@ class WCCSubs_Admin {
 	 */
 	public static function subscription_scheme_content( $index, $scheme_data, $post_id, $doing_ajax ) {
 
+		global $thepostid;
+
+		if ( empty( $thepostid ) ) {
+			$thepostid = '-1';
+		}
+
 		if ( ! empty( $scheme_data ) ) {
-			$subscription_period = $scheme_data[ 'subscription_period' ];
+			$subscription_period          = $scheme_data[ 'subscription_period' ];
 			$subscription_period_interval = $scheme_data[ 'subscription_period_interval' ];
-			$subscription_length = $scheme_data[ 'subscription_length' ];
+			$subscription_length          = $scheme_data[ 'subscription_length' ];
 		} else {
 			$subscription_period          = 'month';
 			$subscription_period_interval = '';
-			$subscription_length   = '';
+			$subscription_length          = '';
 		}
 
 		// Subscription Period Interval
@@ -143,10 +318,10 @@ class WCCSubs_Admin {
 			$result = 'success';
 
 			if ( empty( $post_id ) ) {
-
-			} else {
-				include( 'views/subscription-scheme.php' );
+				$post_id = '';
 			}
+
+			include( 'views/subscription-scheme.php' );
 
 		} else {
 			$result = 'failure';

@@ -32,7 +32,7 @@
 	margin: 0;
 }
 
-#cart_subscriptions_data .subscription_scheme .remove_row {
+#cart_subscriptions_data.panel .subscription_scheme .remove_row {
 	margin-top: 5px;
 }
 
@@ -40,4 +40,26 @@
 	clear: both;
 	display: table;
 	content: " ";
+}
+
+/*
+ * Admin settings
+ */
+
+.forminp #cart_subscriptions_data {
+	padding-top: 10px;
+}
+
+.forminp #cart_subscriptions_data .wc-metabox {
+	background: none;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #fff;
+}
+
+.forminp #cart_subscriptions_data .wc-metabox:first-of-type {
+	border-top: 0;
+}
+
+.forminp #cart_subscriptions_data .add_subscription_scheme {
+	font-weight: bold;
 }

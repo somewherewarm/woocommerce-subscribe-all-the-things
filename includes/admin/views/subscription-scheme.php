@@ -9,12 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-global $thepostid;
-
-if ( empty( $thepostid ) ) {
-	$thepostid = $post_id;
-}
-
 ?><div class="subscription_scheme wc-metabox <?php echo ! $ajax ? 'closed' : ''; ?>">
 	<h3>
 		<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
