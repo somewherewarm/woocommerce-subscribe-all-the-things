@@ -234,6 +234,13 @@ class WCCSubs_Admin {
 		if ( isset( $_POST[ '_wccsubs_default_status' ] ) ) {
 			update_post_meta( $post_id, '_wccsubs_default_status', stripslashes( $_POST[ '_wccsubs_default_status' ] ) );
 		}
+
+		// Save one-time status
+
+		$force_subscription = isset( $_POST[ '_wccsubs_force_subscription' ] ) ? 'yes' : 'no';
+
+		update_post_meta( $post_id, '_wccsubs_force_subscription', $force_subscription );
+
 	}
 
 	/**
@@ -436,14 +443,18 @@ class WCCSubs_Admin {
 			<div class="options_group"><?php
 
 				// Subscription Status
-				woocommerce_wp_select( array( 'id' => '_wccsubs_default_status', 'label' => __( 'Default to', WCCSubs::TEXT_DOMAIN ), 'description' => '', 'options' => array(
+				woocommerce_wp_checkbox( array( 'id' => '_wccsubs_force_subscription', 'label' => __( 'Force subscription', WCCSubs::TEXT_DOMAIN ), 'description' => __( 'Check this option to prevent one-time purchases', WCCSubs::TEXT_DOMAIN ) ) );
+
+				// Default Status
+				woocommerce_wp_select( array( 'id' => '_wccsubs_default_status', 'wrapper_class'=> 'wccsubs_default_status', 'label' => __( 'Default to', WCCSubs::TEXT_DOMAIN ), 'description' => '', 'options' => array(
 					'subscription' => __( 'Subscription', WCCSubs::TEXT_DOMAIN ),
 					'one-time'     => __( 'One-time purchase', WCCSubs::TEXT_DOMAIN ),
 				) ) );
+
 			?></div>
 
 			<p class="form-field"><label><?php _e( 'Subscription Options', WCCSubs::TEXT_DOMAIN ); ?></label>
-				<img class="help_tip" data-tip="<?php _e( 'Add one or more subscription options for this product. Any available subscription options will be presented in the cart/checkout pages.', WCCSubs::TEXT_DOMAIN ); ?>" src="<?php echo WC()->plugin_url(); ?>/assets/images/help.png" />
+				<img class="help_tip" data-tip="<?php _e( 'Add one or more subscription options for this product.', WCCSubs::TEXT_DOMAIN ); ?>" src="<?php echo WC()->plugin_url(); ?>/assets/images/help.png" />
 			</p>
 			<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 

@@ -24,6 +24,7 @@ jQuery( function($) {
 		} );
 	};
 
+	// Unused (for now)
 	if ( wccsubs_admin_params.post_id === '' ) {
 
 		$wccsubs_data_tab.on( 'click', 'h3', function() {
@@ -52,6 +53,17 @@ jQuery( function($) {
 		} );
 
 	}
+
+	// Hide "default to" option when "force subscription" is checked
+	$wccsubs_data_tab.find( 'input#_wccsubs_force_subscription' ).on( 'change', function() {
+
+		if ( $( this ).is( ':checked' ) ) {
+			$wccsubs_data_tab.find( '.wccsubs_default_status' ).hide();
+		} else {
+			$wccsubs_data_tab.find( '.wccsubs_default_status' ).show();
+		}
+
+	} ).change();
 
 	// Remove
 	$wccsubs_data_tab.on( 'click', 'button.remove_row', function() {

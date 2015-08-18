@@ -139,11 +139,12 @@ class WCCSubs_Schemes {
 
 			if ( false === $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) {
 
-				$product_id        = $cart_item[ 'product_id' ];
-				$default_status    = get_post_meta( $product_id, '_wccsubs_default_status', true );
-				$default_scheme_id = '0';
+				$product_id         = $cart_item[ 'product_id' ];
+				$force_subscription = get_post_meta( $product_id, '_wccsubs_force_subscription', true );
+				$default_status     = get_post_meta( $product_id, '_wccsubs_default_status', true );
+				$default_scheme_id  = '0';
 
-				if ( $default_status === 'subscription' ) {
+				if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {
 
 					$subscription_schemes = self::get_subscription_schemes( $cart_item, 'cart-item' );
 

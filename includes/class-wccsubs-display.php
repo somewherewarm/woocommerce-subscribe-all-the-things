@@ -66,19 +66,27 @@ class WCCSubs_Display {
 			return $subtotal;
 		}
 
-		// Grab subtotal without Subs formatting
-		remove_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
-		$subtotal = WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] );
-		add_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+		// Allow one-time purchase option?
+		$allow_one_time_option         = true;
+		$has_product_level_schemes     = empty( WCCSubs_Schemes::get_subscription_schemes( $cart_item, 'cart-item' ) ) ? false : true;
+
+		if ( $has_product_level_schemes ) {
+			$force_subscription = get_post_meta( $cart_item[ 'product_id' ], '_wccsubs_force_subscription', true );
+			if ( $force_subscription === 'yes' ) {
+				$allow_one_time_option = false;
+			}
+		}
 
 		$options                       = array();
 		$active_subscription_scheme_id = WCCSubs_Schemes::get_active_subscription_scheme_id( $cart_item );
 
-		$options[] = array(
-			'id'          => '0',
-			'description' => __( 'only this time', WCCSubs::TEXT_DOMAIN ),
-			'selected'    => $active_subscription_scheme_id === '0',
-		);
+		if ( $allow_one_time_option ) {
+			$options[] = array(
+				'id'          => '0',
+				'description' => __( 'only this time', WCCSubs::TEXT_DOMAIN ),
+				'selected'    => $active_subscription_scheme_id === '0',
+			);
+		}
 
 		foreach ( $subscription_schemes as $subscription_scheme ) {
 
@@ -109,9 +117,16 @@ class WCCSubs_Display {
 			);
 		}
 
-		if ( empty( $options ) ) {
+		// If there's just one option to display, it means that one-time purchases are not allowed and there's only one sub scheme on offer -- so don't show any options
+		if ( count( $options ) === 1 ) {
 			return $subtotal;
 		}
+
+		// Grab subtotal without Subs formatting
+		remove_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+		$subtotal = WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] );
+		add_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+
 
 		ob_start();
 
