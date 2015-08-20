@@ -84,6 +84,10 @@ class WCCSubs_Admin {
 			}
 
 			$_POST[ $field_name ] = $clean_schemes;
+
+		} else {
+
+			$_POST[ $field_name ] = array();
 		}
 	}
 
@@ -183,7 +187,7 @@ class WCCSubs_Admin {
 
 				$new_settings[] = array(
 					'name'            => __( 'Subscription Options', WCCSubs::TEXT_DOMAIN ),
-					'desc'            => __( 'Configure the subscription options available for purchasing an entire cart/order content as a Subscription.', WCCSubs::TEXT_DOMAIN ),
+					'desc'            => __( 'Configure the subscription options available for signing up to cart/order contents.', WCCSubs::TEXT_DOMAIN ),
 					'id'              => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_schemes',
 					'type'            => 'subscription_schemes_metaboxes',
 					'desc_tip'        => __( 'Test.', WCCSubs::TEXT_DOMAIN ),
