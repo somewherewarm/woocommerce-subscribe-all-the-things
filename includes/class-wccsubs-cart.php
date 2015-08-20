@@ -43,7 +43,7 @@ class WCCSubs_Cart {
 
 		check_ajax_referer( 'wccsubs_update_cart_option', 'security' );
 
-		if ( ! defined('WOOCOMMERCE_CART') ) {
+		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
 			define( 'WOOCOMMERCE_CART', true );
 		}
 

@@ -6,8 +6,6 @@
 * Version: 1.0.0
 * Author: Prospress
 * Author URI: http://prospress.com/
-* Developer: Manos Psychogyiopoulos
-* Developer URI: http://somewherewarm.net/
 *
 * Text Domain: woocommerce-subscriptions-cart
 * Domain Path: /languages/
