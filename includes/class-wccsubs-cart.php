@@ -212,6 +212,25 @@ class WCCSubs_Cart {
 
 		return $is_convertible;
 	}
+
+	/**
+	 * True if the product corresponding to a cart item is one of the types supported by the plugin.
+	 *
+	 * @param  array  $cart_item
+	 * @return boolean
+	 */
+	public static function is_supported_product_type( $cart_item ) {
+
+		$product         = $cart_item[ 'data' ];
+		$product_type    = $cart_item[ 'data' ]->product_type;
+		$supported_types = WCCSubs()->get_supported_product_types();
+
+		if ( in_array( $product_type, $supported_types ) ) {
+			return true;
+		}
+
+		return false;
+	}
 }
 
 WCCSubs_Cart::init();

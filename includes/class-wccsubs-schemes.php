@@ -222,7 +222,7 @@ class WCCSubs_Schemes {
 
 		foreach ( WC()->cart->cart_contents as $cart_item ) {
 
-			if ( ! WCCSubs()->is_supported_product_type( $cart_item ) ) {
+			if ( ! WCCSubs_Cart::is_supported_product_type( $cart_item ) ) {
 				return false;
 			}
 

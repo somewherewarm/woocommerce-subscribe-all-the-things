@@ -123,9 +123,9 @@ class WCCSubs_Display {
 		}
 
 		// Grab subtotal without Subs formatting
-		remove_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+		remove_filter( 'woocommerce_cart_product_subtotal', 'WC_Subscriptions_Cart' . '::get_formatted_product_subtotal', 11, 4 );
 		$subtotal = WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] );
-		add_filter( 'woocommerce_cart_product_subtotal', WC_Subscriptions_Cart . '::get_formatted_product_subtotal', 11, 4 );
+		add_filter( 'woocommerce_cart_product_subtotal', 'WC_Subscriptions_Cart' . '::get_formatted_product_subtotal', 11, 4 );
 
 
 		ob_start();

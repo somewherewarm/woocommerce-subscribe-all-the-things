@@ -13,7 +13,7 @@
 * Domain Path: /languages/
 *
 * Requires at least: 3.8
-* Tested up to: 4.2
+* Tested up to: 4.3
 *
 * Copyright: © 2009-2015 Prospress, Inc.
 * License: GNU General Public License v3.0
@@ -180,22 +180,14 @@ class WCCSubs {
 	}
 
 	/**
-	 * True if the product corresponding to a cart item is one of the types supported by the plugin.
+	 * Product types supported by the plugin.
+	 * You can dynamically attach subscriptions to these product types
 	 *
-	 * @param  array  $cart_item
-	 * @return boolean
+	 * @return array
 	 */
-	public function is_supported_product_type( $cart_item ) {
+	public function get_supported_product_types() {
 
-		$product         = $cart_item[ 'data' ];
-		$product_type    = $cart_item[ 'data' ]->product_type;
-		$supported_types = array( 'simple', 'variable', 'subscription', 'bundle', 'composite', 'mix-and-match', 'subscription_variation' );
-
-		if ( in_array( $product_type, $supported_types ) ) {
-			return true;
-		}
-
-		return false;
+		return apply_filters( 'wccsubs_supported_product_types', array( 'simple', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 }
 

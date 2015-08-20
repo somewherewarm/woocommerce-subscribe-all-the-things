@@ -205,41 +205,57 @@ class WCCSubs_Admin {
 	 */
 	public static function process_product_meta( $post_id ) {
 
-		// Save subscription scheme options
+		// Get type
+		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) );
+		$supported_types = WCCSubs()->get_supported_product_types();
 
-		if ( isset( $_POST[ 'wccsubs_schemes' ] ) ) {
+		if ( in_array( $product_type, $supported_types ) ) {
 
-			$posted_schemes = stripslashes_deep( $_POST[ 'wccsubs_schemes' ] );
-			$scheme_ids     = array();
-			$clean_schemes  = array();
+			// Save subscription scheme options
 
-			foreach ( $posted_schemes as $posted_scheme ) {
+			if ( isset( $_POST[ 'wccsubs_schemes' ] ) ) {
 
-				$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+				$posted_schemes = stripslashes_deep( $_POST[ 'wccsubs_schemes' ] );
+				$scheme_ids     = array();
+				$clean_schemes  = array();
 
-				if ( in_array( $scheme_id, $scheme_ids ) ) {
-					continue;
+				foreach ( $posted_schemes as $posted_scheme ) {
+
+					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+
+					if ( in_array( $scheme_id, $scheme_ids ) ) {
+						continue;
+					}
+
+					$posted_scheme[ 'id' ] = $scheme_id;
+					$scheme_ids[]          = $scheme_id;
+					$clean_schemes[]       = $posted_scheme;
 				}
 
-				$posted_scheme[ 'id' ] = $scheme_id;
-				$scheme_ids[]          = $scheme_id;
-				$clean_schemes[]       = $posted_scheme;
+				update_post_meta( $post_id, '_wccsubs_schemes', $clean_schemes );
+
+			} else {
+				delete_post_meta( $post_id, '_wccsubs_schemes' );
 			}
 
-			update_post_meta( $post_id, '_wccsubs_schemes', $clean_schemes );
+			// Save default status
+
+			if ( isset( $_POST[ '_wccsubs_default_status' ] ) ) {
+				update_post_meta( $post_id, '_wccsubs_default_status', stripslashes( $_POST[ '_wccsubs_default_status' ] ) );
+			}
+
+			// Save one-time status
+
+			$force_subscription = isset( $_POST[ '_wccsubs_force_subscription' ] ) ? 'yes' : 'no';
+
+			update_post_meta( $post_id, '_wccsubs_force_subscription', $force_subscription );
+
+		} else {
+
+			delete_post_meta( $post_id, '_wccsubs_schemes' );
+			delete_post_meta( $post_id, '_wccsubs_force_subscription' );
+			delete_post_meta( $post_id, '_wccsubs_default_status' );
 		}
-
-		// Save default status
-
-		if ( isset( $_POST[ '_wccsubs_default_status' ] ) ) {
-			update_post_meta( $post_id, '_wccsubs_default_status', stripslashes( $_POST[ '_wccsubs_default_status' ] ) );
-		}
-
-		// Save one-time status
-
-		$force_subscription = isset( $_POST[ '_wccsubs_force_subscription' ] ) ? 'yes' : 'no';
-
-		update_post_meta( $post_id, '_wccsubs_force_subscription', $force_subscription );
 
 	}
 
@@ -423,7 +439,7 @@ class WCCSubs_Admin {
 	 */
 	public static function product_write_panel_tab() {
 
-		?><li class="cart_subscription_options cart_subscriptions_tab show_if_simple show_if_variable show_if_bundle">
+		?><li class="cart_subscription_options cart_subscriptions_tab show_if_simple show_if_variable show_if_bundle hide_if_variable hide_if_subscription hide_if_variable-subscription">
 			<a href="#cart_subscriptions_data"><?php _e( 'Subscriptions', WCCSubs::VERSION ); ?></a>
 		</li><?php
 	}
