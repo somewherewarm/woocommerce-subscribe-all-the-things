@@ -40,19 +40,19 @@ class WCCSubs_Integrations {
 			add_filter( 'wccsubs_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
 			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
 			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
-			add_action( 'wccsubs_updated_cart_item_scheme_id', __CLASS__ . '::bundled_item_scheme_id', 10, 3 );
+			add_filter( 'wccsubs_set_subscription_scheme_id', __CLASS__ . '::set_bundled_item_subscription_scheme_id', 10, 3 );
 		}
 	}
 
 	/**
-	 * Bundled items inherit the active subscription scheme id from their parent.
+	 * Bundled items inherit the active subscription scheme id of their parent.
 	 *
 	 * @param  string $scheme_id
 	 * @param  array  $cart_item
-	 * @param  string $cart_item_key
+	 * @param  array  $cart_level_schemes
 	 * @return string
 	 */
-	public static function bundled_item_scheme_id( $scheme_id, $cart_item, $cart_item_key ) {
+	public static function set_bundled_item_subscription_scheme_id( $scheme_id, $cart_item, $cart_level_schemes ) {
 
 		foreach ( self::$container_key_names as $container_key_name ) {
 

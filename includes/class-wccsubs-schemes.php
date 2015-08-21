@@ -159,7 +159,7 @@ class WCCSubs_Schemes {
 			}
 		}
 
-		return $default_scheme_id;
+		return apply_filters( 'wccsubs_set_subscription_scheme_id', $default_scheme_id, $cart_item, $cart_level_schemes );
 	}
 
 	/**
