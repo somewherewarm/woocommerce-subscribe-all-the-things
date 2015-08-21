@@ -64,7 +64,8 @@ class WCCSubs_Cart {
 
 		WC()->cart->calculate_totals();
 
-		woocommerce_cart_totals();
+		// Update the cart table apart from the totals in order to show modified price html strings with sub details
+		wc_get_template( 'cart/cart.php' );
 
 		die();
 	}

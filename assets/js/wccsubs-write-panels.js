@@ -1,7 +1,7 @@
 jQuery( function($) {
 
-	$wccsubs_data_tab  = $( '#cart_subscriptions_data' );
-	$wccsubs_schemes   = $wccsubs_data_tab.find( '.subscription_schemes' );
+	$wccsubs_data_tab    = $( '#cart_subscriptions_data' );
+	$wccsubs_schemes     = $wccsubs_data_tab.find( '.subscription_schemes' );
 	wccsubs_block_params = {
 			message:    null,
 			overlayCSS: {

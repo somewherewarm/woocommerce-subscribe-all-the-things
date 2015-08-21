@@ -186,7 +186,7 @@ class WCCSubs {
 	 */
 	public function get_supported_product_types() {
 
-		return apply_filters( 'wccsubs_supported_product_types', array( 'simple', 'mix-and-match', 'bundle', 'composite' ) );
+		return apply_filters( 'wccsubs_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 }
 
