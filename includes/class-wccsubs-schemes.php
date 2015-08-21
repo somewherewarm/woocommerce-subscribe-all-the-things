@@ -233,7 +233,6 @@ class WCCSubs_Schemes {
 			if ( WC_Subscriptions_Product::is_subscription( $cart_item[ 'product_id' ] ) ) {
 				return false;
 			}
-
 		}
 
 		return $cart_level_schemes;

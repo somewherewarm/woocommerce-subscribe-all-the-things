@@ -449,7 +449,7 @@ class WCCSubs_Admin {
 	}
 
 	/**
-	 * Product writepanel for Restrictions.
+	 * Product writepanel for Subscriptions.
 	 *
 	 * @return void
 	 */
