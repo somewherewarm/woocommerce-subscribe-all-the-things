@@ -45,7 +45,7 @@ class WCCSubs_Integrations {
 
 				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
 
-				if ( isset( $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) ) {
+				if ( self::overrides_child_schemes( $container_cart_item ) && isset( $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) ) {
 					$scheme_id = $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ];
 				}
 			}
