@@ -137,25 +137,26 @@ class WCCSubs_Schemes {
 
 		} else {
 
-			if ( false === $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) {
+			// default to last setting
+			$default_scheme_id = $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ];
 
-				$product_id         = $cart_item[ 'product_id' ];
-				$force_subscription = get_post_meta( $product_id, '_wccsubs_force_subscription', true );
-				$default_status     = get_post_meta( $product_id, '_wccsubs_default_status', true );
-				$default_scheme_id  = '0';
+			if ( false === $default_scheme_id ) {
 
-				if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {
+				if ( $subscription_schemes = self::get_subscription_schemes( $cart_item, 'cart-item' ) ) {
 
-					$subscription_schemes = self::get_subscription_schemes( $cart_item, 'cart-item' );
+					$product_id         = $cart_item[ 'product_id' ];
+					$force_subscription = get_post_meta( $product_id, '_wccsubs_force_subscription', true );
+					$default_status     = get_post_meta( $product_id, '_wccsubs_default_status', true );
+					$default_scheme_id  = '0';
 
-					if ( ! empty( $subscription_schemes ) ) {
-						$default_scheme       = current( $subscription_schemes );
-						$default_scheme_id    = $default_scheme[ 'id' ];
+					if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {
+
+						if ( ! empty( $subscription_schemes ) ) {
+							$default_scheme       = current( $subscription_schemes );
+							$default_scheme_id    = $default_scheme[ 'id' ];
+						}
 					}
 				}
-
-			} else {
-				$default_scheme_id = $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ];
 			}
 		}
 

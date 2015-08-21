@@ -163,15 +163,10 @@ class WCCSubs_Integrations {
 	 */
 	public static function overrides_child_schemes( $cart_item ) {
 
-		$container = $cart_item[ 'data' ];
-		$overrides = true;
+		$overrides = false;
 
-		remove_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
-		$bundle_schemes = WCCSubs_Schemes::get_subscription_schemes( $cart_item );
-		add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
-
-		if ( empty( $bundle_schemes ) ) {
-			$overrides = false;
+		if ( isset( $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) && ( false !== $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) ) {
+			$overrides = true;
 		}
 
 		return $overrides;
