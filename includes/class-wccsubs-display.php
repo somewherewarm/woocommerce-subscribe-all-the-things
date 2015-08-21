@@ -57,8 +57,10 @@ class WCCSubs_Display {
 		$subscription_schemes        = WCCSubs_Schemes::get_cart_item_subscription_schemes( $cart_item );
 		$show_convert_to_sub_options = apply_filters( 'wccsubs_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
+		$is_mini_cart                = did_action( 'woocommerce_before_mini_cart' ) && ! did_action( 'woocommerce_after_mini_cart' );
+
 		// currently show options only in cart
-		if ( ! is_cart() ) {
+		if ( ! is_cart() || $is_mini_cart ) {
 			return $subtotal;
 		}
 
