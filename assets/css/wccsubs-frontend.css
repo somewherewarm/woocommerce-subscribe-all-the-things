@@ -4,6 +4,7 @@ ul.wccsubs-convert li, ul.wccsubs-convert-cart li {
 
 ul.wccsubs-convert {
 	margin: 0;
+	min-width: 120px;
 }
 
 ul.wccsubs-convert-cart {

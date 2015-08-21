@@ -101,7 +101,7 @@ class WCCSubs_Schemes {
 
 		}
 
-		return $schemes;
+		return apply_filters( 'wccsubs_subscription_schemes', $schemes, $cart_item, $scope );
 	}
 
 	/**

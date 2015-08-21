@@ -467,8 +467,8 @@ class WCCSubs_Admin {
 
 				// Default Status
 				woocommerce_wp_select( array( 'id' => '_wccsubs_default_status', 'wrapper_class'=> 'wccsubs_default_status', 'label' => __( 'Default to', WCCSubs::TEXT_DOMAIN ), 'description' => '', 'options' => array(
-					'subscription' => __( 'Subscription', WCCSubs::TEXT_DOMAIN ),
 					'one-time'     => __( 'One-time purchase', WCCSubs::TEXT_DOMAIN ),
+					'subscription' => __( 'Subscription', WCCSubs::TEXT_DOMAIN ),
 				) ) );
 
 			?></div>

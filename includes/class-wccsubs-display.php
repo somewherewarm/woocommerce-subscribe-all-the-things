@@ -55,7 +55,7 @@ class WCCSubs_Display {
 	public static function convert_to_sub_options( $subtotal, $cart_item, $cart_item_key ) {
 
 		$subscription_schemes        = WCCSubs_Schemes::get_cart_item_subscription_schemes( $cart_item );
-		$show_convert_to_sub_options = apply_filters( 'wccsub_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
+		$show_convert_to_sub_options = apply_filters( 'wccsubs_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
 		// currently show options only in cart
 		if ( ! is_cart() ) {
@@ -124,7 +124,9 @@ class WCCSubs_Display {
 
 		// Grab subtotal without Subs formatting
 		remove_filter( 'woocommerce_cart_product_subtotal', 'WC_Subscriptions_Cart' . '::get_formatted_product_subtotal', 11, 4 );
-		$subtotal = WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] );
+		remove_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::convert_to_sub_options', 1000, 3 );
+		$subtotal = apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] ), $cart_item, $cart_item_key );
+		add_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::convert_to_sub_options', 1000, 3 );
 		add_filter( 'woocommerce_cart_product_subtotal', 'WC_Subscriptions_Cart' . '::get_formatted_product_subtotal', 11, 4 );
 
 

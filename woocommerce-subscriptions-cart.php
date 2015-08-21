@@ -108,6 +108,7 @@ class WCCSubs {
 		}
 
 		require_once( 'includes/class-wccsubs-core-compatibility.php' );
+		require_once( 'includes/class-wccsubs-integrations.php' );
 		require_once( 'includes/class-wccsubs-schemes.php' );
 		require_once( 'includes/class-wccsubs-cart.php' );
 		require_once( 'includes/class-wccsubs-display.php' );

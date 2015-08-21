@@ -78,16 +78,18 @@ class WCCSubs_Cart {
 	public static function update_convert_to_sub_options( $updated ) {
 
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+			if ( ! empty( $cart_item[ 'wccsub_data' ] ) ) {
 
-			if ( ! empty( $cart_item[ 'wccsub_data' ] ) && isset( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ) {
+				$selected_scheme = isset( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ? $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] : false;
+				$selected_scheme = apply_filters( 'wccsubs_updated_cart_item_scheme_id', $selected_scheme, $cart_item, $cart_item_key );
 
-				WC()->cart->cart_contents[ $cart_item_key ][ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ];
-
-				$updated = true;
+				if ( false !== $selected_scheme ) {
+					WC()->cart->cart_contents[ $cart_item_key ][ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = $selected_scheme;
+				}
 			}
 		}
 
-		return $updated;
+		return true;
 	}
 
 	/**
