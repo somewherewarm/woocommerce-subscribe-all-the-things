@@ -8,24 +8,39 @@
 
 class WCCSubs_Integrations {
 
+	public static $container_key_names = array();
+	public static $child_keys_names    = array();
+
 	public static function init() {
+
+		$bundle_type_exists = false;
 
 		// Bundles
 		if ( class_exists( 'WC_Bundles' ) ) {
-			add_filter( 'wccsubs_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
-			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
-			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
-			add_action( 'wccsubs_updated_cart_item_scheme_id', __CLASS__ . '::bundled_item_scheme_id', 10, 3 );
+			self::$container_key_names[] = 'bundled_by';
+			self::$child_keys_names[]    = 'bundled_items';
+			$bundle_type_exists          = true;
 		}
 
 		// Composites
 		if ( class_exists( 'WC_Composite_Products' ) ) {
-
+			self::$container_key_names[] = 'composite_parent';
+			self::$child_keys_names[]    = 'composite_children';
+			$bundle_type_exists          = true;
 		}
 
 		// Mix n Match
 		if ( class_exists( 'WC_Mix_and_Match' ) ) {
+			self::$container_key_names[] = 'mnm_container';
+			self::$child_keys_names[]    = 'mnm_contents';
+			$bundle_type_exists          = true;
+		}
 
+		if ( $bundle_type_exists ) {
+			add_filter( 'wccsubs_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
+			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
+			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
+			add_action( 'wccsubs_updated_cart_item_scheme_id', __CLASS__ . '::bundled_item_scheme_id', 10, 3 );
 		}
 	}
 
@@ -39,14 +54,17 @@ class WCCSubs_Integrations {
 	 */
 	public static function bundled_item_scheme_id( $scheme_id, $cart_item, $cart_item_key ) {
 
-		if ( ! empty( $cart_item[ 'bundled_by' ] ) ) {
-			$container_key = $cart_item[ 'bundled_by' ];
-			if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
+		foreach ( self::$container_key_names as $container_key_name ) {
 
-				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
+			if ( ! empty( $cart_item[ $container_key_name ] ) ) {
+				$container_key = $cart_item[ $container_key_name ];
+				if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
 
-				if ( self::overrides_child_schemes( $container_cart_item ) && isset( $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) ) {
-					$scheme_id = $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ];
+					$container_cart_item = WC()->cart->cart_contents[ $container_key ];
+
+					if ( self::overrides_child_schemes( $container_cart_item ) && isset( $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) ) {
+						$scheme_id = $container_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ];
+					}
 				}
 			}
 		}
@@ -66,14 +84,17 @@ class WCCSubs_Integrations {
 	 */
 	public static function get_bundled_item_schemes( $schemes, $cart_item, $scope ) {
 
-		if ( ! empty( $cart_item[ 'bundled_by' ] ) ) {
-			$container_key = $cart_item[ 'bundled_by' ];
-			if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
+		foreach ( self::$container_key_names as $container_key_name ) {
 
-				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
+			if ( ! empty( $cart_item[ $container_key_name ] ) ) {
+				$container_key = $cart_item[ $container_key_name ];
+				if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
 
-				if ( self::overrides_child_schemes( $container_cart_item ) ) {
-					$schemes = WCCSubs_Schemes::get_subscription_schemes( $container_cart_item, $scope );
+					$container_cart_item = WC()->cart->cart_contents[ $container_key ];
+
+					if ( self::overrides_child_schemes( $container_cart_item ) ) {
+						$schemes = WCCSubs_Schemes::get_subscription_schemes( $container_cart_item, $scope );
+					}
 				}
 			}
 		}
@@ -91,10 +112,13 @@ class WCCSubs_Integrations {
 	 */
 	public static function get_bundle_schemes( $schemes, $cart_item, $scope ) {
 
-		if ( ! empty( $cart_item[ 'bundled_items' ] ) ) {
-			$container = $cart_item[ 'data' ];
-			if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
-				$schemes = array();
+		foreach ( self::$child_keys_names as $child_keys_name ) {
+
+			if ( ! empty( $cart_item[ $child_keys_name ] ) ) {
+				$container = $cart_item[ 'data' ];
+				if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
+					$schemes = array();
+				}
 			}
 		}
 
@@ -113,14 +137,17 @@ class WCCSubs_Integrations {
 	 */
 	public static function hide_bundled_item_options( $show, $cart_item, $cart_item_key ) {
 
-		if ( ! empty( $cart_item[ 'bundled_by' ] ) ) {
-			$container_key = $cart_item[ 'bundled_by' ];
-			if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
+		foreach ( self::$container_key_names as $container_key_name ) {
 
-				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
+			if ( ! empty( $cart_item[ $container_key_name ] ) ) {
+				$container_key = $cart_item[ $container_key_name ];
+				if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
 
-				if ( self::overrides_child_schemes( $container_cart_item ) ) {
-					$show = false;
+					$container_cart_item = WC()->cart->cart_contents[ $container_key ];
+
+					if ( self::overrides_child_schemes( $container_cart_item ) ) {
+						$show = false;
+					}
 				}
 			}
 		}
@@ -129,10 +156,10 @@ class WCCSubs_Integrations {
 	}
 
 	/**
-	 * Return inherited bundled cart item sub schemes from container.
+	 * True if there are sub schemes inherited from a container.
 	 *
 	 * @param  array $cart_item
-	 * @return array
+	 * @return boolean
 	 */
 	public static function overrides_child_schemes( $cart_item ) {
 
