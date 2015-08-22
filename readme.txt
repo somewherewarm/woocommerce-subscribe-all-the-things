@@ -14,15 +14,15 @@ Create multiple subscription options for existing WooCommerce products, or give 
 
 == Description ==
 
-WooCommerce Add-on Subscriptions is a mini-extenstion for WooCommerce Subscriptions that makes it possible to convert any existing product into a subscription. Add-on Subscriptions allows you to attach subscription options to existing products and comes with with full support for the Composite Products, Product Bundles and Mix and Match Products extensions.
+WooCommerce Add-on Subscriptions is a mini-extenstion for [WooCommerce Subscriptions](http://www.woothemes.com/products/woocommerce-subscriptions/) that makes it possible to convert any existing product into a subscription. Add-on Subscriptions allows you to attach subscription options to existing products and comes with with full support for the [Composite Products](http://www.woothemes.com/products/composite-products/), [Product Bundles](http://www.woothemes.com/products/product-bundles/) and [Mix and Match Products](http://www.woothemes.com/products/woocommerce-mix-and-match-products/) extensions.
 
 Use Add-on Subscriptions to:
 
-- Offer any existing product as a subscription, without limiting yourself to the functionality provided by the Simple/Variable Subscription product types.
-- Offer multiple billing period/interval/length options and let customers choose the one that suits their needs.
-- Prevent one-time purchases when introducing subscription options to a product.
-- Offer personalized subscriptions based on complex product types such as Bundles, Composites and Mix-and-Match Products.
-- Give customers the option to subscribe to the contents of their cart before checking out, by creating multiple global billing period/interval/length options.
+* Offer any existing product as a subscription, without limiting yourself to the functionality provided by the Simple/Variable Subscription product types.
+* Offer multiple billing period/interval/length options and let customers choose the one that suits their needs.
+* Prevent one-time purchases when introducing subscription options to a product.
+* Offer personalized subscriptions based on complex product types such as Bundles, Composites and Mix-and-Match Products.
+* Give customers the option to subscribe to the contents of their cart before checking out, by creating multiple global billing period/interval/length options.
 
 **Requires WooCommerce Subscriptions v2.0+**.
 
