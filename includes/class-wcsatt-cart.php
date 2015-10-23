@@ -2,11 +2,11 @@
 /**
  * Cart functionality for converting cart items to subscriptions.
  *
- * @class 	WCCSubs_Cart
+ * @class 	WCS_ATT_Cart
  * @version 1.0.0
  */
 
-class WCCSubs_Cart {
+class WCS_ATT_Cart {
 
 	public static function init() {
 
@@ -26,11 +26,11 @@ class WCCSubs_Cart {
 		add_filter( 'woocommerce_update_cart_action_cart_updated', __CLASS__ . '::update_convert_to_sub_options', 10 );
 
 		// Save the convert to sub cart-level setting via ajax
-		if ( WCCSubs_Core_Compatibility::is_wc_version_gte_2_4() ) {
-			add_action( 'wc_ajax_wccsubs_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
+		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ) {
+			add_action( 'wc_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 		} else {
-			add_action( 'wp_ajax_wccsubs_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
-			add_action( 'wp_ajax_nopriv_wccsubs_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
+			add_action( 'wp_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
+			add_action( 'wp_ajax_nopriv_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 		}
 	}
 
@@ -41,7 +41,7 @@ class WCCSubs_Cart {
 	 */
 	public static function update_convert_to_sub_cart_options() {
 
-		check_ajax_referer( 'wccsubs_update_cart_option', 'security' );
+		check_ajax_referer( 'wcsatt_update_cart_option', 'security' );
 
 		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
 			define( 'WOOCOMMERCE_CART', true );
@@ -60,7 +60,7 @@ class WCCSubs_Cart {
 			}
 		}
 
-		WC()->session->set( 'wccsubs-active-scheme-id', $selected_scheme );
+		WC()->session->set( 'wcsatt-active-scheme-id', $selected_scheme );
 
 		WC()->cart->calculate_totals();
 
@@ -82,7 +82,7 @@ class WCCSubs_Cart {
 			if ( ! empty( $cart_item[ 'wccsub_data' ] ) ) {
 
 				$selected_scheme = isset( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ? $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] : false;
-				$selected_scheme = apply_filters( 'wccsubs_updated_cart_item_scheme_id', $selected_scheme, $cart_item, $cart_item_key );
+				$selected_scheme = apply_filters( 'wcsatt_updated_cart_item_scheme_id', $selected_scheme, $cart_item, $cart_item_key );
 
 				if ( false !== $selected_scheme ) {
 					WC()->cart->cart_contents[ $cart_item_key ][ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = $selected_scheme;
@@ -136,7 +136,7 @@ class WCCSubs_Cart {
 	 */
 	public static function convert_to_sub( $cart_item ) {
 
-		if ( $active_subscription_scheme = WCCSubs_Schemes::get_active_subscription_scheme( $cart_item ) ) {
+		if ( $active_subscription_scheme = WCS_ATT_Schemes::get_active_subscription_scheme( $cart_item ) ) {
 
 			$cart_item[ 'data' ]->is_converted_to_sub = 'yes';
 
@@ -160,14 +160,14 @@ class WCCSubs_Cart {
 	 */
 	public static function apply_convert_to_sub_session_data( $cart ) {
 
-		$cart_level_schemes = WCCSubs_Schemes::get_cart_subscription_schemes();
+		$cart_level_schemes = WCS_ATT_Schemes::get_cart_subscription_schemes();
 
 		foreach ( WC()->cart->cart_contents as $cart_item_key => $cart_item ) {
 
 			if ( isset( $cart_item[ 'wccsub_data' ] ) ) {
 
 				// Initialize subscription scheme data
-				$cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = WCCSubs_Schemes::set_subscription_scheme_id( $cart_item, $cart_level_schemes );
+				$cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = WCS_ATT_Schemes::set_subscription_scheme_id( $cart_item, $cart_level_schemes );
 
 				// Convert the cart item to a subscription, if needed
 				WC()->cart->cart_contents[ $cart_item_key ] = self::convert_to_sub( $cart_item );
@@ -226,7 +226,7 @@ class WCCSubs_Cart {
 
 		$product         = $cart_item[ 'data' ];
 		$product_type    = $cart_item[ 'data' ]->product_type;
-		$supported_types = WCCSubs()->get_supported_product_types();
+		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product_type, $supported_types ) ) {
 			return true;
@@ -236,4 +236,4 @@ class WCCSubs_Cart {
 	}
 }
 
-WCCSubs_Cart::init();
+WCS_ATT_Cart::init();

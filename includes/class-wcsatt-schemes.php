@@ -2,11 +2,11 @@
 /**
  * Loading and filtering of subscription scheme settings.
  *
- * @class 	WCCSubs_Schemes
+ * @class 	WCS_ATT_Schemes
  * @version 1.0.0
  */
 
-class WCCSubs_Schemes {
+class WCS_ATT_Schemes {
 
 	/**
 	 * Returns the active cart-level subscription scheme id, or '0' if none is set.
@@ -15,7 +15,7 @@ class WCCSubs_Schemes {
 	 */
 	public static function get_active_cart_subscription_scheme_id() {
 
-		return WC()->session->get( 'wccsubs-active-scheme-id', '0' );
+		return WC()->session->get( 'wcsatt-active-scheme-id', '0' );
 	}
 
 	/**
@@ -61,14 +61,14 @@ class WCCSubs_Schemes {
 
 		$schemes = array();
 
-		if ( WCCSubs_Cart::is_convertible_to_sub( $cart_item ) ) {
+		if ( WCS_ATT_Cart::is_convertible_to_sub( $cart_item ) ) {
 
 			// Get product-level subscription schemes stored in product meta
 
 			if ( in_array( $scope, array( 'all', 'cart-item' ) ) ) {
 
 				$product_id      = $cart_item[ 'product_id' ];
-				$product_schemes = get_post_meta( $product_id, '_wccsubs_schemes', true );
+				$product_schemes = get_post_meta( $product_id, '_wcsatt_schemes', true );
 
 				if ( $product_schemes ) {
 					foreach ( $product_schemes as $scheme ) {
@@ -101,7 +101,7 @@ class WCCSubs_Schemes {
 
 		}
 
-		return apply_filters( 'wccsubs_subscription_schemes', $schemes, $cart_item, $scope );
+		return apply_filters( 'wcsatt_subscription_schemes', $schemes, $cart_item, $scope );
 	}
 
 	/**
@@ -116,13 +116,13 @@ class WCCSubs_Schemes {
 		if ( $cart_level_schemes ) {
 
 			// default to last setting
-			$default_scheme_id = WC()->session->get( 'wccsubs-active-scheme-id', false );
+			$default_scheme_id = WC()->session->get( 'wcsatt-active-scheme-id', false );
 
 			if ( false === $default_scheme_id ) {
 
 				// default to subscription
 
-				if ( apply_filters( 'wccsubs_enable_cart_subscription_by_default', false ) ) {
+				if ( apply_filters( 'wcsatt_enable_cart_subscription_by_default', false ) ) {
 
 					$default_scheme    = current( $cart_level_schemes );
 					$default_scheme_id = $default_scheme[ 'id' ];
@@ -145,8 +145,8 @@ class WCCSubs_Schemes {
 				if ( $subscription_schemes = self::get_subscription_schemes( $cart_item, 'cart-item' ) ) {
 
 					$product_id         = $cart_item[ 'product_id' ];
-					$force_subscription = get_post_meta( $product_id, '_wccsubs_force_subscription', true );
-					$default_status     = get_post_meta( $product_id, '_wccsubs_default_status', true );
+					$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+					$default_status     = get_post_meta( $product_id, '_wcsatt_default_status', true );
 					$default_scheme_id  = '0';
 
 					if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {
@@ -160,7 +160,7 @@ class WCCSubs_Schemes {
 			}
 		}
 
-		return apply_filters( 'wccsubs_set_subscription_scheme_id', $default_scheme_id, $cart_item, $cart_level_schemes );
+		return apply_filters( 'wcsatt_set_subscription_scheme_id', $default_scheme_id, $cart_item, $cart_level_schemes );
 	}
 
 	/**
@@ -223,7 +223,7 @@ class WCCSubs_Schemes {
 
 		foreach ( WC()->cart->cart_contents as $cart_item ) {
 
-			if ( ! WCCSubs_Cart::is_supported_product_type( $cart_item ) ) {
+			if ( ! WCS_ATT_Cart::is_supported_product_type( $cart_item ) ) {
 				return false;
 			}
 

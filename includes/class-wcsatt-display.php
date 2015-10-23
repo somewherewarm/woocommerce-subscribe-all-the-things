@@ -2,11 +2,11 @@
 /**
  * Templating and styling functions.
  *
- * @class 	WCCSubs_Display
+ * @class 	WCS_ATT_Display
  * @version 1.0.0
  */
 
-class WCCSubs_Display {
+class WCS_ATT_Display {
 
 	public static function init() {
 
@@ -27,21 +27,21 @@ class WCCSubs_Display {
 	 */
 	public static function frontend_scripts() {
 
-		wp_register_style( 'wccsubs-css', WCCSubs()->plugin_url() . '/assets/css/wccsubs-frontend.css', false, WCCSubs::VERSION, 'all' );
-		wp_enqueue_style( 'wccsubs-css' );
+		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-frontend.css', false, WCS_ATT::VERSION, 'all' );
+		wp_enqueue_style( 'wcsatt-css' );
 
 		if ( is_cart() ) {
-			wp_register_script( 'wccsubs-cart', WCCSubs()->plugin_url() . '/assets/js/wccsubs-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCCSubs::VERSION, true );
+			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
 		}
 
-		wp_enqueue_script( 'wccsubs-cart' );
+		wp_enqueue_script( 'wcsatt-cart' );
 
 		$params = array(
-			'update_cart_option_nonce' => wp_create_nonce( 'wccsubs_update_cart_option' ),
-			'wc_ajax_url'              => WCCSubs_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+			'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
+			'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
 		);
 
-		wp_localize_script( 'wccsubs-cart', 'wccsubs_cart_params', $params );
+		wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
 	}
 
 	/**
@@ -54,8 +54,8 @@ class WCCSubs_Display {
 	 */
 	public static function convert_to_sub_options( $subtotal, $cart_item, $cart_item_key ) {
 
-		$subscription_schemes        = WCCSubs_Schemes::get_cart_item_subscription_schemes( $cart_item );
-		$show_convert_to_sub_options = apply_filters( 'wccsubs_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
+		$subscription_schemes        = WCS_ATT_Schemes::get_cart_item_subscription_schemes( $cart_item );
+		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
 		$is_mini_cart                = did_action( 'woocommerce_before_mini_cart' ) && ! did_action( 'woocommerce_after_mini_cart' );
 
@@ -70,22 +70,22 @@ class WCCSubs_Display {
 
 		// Allow one-time purchase option?
 		$allow_one_time_option         = true;
-		$has_product_level_schemes     = empty( WCCSubs_Schemes::get_subscription_schemes( $cart_item, 'cart-item' ) ) ? false : true;
+		$has_product_level_schemes     = empty( WCS_ATT_Schemes::get_subscription_schemes( $cart_item, 'cart-item' ) ) ? false : true;
 
 		if ( $has_product_level_schemes ) {
-			$force_subscription = get_post_meta( $cart_item[ 'product_id' ], '_wccsubs_force_subscription', true );
+			$force_subscription = get_post_meta( $cart_item[ 'product_id' ], '_wcsatt_force_subscription', true );
 			if ( $force_subscription === 'yes' ) {
 				$allow_one_time_option = false;
 			}
 		}
 
 		$options                       = array();
-		$active_subscription_scheme_id = WCCSubs_Schemes::get_active_subscription_scheme_id( $cart_item );
+		$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_subscription_scheme_id( $cart_item );
 
 		if ( $allow_one_time_option ) {
 			$options[] = array(
 				'id'          => '0',
-				'description' => __( 'only this time', WCCSubs::TEXT_DOMAIN ),
+				'description' => __( 'only this time', WCS_ATT::TEXT_DOMAIN ),
 				'selected'    => $active_subscription_scheme_id === '0',
 			);
 		}
@@ -134,7 +134,7 @@ class WCCSubs_Display {
 
 		ob_start();
 
-		?><ul class="wccsubs-convert"><?php
+		?><ul class="wcsatt-convert"><?php
 
 			foreach ( $options as $option ) {
 				?><li>
@@ -163,19 +163,19 @@ class WCCSubs_Display {
 	public static function show_subscribe_to_cart_prompt() {
 
 		// Show cart/order level options only if all cart items share a common cart/order level subscription scheme.
-		if ( $subscription_schemes = WCCSubs_Schemes::get_cart_subscription_schemes() ) {
+		if ( $subscription_schemes = WCS_ATT_Schemes::get_cart_subscription_schemes() ) {
 
 			?>
-			<h2><?php _e( 'Cart Subscription', WCCSubs::TEXT_DOMAIN ); ?></h2>
-			<p><?php _e( 'Interested in subscribing to these items?', WCCSubs::TEXT_DOMAIN ); ?></h2>
-			<ul class="wccsubs-convert-cart"><?php
+			<h2><?php _e( 'Cart Subscription', WCS_ATT::TEXT_DOMAIN ); ?></h2>
+			<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></h2>
+			<ul class="wcsatt-convert-cart"><?php
 
 				$options                       = array();
-				$active_subscription_scheme_id = WCCSubs_Schemes::get_active_cart_subscription_scheme_id();
+				$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_cart_subscription_scheme_id();
 
 				$options[] = array(
 					'id'          => '0',
-					'description' => __( 'No &mdash; I will purchase again, if needed.', WCCSubs::TEXT_DOMAIN ),
+					'description' => __( 'No &mdash; I will purchase again, if needed.', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $active_subscription_scheme_id === '0',
 				);
 
@@ -193,7 +193,7 @@ class WCCSubs_Display {
 
 					$options[] = array(
 						'id'          => $subscription_scheme[ 'id' ],
-						'description' => sprintf( __( 'Yes &mdash; Bill me %s.', WCCSubs::TEXT_DOMAIN ), $sub_suffix ),
+						'description' => sprintf( __( 'Yes &mdash; Bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
 						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 					);
 				}
@@ -214,4 +214,4 @@ class WCCSubs_Display {
 
 }
 
-WCCSubs_Display::init();
+WCS_ATT_Display::init();

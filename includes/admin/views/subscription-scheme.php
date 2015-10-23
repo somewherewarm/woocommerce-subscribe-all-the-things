@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<h3>
 		<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
 		<div class="subscription_scheme_data">
-			<?php do_action( 'wccsubs_subscription_scheme_content', $index, array(), $post_id, $ajax ); ?>
+			<?php do_action( 'wcsatt_subscription_scheme_content', $index, array(), $post_id, $ajax ); ?>
 		</div>
-		<input type="hidden" name="wccsubs_schemes[<?php echo $index; ?>][position]" class="position" value=""/>
+		<input type="hidden" name="wcsatt_schemes[<?php echo $index; ?>][position]" class="position" value=""/>
 	</h3>
 
 </div>

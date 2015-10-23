@@ -1,11 +1,11 @@
 jQuery( function($) {
 
-	$wccsubs_data_tab    = $( '#cart_subscriptions_data' );
-	$wccsubs_schemes     = $wccsubs_data_tab.find( '.subscription_schemes' );
-	wccsubs_block_params = {
+	$wcsatt_data_tab    = $( '#wcsatt_data' );
+	$wcsatt_schemes     = $wcsatt_data_tab.find( '.subscription_schemes' );
+	wcsatt_block_params = {
 			message:    null,
 			overlayCSS: {
-				background: wccsubs_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
+				background: wcsatt_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
 				opacity:    0.6
 			}
 		};
@@ -14,7 +14,7 @@ jQuery( function($) {
 	/* Subscription Schemes
 	/* ------------------------------------*/
 
-	$.fn.wccsubs_scripts = function() {
+	$.fn.wcsatt_scripts = function() {
 
 		$( this ).find( '.help_tip, .tips' ).tipTip( {
 			'attribute': 'data-tip',
@@ -25,9 +25,9 @@ jQuery( function($) {
 	};
 
 	// Unused (for now)
-	if ( wccsubs_admin_params.post_id === '' ) {
+	if ( wcsatt_admin_params.post_id === '' ) {
 
-		$wccsubs_data_tab.on( 'click', 'h3', function() {
+		$wcsatt_data_tab.on( 'click', 'h3', function() {
 
 			var p = $( this ).closest( '.wc-metabox' );
 			var c = p.find( '.wc-metabox-content' );
@@ -42,7 +42,7 @@ jQuery( function($) {
 
 		} );
 
-		$wccsubs_data_tab.find( '.wc-metabox' ).each( function() {
+		$wcsatt_data_tab.find( '.wc-metabox' ).each( function() {
 
 			var p = $( this );
 			var c = p.find( '.wc-metabox-content' );
@@ -55,18 +55,18 @@ jQuery( function($) {
 	}
 
 	// Hide "default to" option when "force subscription" is checked
-	$wccsubs_data_tab.find( 'input#_wccsubs_force_subscription' ).on( 'change', function() {
+	$wcsatt_data_tab.find( 'input#_wcsatt_force_subscription' ).on( 'change', function() {
 
 		if ( $( this ).is( ':checked' ) ) {
-			$wccsubs_data_tab.find( '.wccsubs_default_status' ).hide();
+			$wcsatt_data_tab.find( '.wcsatt_default_status' ).hide();
 		} else {
-			$wccsubs_data_tab.find( '.wccsubs_default_status' ).show();
+			$wcsatt_data_tab.find( '.wcsatt_default_status' ).show();
 		}
 
 	} ).change();
 
 	// Remove
-	$wccsubs_data_tab.on( 'click', 'button.remove_row', function() {
+	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
 
 		var $parent = $( this ).parent().parent();
 
@@ -76,45 +76,45 @@ jQuery( function($) {
 	} );
 
 	// Expand
-	$wccsubs_data_tab.on( 'click', '.expand_all', function() {
-		$wccsubs_schemes.find( '.wc-metabox > .wc-metabox-content' ).show();
+	$wcsatt_data_tab.on( 'click', '.expand_all', function() {
+		$wcsatt_schemes.find( '.wc-metabox > .wc-metabox-content' ).show();
 		return false;
 	} );
 
 	// Close
-	$wccsubs_data_tab.on( 'click', '.close_all', function() {
-		$wccsubs_schemes.find( '.wc-metabox > .wc-metabox-content' ).hide();
+	$wcsatt_data_tab.on( 'click', '.close_all', function() {
+		$wcsatt_schemes.find( '.wc-metabox > .wc-metabox-content' ).hide();
 		return false;
 	} );
 
 	// Add
-	var subscription_schemes_metabox_count = $wccsubs_data_tab.find( '.wc-metabox' ).length;
+	var subscription_schemes_metabox_count = $wcsatt_data_tab.find( '.wc-metabox' ).length;
 
-	$wccsubs_data_tab.on( 'click', 'button.add_subscription_scheme', function () {
+	$wcsatt_data_tab.on( 'click', 'button.add_subscription_scheme', function () {
 
-		$wccsubs_data_tab.block( wccsubs_block_params );
+		$wcsatt_data_tab.block( wcsatt_block_params );
 
 		subscription_schemes_metabox_count++;
 
 		var data = {
-			action:  'wccsubs_add_subscription_scheme',
-			post_id:  wccsubs_admin_params.post_id,
+			action:  'wcsatt_add_subscription_scheme',
+			post_id:  wcsatt_admin_params.post_id,
 			index:    subscription_schemes_metabox_count,
-			security: wccsubs_admin_params.add_subscription_scheme_nonce
+			security: wcsatt_admin_params.add_subscription_scheme_nonce
 		};
 
-		$.post( wccsubs_admin_params.wc_ajax_url, data, function ( response ) {
+		$.post( wcsatt_admin_params.wc_ajax_url, data, function ( response ) {
 
-			$wccsubs_schemes.append( response.markup );
+			$wcsatt_schemes.append( response.markup );
 
-			var added = $wccsubs_schemes.find( '.subscription_scheme' ).last();
+			var added = $wcsatt_schemes.find( '.subscription_scheme' ).last();
 
-			added.wccsubs_scripts();
+			added.wcsatt_scripts();
 
 			subscription_schemes_row_indexes();
 
-			$wccsubs_data_tab.unblock();
-			$wccsubs_data_tab.trigger( 'woocommerce_subscription_scheme_added', response );
+			$wcsatt_data_tab.unblock();
+			$wcsatt_data_tab.trigger( 'woocommerce_subscription_scheme_added', response );
 
 		}, 'json' );
 
@@ -125,7 +125,7 @@ jQuery( function($) {
 	init_subscription_schemes_metaboxes();
 
 	function subscription_schemes_row_indexes() {
-		$wccsubs_schemes.find( '.subscription_scheme' ).each( function( index, el ) {
+		$wcsatt_schemes.find( '.subscription_scheme' ).each( function( index, el ) {
 			$( '.position', el ).val( parseInt( $(el).index( '.subscription_schemes .subscription_scheme' ) ) );
 		} );
 	}
@@ -134,7 +134,7 @@ jQuery( function($) {
 	function init_subscription_schemes_metaboxes() {
 
 		// Initial order
-		var subscription_schemes = $wccsubs_schemes.find( '.subscription_scheme' ).get();
+		var subscription_schemes = $wcsatt_schemes.find( '.subscription_scheme' ).get();
 
 		subscription_schemes.sort( function( a, b ) {
 		   var compA = parseInt( $(a).attr( 'rel' ) );
@@ -143,11 +143,11 @@ jQuery( function($) {
 		} );
 
 		$( subscription_schemes ).each( function( idx, itm ) {
-			$wccsubs_schemes.append( itm );
+			$wcsatt_schemes.append( itm );
 		} );
 
 		// Component ordering
-		$wccsubs_schemes.sortable( {
+		$wcsatt_schemes.sortable( {
 			items:                '.subscription_scheme',
 			cursor:               'move',
 			axis:                 'y',

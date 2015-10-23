@@ -2,11 +2,11 @@
 /**
  * Compatibility with other extensions.
  *
- * @class 	WCCSubs_Integrations
+ * @class 	WCS_ATT_Integrations
  * @version 1.0.0
  */
 
-class WCCSubs_Integrations {
+class WCS_ATT_Integrations {
 
 	public static $container_key_names = array();
 	public static $child_keys_names    = array();
@@ -37,10 +37,10 @@ class WCCSubs_Integrations {
 		}
 
 		if ( $bundle_type_exists ) {
-			add_filter( 'wccsubs_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
-			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
-			add_filter( 'wccsubs_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
-			add_filter( 'wccsubs_set_subscription_scheme_id', __CLASS__ . '::set_bundled_item_subscription_scheme_id', 10, 3 );
+			add_filter( 'wcsatt_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
+			add_filter( 'wcsatt_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
+			add_filter( 'wcsatt_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
+			add_filter( 'wcsatt_set_subscription_scheme_id', __CLASS__ . '::set_bundled_item_subscription_scheme_id', 10, 3 );
 		}
 	}
 
@@ -93,7 +93,7 @@ class WCCSubs_Integrations {
 					$container_cart_item = WC()->cart->cart_contents[ $container_key ];
 
 					if ( self::overrides_child_schemes( $container_cart_item ) ) {
-						$schemes = WCCSubs_Schemes::get_subscription_schemes( $container_cart_item, $scope );
+						$schemes = WCS_ATT_Schemes::get_subscription_schemes( $container_cart_item, $scope );
 					}
 				}
 			}
@@ -173,4 +173,4 @@ class WCCSubs_Integrations {
 	}
 }
 
-WCCSubs_Integrations::init();
+WCS_ATT_Integrations::init();

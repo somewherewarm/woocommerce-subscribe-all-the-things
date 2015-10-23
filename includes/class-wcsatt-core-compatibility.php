@@ -2,7 +2,7 @@
 /**
  * Functions related to core back-compatibility.
  *
- * @class  WCCSubs_Core_Compatibility
+ * @class  WCS_ATT_Core_Compatibility
  * @since  1.0.0
  */
 
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WCCSubs_Core_Compatibility {
+class WCS_ATT_Core_Compatibility {
 
 	/**
 	 * Helper method to get the version of the currently installed WooCommerce

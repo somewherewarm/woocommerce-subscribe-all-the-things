@@ -1,0 +1,75 @@
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme h3 select {
+	font-family: inherit;
+	max-width: inherit;
+	margin: inherit;
+}
+
+#woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
+	content: '\e00e';
+}
+
+#wcsatt_data .subscription_scheme .description {
+	font-style: normal;
+}
+
+#wcsatt_data {
+	padding-bottom: 10px;
+}
+
+#wcsatt_data .help_tip {
+	width: 17px;
+	height: 17px;
+	margin-left: 0;
+}
+
+#wcsatt_data .subscription_schemes {
+	border-bottom: none;
+}
+
+#wcsatt_data .subscription_scheme .form-field {
+	float: left;
+}
+
+#wcsatt_data .subscription_scheme {
+	border-radius: 0;
+}
+
+#wcsatt_data .subscription_scheme_data {
+	font-weight: normal;
+}
+
+#wcsatt_data .subscription_scheme_data .form-field {
+	margin: 0;
+}
+
+#wcsatt_data.panel .subscription_scheme .remove_row {
+	margin-top: 5px;
+}
+
+#wcsatt_data .subscription_scheme_data:after {
+	clear: both;
+	display: table;
+	content: " ";
+}
+
+/*
+ * Admin settings
+ */
+
+.forminp #wcsatt_data {
+	padding-top: 10px;
+}
+
+.forminp #wcsatt_data .wc-metabox {
+	background: none;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #fff;
+}
+
+.forminp #wcsatt_data .wc-metabox:first-of-type {
+	border-top: 0;
+}
+
+.forminp #wcsatt_data .add_subscription_scheme {
+	font-weight: bold;
+}

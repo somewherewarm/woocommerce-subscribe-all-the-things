@@ -1,13 +1,13 @@
 <?php
 /*
-* Plugin Name: WooCommerce Cart Subscriptions
-* Plugin URI: http://www.woothemes.com/products/woocommerce-subscriptions/
-* Description: Create subscriptions from physical products in the cart.
+* Plugin Name: WooCommerce Subscribe All the Things
+* Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
+* Description: Experimental extension for linking WooCommerce Subscriptions with product types created by other extensions, like Composites and Bundles.
 * Version: 1.0.0
 * Author: Prospress
 * Author URI: http://prospress.com/
 *
-* Text Domain: woocommerce-subscriptions-cart
+* Text Domain: woocommerce-subscribe-all-the-things
 * Domain Path: /languages/
 *
 * Requires at least: 3.8
@@ -23,9 +23,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'WCCSubs' ) ) :
+if ( ! class_exists( 'WCS_ATT' ) ) :
 
-class WCCSubs {
+class WCS_ATT {
 
 	/* plugin version */
 	const VERSION = '1.0.0';
@@ -34,23 +34,23 @@ class WCCSubs {
 	const REQ_WC_VERSION = '2.3.0';
 
 	/* text domain */
-	const TEXT_DOMAIN = 'woocommerce-subscriptions-cart';
+	const TEXT_DOMAIN = 'woocommerce-subscribe-all-the-things';
 
 	/**
-	 * @var WCCSubs - the single instance of the class.
+	 * @var WCS_ATT - the single instance of the class.
 	 *
 	 * @since 1.0.0
 	 */
 	protected static $_instance = null;
 
 	/**
-	 * Main WCCSubs Instance.
+	 * Main WCS_ATT Instance.
 	 *
-	 * Ensures only one instance of WCCSubs is loaded or can be loaded.
+	 * Ensures only one instance of WCS_ATT is loaded or can be loaded.
 	 *
 	 * @static
-	 * @see WCCSubs()
-	 * @return WCCSubs - Main instance
+	 * @see WCS_ATT()
+	 * @return WCS_ATT - Main instance
 	 * @since 1.0.0
 	 */
 	public static function instance() {
@@ -101,17 +101,23 @@ class WCCSubs {
 
 		global $woocommerce;
 
-		// WC 2 check
-		if ( version_compare( $woocommerce->version, self::REQ_WC_VERSION ) < 0 ) {
-			add_action( 'admin_notices', array( $this, 'admin_notice' ) );
+		// Subs 2 check
+		if ( ! function_exists( 'wcs_is_subscription' ) ) {
+			add_action( 'admin_notices', array( $this, 'wcs_admin_notice' ) );
 			return false;
 		}
 
-		require_once( 'includes/class-wccsubs-core-compatibility.php' );
-		require_once( 'includes/class-wccsubs-integrations.php' );
-		require_once( 'includes/class-wccsubs-schemes.php' );
-		require_once( 'includes/class-wccsubs-cart.php' );
-		require_once( 'includes/class-wccsubs-display.php' );
+		// WC 2 check
+		if ( version_compare( $woocommerce->version, self::REQ_WC_VERSION ) < 0 ) {
+			add_action( 'admin_notices', array( $this, 'wc_admin_notice' ) );
+			return false;
+		}
+
+		require_once( 'includes/class-wcsatt-core-compatibility.php' );
+		require_once( 'includes/class-wcsatt-integrations.php' );
+		require_once( 'includes/class-wcsatt-schemes.php' );
+		require_once( 'includes/class-wcsatt-cart.php' );
+		require_once( 'includes/class-wcsatt-display.php' );
 
 		// Admin includes
 		if ( is_admin() ) {
@@ -127,7 +133,17 @@ class WCCSubs {
 	 */
 	public function admin_includes() {
 
-		require_once( 'includes/admin/class-wccsubs-admin.php' );
+		require_once( 'includes/admin/class-wcsatt-admin.php' );
+	}
+
+	/**
+	 * Display a warning message if Subs version check fails.
+	 *
+	 * @return void
+	 */
+	public function wcs_admin_notice() {
+
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Cart Subscriptions requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -135,9 +151,9 @@ class WCCSubs {
 	 *
 	 * @return void
 	 */
-	public function admin_notice() {
+	public function wc_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Cart Subscriptions requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe to All the Things requires at least WooCommerce Subscriptions version 2.0 in order to function.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -147,7 +163,7 @@ class WCCSubs {
 	 */
 	public function init_textdomain() {
 
-		load_plugin_textdomain( 'woocommerce-subscriptions-cart', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'woocommerce-subscribe-all-the-things', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**
@@ -159,12 +175,12 @@ class WCCSubs {
 
 		global $wpdb;
 
-		$version = get_option( 'wccsubs_version', false );
+		$version = get_option( 'wcsatt_version', false );
 
 		if ( $version === false ) {
-			add_option( 'wccsubs_version', self::VERSION );
+			add_option( 'wcsatt_version', self::VERSION );
 		} elseif ( version_compare( $version, self::VERSION, '<' ) ) {
-			update_option( 'wccsubs_version', self::VERSION );
+			update_option( 'wcsatt_version', self::VERSION );
 		}
 	}
 
@@ -175,7 +191,7 @@ class WCCSubs {
 	 */
 	public function deactivate() {
 
-		delete_option( 'wccsubs_version' );
+		delete_option( 'wcsatt_version' );
 	}
 
 	/**
@@ -186,22 +202,22 @@ class WCCSubs {
 	 */
 	public function get_supported_product_types() {
 
-		return apply_filters( 'wccsubs_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
+		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 }
 
 endif; // end class_exists check
 
 /**
- * Returns the main instance of WCCSubs to prevent the need to use globals.
+ * Returns the main instance of WCS_ATT to prevent the need to use globals.
  *
  * @since  1.0.0
  * @return WooCommerce Cart Subscriptions
  */
-function WCCSubs() {
+function WCS_ATT() {
 
-  return WCCSubs::instance();
+  return WCS_ATT::instance();
 }
 
 // Launch the whole plugin
-$GLOBALS[ 'woocommerce_subscriptions_cart' ] = WCCSubs();
+$GLOBALS[ 'woocommerce_subscriptions_cart' ] = WCS_ATT();
