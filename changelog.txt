@@ -1,0 +1,4 @@
+*** WooCommerce Subscribe All the Things ***
+
+2015.10.24 - version 1.0.0
+ * Initial version.

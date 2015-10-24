@@ -18,6 +18,8 @@ class WCS_ATT_Display {
 
 		// Use radio buttons to mark a cart item as a one-time sale or as a subscription
 		add_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::convert_to_sub_options', 1000, 3 );
+
+		add_action( 'woocommerce_before_add_to_cart_button',  __CLASS__ . '::convert_to_sub_product_options', 100 );
 	}
 
 	/**
@@ -45,7 +47,76 @@ class WCS_ATT_Display {
 	}
 
 	/**
-	 * Displays an option to purchase the item once or create a subscription from it.
+	 * Displays signle-prouct options for purchasing a product once or creating a subscription from it.
+	 *
+	 * @return void
+	 */
+	public static function convert_to_sub_product_options() {
+
+		global $product;
+
+		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
+
+		// Allow one-time purchase option?
+		$allow_one_time_option         = true;
+		$has_product_level_schemes     = empty( $subscription_schemes ) ? false : true;
+
+		if ( $has_product_level_schemes ) {
+
+			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+
+			if ( $force_subscription === 'yes' ) {
+				$allow_one_time_option = false;
+			}
+
+			$options                        = array();
+			$default_subscription_scheme    = current( $subscription_schemes );
+			$default_subscription_scheme_id = $allow_one_time_option ? '0' : $default_subscription_scheme[ 'id' ];
+			$default_subscription_scheme_id = apply_filters( 'wcsatt_get_default_subscription_scheme_id', $default_subscription_scheme_id, $subscription_schemes, $allow_one_time_option, $product );
+
+			if ( $allow_one_time_option ) {
+				$options[] = array(
+					'id'          => '0',
+					'description' => __( 'No, thanks.', WCS_ATT::TEXT_DOMAIN ),
+					'selected'    => $default_subscription_scheme_id === '0',
+				);
+			}
+
+			foreach ( $subscription_schemes as $subscription_scheme ) {
+
+				$subscription_scheme_id = $subscription_scheme[ 'id' ];
+
+				$_cloned = clone $product;
+
+				$_cloned->is_converted_to_sub              = 'yes';
+				$_cloned->subscription_period              = $subscription_scheme[ 'subscription_period' ];
+				$_cloned->subscription_period_interval     = $subscription_scheme[ 'subscription_period_interval' ];
+				$_cloned->subscription_length              = $subscription_scheme[ 'subscription_length' ];
+
+				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
+
+				$options[] = array(
+					'id'          => $subscription_scheme_id,
+					'description' => sprintf( __( 'Yes, bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
+					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
+				);
+			}
+
+			// If there's just one option to display, it means that one-time purchases are not allowed and there's only one sub scheme on offer -- so don't show any options
+			if ( count( $options ) === 1 ) {
+				return false;
+			}
+
+			wc_get_template( 'product-options.php', array(
+				'product' => $product,
+				'options' => $options,
+			), false, WCS_ATT()->plugin_path() . '/templates/' );
+		}
+	}
+
+	/**
+	 * Displays cart item options for purchasing a product once or creating a subscription from it.
 	 *
 	 * @param  string $subtotal
 	 * @param  array  $cart_item
@@ -134,18 +205,10 @@ class WCS_ATT_Display {
 
 		ob_start();
 
-		?><ul class="wcsatt-convert"><?php
-
-			foreach ( $options as $option ) {
-				?><li>
-					<label>
-						<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo $option[ 'id' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
-						<?php echo $option[ 'description' ]; ?>
-					</label>
-				</li><?php
-			}
-
-		?></ul><?php
+		wc_get_template( 'cart-item-options.php', array(
+			'options'       => $options,
+			'cart_item_key' => $cart_item_key
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
 
 		$convert_to_sub_options = ob_get_clean();
 
@@ -167,7 +230,7 @@ class WCS_ATT_Display {
 
 			?>
 			<h2><?php _e( 'Cart Subscription', WCS_ATT::TEXT_DOMAIN ); ?></h2>
-			<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></h2>
+			<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></p>
 			<ul class="wcsatt-convert-cart"><?php
 
 				$options                       = array();
@@ -175,7 +238,7 @@ class WCS_ATT_Display {
 
 				$options[] = array(
 					'id'          => '0',
-					'description' => __( 'No &mdash; I will purchase again, if needed.', WCS_ATT::TEXT_DOMAIN ),
+					'description' => __( 'No thanks.', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $active_subscription_scheme_id === '0',
 				);
 
@@ -193,7 +256,7 @@ class WCS_ATT_Display {
 
 					$options[] = array(
 						'id'          => $subscription_scheme[ 'id' ],
-						'description' => sprintf( __( 'Yes &mdash; Bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
+						'description' => sprintf( __( 'Yes, bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
 						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 					);
 				}

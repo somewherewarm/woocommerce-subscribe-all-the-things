@@ -98,10 +98,37 @@ class WCS_ATT_Schemes {
 					}
 				}
 			}
-
 		}
 
 		return apply_filters( 'wcsatt_subscription_schemes', $schemes, $cart_item, $scope );
+	}
+
+	/**
+	 * Returns all available subscription schemes for displaying single-product options (product-level).
+	 *
+	 * @return array
+	 */
+	public static function get_product_subscription_schemes( $product ) {
+
+		$schemes = array();
+
+		$supported_types = WCS_ATT()->get_supported_product_types();
+
+		if ( in_array( $product->product_type, $supported_types ) ) {
+
+			// Get product-level subscription schemes stored in product meta
+
+			$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
+
+			if ( $product_schemes ) {
+				foreach ( $product_schemes as $scheme ) {
+					$scheme[ 'scope' ] = 'cart-item';
+					$schemes[]         = $scheme;
+				}
+			}
+		}
+
+		return apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $product );
 	}
 
 	/**
@@ -150,10 +177,9 @@ class WCS_ATT_Schemes {
 					$default_scheme_id  = '0';
 
 					if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {
-
 						if ( ! empty( $subscription_schemes ) ) {
-							$default_scheme       = current( $subscription_schemes );
-							$default_scheme_id    = $default_scheme[ 'id' ];
+							$default_scheme    = current( $subscription_schemes );
+							$default_scheme_id = $default_scheme[ 'id' ];
 						}
 					}
 				}

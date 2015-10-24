@@ -103,8 +103,15 @@ class WCS_ATT_Cart {
 
 		if ( self::is_convertible_to_sub( $cart_item ) ) {
 
+			$posted_subscription_scheme_id = false;
+			$product_id                    = $cart_item[ 'product_id' ];
+
+			if ( ! empty( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
+				$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
+			}
+
 			$cart_item[ 'wccsub_data' ] = array(
-				'active_subscription_scheme_id' => false,
+				'active_subscription_scheme_id' => $posted_subscription_scheme_id,
 			);
 		}
 
