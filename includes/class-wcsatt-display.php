@@ -19,7 +19,11 @@ class WCS_ATT_Display {
 		// Use radio buttons to mark a cart item as a one-time sale or as a subscription
 		add_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::convert_to_sub_options', 1000, 3 );
 
+		// Display subscription options in the single-product template
 		add_action( 'woocommerce_before_add_to_cart_button',  __CLASS__ . '::convert_to_sub_product_options', 100 );
+
+		// Add subscription price string info to products with attached subscription schemes
+		add_filter( 'woocommerce_get_price_html',  __CLASS__ . '::filter_price_html', 1000, 2 );
 	}
 
 	/**
@@ -55,8 +59,8 @@ class WCS_ATT_Display {
 
 		global $product;
 
-		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
-		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
+		$subscription_schemes          = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		$show_convert_to_sub_options   = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 		// Allow one-time purchase option?
 		$allow_one_time_option         = true;
@@ -65,14 +69,21 @@ class WCS_ATT_Display {
 		if ( $has_product_level_schemes ) {
 
 			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+			$default_status     = get_post_meta( $product->id, '_wcsatt_default_status', true );
 
 			if ( $force_subscription === 'yes' ) {
 				$allow_one_time_option = false;
 			}
 
-			$options                        = array();
-			$default_subscription_scheme    = current( $subscription_schemes );
-			$default_subscription_scheme_id = $allow_one_time_option ? '0' : $default_subscription_scheme[ 'id' ];
+			$options                     = array();
+			$default_subscription_scheme = current( $subscription_schemes );
+
+			if ( $allow_one_time_option && $default_status !== 'subscription' ) {
+				$default_subscription_scheme_id = '0';
+			} else {
+				$default_subscription_scheme_id = $default_subscription_scheme[ 'id' ];
+			}
+
 			$default_subscription_scheme_id = apply_filters( 'wcsatt_get_default_subscription_scheme_id', $default_subscription_scheme_id, $subscription_schemes, $allow_one_time_option, $product );
 
 			if ( $allow_one_time_option ) {
@@ -89,16 +100,16 @@ class WCS_ATT_Display {
 
 				$_cloned = clone $product;
 
-				$_cloned->is_converted_to_sub              = 'yes';
-				$_cloned->subscription_period              = $subscription_scheme[ 'subscription_period' ];
-				$_cloned->subscription_period_interval     = $subscription_scheme[ 'subscription_period_interval' ];
-				$_cloned->subscription_length              = $subscription_scheme[ 'subscription_length' ];
+				$_cloned->is_converted_to_sub          = 'yes';
+				$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
+				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
+				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
 				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
 
 				$options[] = array(
 					'id'          => $subscription_scheme_id,
-					'description' => sprintf( __( 'Yes, bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
+					'description' => $allow_one_time_option ? sprintf( __( 'Yes, bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ) : $sub_suffix,
 					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
 				);
 			}
@@ -109,8 +120,9 @@ class WCS_ATT_Display {
 			}
 
 			wc_get_template( 'product-options.php', array(
-				'product' => $product,
-				'options' => $options,
+				'product'        => $product,
+				'options'        => $options,
+				'allow_one_time' => $allow_one_time_option,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
 		}
 	}
@@ -275,6 +287,43 @@ class WCS_ATT_Display {
 		}
 	}
 
+	/**
+	 * Add subscription price string info to products with attached subscription schemes.
+	 *
+	 * @param  string     $price
+	 * @param  WC_Product $product
+	 * @return string
+	 */
+	public static function filter_price_html( $price, $product ) {
+
+		$subscription_schemes      = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		$has_product_level_schemes = empty( $subscription_schemes ) ? false : true;
+
+		if ( $has_product_level_schemes ) {
+
+			$force_subscription  = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+			$subscription_scheme = current( $subscription_schemes );
+
+			$_cloned = clone $product;
+
+			$_cloned->is_converted_to_sub          = 'yes';
+			$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
+			$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
+			$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+
+			if ( count( $subscription_schemes ) === 1 && $force_subscription === 'yes' ) {
+				$price = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'price' => $price ) );
+			} elseif ( $force_subscription === 'yes' ) {
+				$suffix = ' <small class="wcsatt-sub-options">' . __( '(sign-up required)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
+			} else {
+				$suffix = ' <small class="wcsatt-sub-options">' . __( '(includes sign-up options)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
+			}
+		}
+
+		return $price;
+	}
 }
 
 WCS_ATT_Display::init();

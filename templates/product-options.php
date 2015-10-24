@@ -13,7 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-<h3><?php echo sprintf( __( 'Subscribe to &quot;%s&quot;?', WCS_ATT::TEXT_DOMAIN ), $product->get_title() ); ?></h3>
+<h3><?php
+	if ( $allow_one_time ) {
+		echo sprintf( __( 'Subscribe to &quot;%s&quot;?', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
+	} else {
+		echo sprintf( __( 'Sign up for &quot;%s&quot;:', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
+	}
+?></h3>
 
 <ul class="wcsatt-convert-product"><?php
 
