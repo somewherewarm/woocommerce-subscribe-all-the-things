@@ -10,6 +10,9 @@
 
 #wcsatt_data .subscription_scheme .description {
 	font-style: normal;
+	display: inline;
+	clear: none;
+	margin-left: 5px;
 }
 
 #wcsatt_data {
@@ -34,16 +37,25 @@
 	border-radius: 0;
 }
 
+#wcsatt_data .subscription_scheme_table td {
+	vertical-align: middle;
+	padding: 5px;
+}
+
+#wcsatt_data .subscription_scheme td.scheme-title {
+	text-align: left;
+}
+
+#wcsatt_data table.subscription_scheme_table {
+	padding: 0;
+}
+
 #wcsatt_data .subscription_scheme_data {
 	font-weight: normal;
 }
 
 #wcsatt_data .subscription_scheme_data .form-field {
 	margin: 0;
-}
-
-#wcsatt_data.panel .subscription_scheme .remove_row {
-	margin-top: 5px;
 }
 
 #wcsatt_data .subscription_scheme_data:after {

@@ -16,8 +16,11 @@ class WCS_ATT_Admin {
 		// Ajax add subscription scheme
 		add_action( 'wp_ajax_wcsatt_add_subscription_scheme', __CLASS__ . '::ajax_add_subscription_scheme' );
 
+		// Subscription scheme markup added on the 'wcsatt_subscription_scheme' action
+		add_action( 'wcsatt_subscription_scheme',  __CLASS__ . '::subscription_scheme', 10, 3 );
+
 		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action
-		add_action( 'wcsatt_subscription_scheme_content',  __CLASS__ . '::subscription_scheme_content', 10, 4 );
+		add_action( 'wcsatt_subscription_scheme_content',  __CLASS__ . '::subscription_scheme_content', 10, 3 );
 
 		/**
 		 * WC Product Metaboxes
@@ -80,20 +83,7 @@ class WCS_ATT_Admin {
 							$i = 0;
 
 							foreach ( $subscription_schemes as $subscription_scheme ) {
-
-								$subscription_scheme_id = $subscription_scheme[ 'id' ];
-
-								?><div class="subscription_scheme wc-metabox closed" rel="<?php echo $subscription_scheme[ 'position' ]; ?>">
-									<h3>
-										<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
-										<div class="subscription_scheme_data">
-											<?php do_action( 'wcsatt_subscription_scheme_content', $i, $subscription_scheme, '', false ); ?>
-										</div>
-										<input type="hidden" name="wcsatt_schemes[<?php echo $i; ?>][id]" class="scheme_id" value="<?php echo $subscription_scheme_id; ?>" />
-										<input type="hidden" name="wcsatt_schemes[<?php echo $i; ?>][position]" class="position" value="<?php echo $i; ?>"/>
-									</h3>
-								</div><?php
-
+								do_action( 'wcsatt_subscription_scheme', $i, $subscription_scheme, '' );
 								$i++;
 							}
 						}
@@ -218,15 +208,26 @@ class WCS_ATT_Admin {
 	}
 
 	/**
+	 * Subscription scheme markup adeed on the 'wcsatt_subscription_scheme' action.
+	 *
+	 * @param  int     $index
+	 * @param  array   $scheme_data
+	 * @param  int     $post_id
+	 * @return void
+	 */
+	public static function subscription_scheme( $index, $scheme_data, $post_id ) {
+		include( 'views/subscription-scheme.php' );
+	}
+
+	/**
 	 * Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
 	 *
 	 * @param  int     $index
 	 * @param  array   $scheme_data
 	 * @param  int     $post_id
-	 * @param  boolean $doing_ajax
 	 * @return void
 	 */
-	public static function subscription_scheme_content( $index, $scheme_data, $post_id, $doing_ajax ) {
+	public static function subscription_scheme_content( $index, $scheme_data, $post_id ) {
 
 		global $thepostid;
 
@@ -290,7 +291,6 @@ class WCS_ATT_Admin {
 
 		$index   = intval( $_POST[ 'index' ] );
 		$post_id = intval( $_POST[ 'post_id' ] );
-		$ajax    = true;
 
 		ob_start();
 
@@ -302,7 +302,7 @@ class WCS_ATT_Admin {
 				$post_id = '';
 			}
 
-			include( 'views/subscription-scheme.php' );
+			do_action( 'wcsatt_subscription_scheme', $index, array(), $post_id );
 
 		} else {
 			$result = 'failure';
@@ -408,20 +408,7 @@ class WCS_ATT_Admin {
 					$i = 0;
 
 					foreach ( $subscription_schemes as $subscription_scheme ) {
-
-						$subscription_scheme_id = $subscription_scheme[ 'id' ];
-
-						?><div class="subscription_scheme wc-metabox closed" rel="<?php echo $subscription_scheme[ 'position' ]; ?>">
-							<h3>
-								<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
-								<div class="subscription_scheme_data">
-									<?php do_action( 'wcsatt_subscription_scheme_content', $i, $subscription_scheme, $post->ID, false ); ?>
-								</div>
-								<input type="hidden" name="wcsatt_schemes[<?php echo $i; ?>][id]" class="scheme_id" value="<?php echo $subscription_scheme_id; ?>" />
-								<input type="hidden" name="wcsatt_schemes[<?php echo $i; ?>][position]" class="position" value="<?php echo $i; ?>"/>
-							</h3>
-						</div><?php
-
+						do_action( 'wcsatt_subscription_scheme', $i, $subscription_scheme, $post->ID );
 						$i++;
 					}
 				}

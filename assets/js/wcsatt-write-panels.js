@@ -68,7 +68,7 @@ jQuery( function($) {
 	// Remove
 	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
 
-		var $parent = $( this ).parent().parent();
+		var $parent = $( this ).closest( '.subscription_scheme' );
 
 		$parent.find('*').off();
 		$parent.remove();
@@ -127,6 +127,8 @@ jQuery( function($) {
 	function subscription_schemes_row_indexes() {
 		$wcsatt_schemes.find( '.subscription_scheme' ).each( function( index, el ) {
 			$( '.position', el ).val( parseInt( $(el).index( '.subscription_schemes .subscription_scheme' ) ) );
+			var ind = '#' + ( index + 1 ).toString();
+			$( '.scheme-title', el ).html( ind );
 		} );
 	}
 
