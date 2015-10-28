@@ -198,11 +198,21 @@ class WCS_ATT_Admin {
 
 			update_post_meta( $post_id, '_wcsatt_force_subscription', $force_subscription );
 
+			// Save prompt
+
+			if ( ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ) {
+				$prompt = wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) );
+				update_post_meta( $post_id, '_wcsatt_subscription_prompt', $prompt );
+			} else {
+				delete_post_meta( $post_id, '_wcsatt_subscription_prompt' );
+			}
+
 		} else {
 
 			delete_post_meta( $post_id, '_wcsatt_schemes' );
 			delete_post_meta( $post_id, '_wcsatt_force_subscription' );
 			delete_post_meta( $post_id, '_wcsatt_default_status' );
+			delete_post_meta( $post_id, '_wcsatt_subscription_prompt' );
 		}
 
 	}
@@ -395,6 +405,9 @@ class WCS_ATT_Admin {
 					'one-time'     => __( 'One-time purchase', WCS_ATT::TEXT_DOMAIN ),
 					'subscription' => __( 'Subscription', WCS_ATT::TEXT_DOMAIN ),
 				) ) );
+
+				// Subscription Prompt
+				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Custom html/text to display before subscription options.', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true ) );
 
 			?></div>
 

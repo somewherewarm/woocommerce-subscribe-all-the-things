@@ -89,7 +89,7 @@ class WCS_ATT_Display {
 			if ( $allow_one_time_option ) {
 				$options[] = array(
 					'id'          => '0',
-					'description' => __( 'No, thanks.', WCS_ATT::TEXT_DOMAIN ),
+					'description' => __( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $default_subscription_scheme_id === '0',
 				);
 			}
@@ -109,7 +109,7 @@ class WCS_ATT_Display {
 
 				$options[] = array(
 					'id'          => $subscription_scheme_id,
-					'description' => $allow_one_time_option ? sprintf( __( 'Yes, bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ) : $sub_suffix,
+					'description' => ucfirst( $allow_one_time_option ? sprintf( __( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ) : $sub_suffix ),
 					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
 				);
 			}
@@ -119,10 +119,15 @@ class WCS_ATT_Display {
 				return false;
 			}
 
+			if ( $prompt = get_post_meta( $product->id, '_wcsatt_subscription_prompt', true ) ) {
+				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
+			}
+
 			wc_get_template( 'product-options.php', array(
 				'product'        => $product,
 				'options'        => $options,
 				'allow_one_time' => $allow_one_time_option,
+				'prompt'         => $prompt,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
 		}
 	}
@@ -250,7 +255,7 @@ class WCS_ATT_Display {
 
 				$options[] = array(
 					'id'          => '0',
-					'description' => __( 'No thanks.', WCS_ATT::TEXT_DOMAIN ),
+					'description' => __( 'No thanks.', 'cart subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $active_subscription_scheme_id === '0',
 				);
 
@@ -268,7 +273,7 @@ class WCS_ATT_Display {
 
 					$options[] = array(
 						'id'          => $subscription_scheme[ 'id' ],
-						'description' => sprintf( __( 'Yes, bill me %s.', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
+						'description' => sprintf( __( 'Yes, %s.', 'cart subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
 						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 					);
 				}
@@ -301,23 +306,29 @@ class WCS_ATT_Display {
 
 		if ( $has_product_level_schemes ) {
 
-			$force_subscription  = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
-			$subscription_scheme = current( $subscription_schemes );
+			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 
-			$_cloned = clone $product;
+			if ( $force_subscription === 'yes' ) {
 
-			$_cloned->is_converted_to_sub          = 'yes';
-			$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
-			$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
-			$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+				$subscription_scheme = current( $subscription_schemes );
+				$suffix              = '';
 
-			if ( count( $subscription_schemes ) === 1 && $force_subscription === 'yes' ) {
+				if ( count( $subscription_schemes ) > 1 ) {
+					$suffix = ' <small class="wcsatt-sub-options">' . __( '(includes more subscription options)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+				}
+
+				$_cloned = clone $product;
+
+				$_cloned->is_converted_to_sub          = 'yes';
+				$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
+				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
+				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+
 				$price = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'price' => $price ) );
-			} elseif ( $force_subscription === 'yes' ) {
-				$suffix = ' <small class="wcsatt-sub-options">' . __( '(sign-up required)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
 				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
+
 			} else {
-				$suffix = ' <small class="wcsatt-sub-options">' . __( '(includes sign-up options)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+				$suffix = ' <small class="wcsatt-sub-options">' . __( '(subscription options available)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
 				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 			}
 		}

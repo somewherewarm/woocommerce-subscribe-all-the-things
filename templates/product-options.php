@@ -12,16 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-?>
-<h3><?php
-	if ( $allow_one_time ) {
-		echo sprintf( __( 'Subscribe to &quot;%s&quot;?', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
-	} else {
-		echo sprintf( __( 'Sign up for &quot;%s&quot;:', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
-	}
-?></h3>
+if ( $prompt ) {
+	echo $prompt;
+} else {
+	?><h3><?php
+		echo sprintf( __( 'Select a &quot;%1$s&quot; subscription:', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
+	?></h3><?php
+}
 
-<ul class="wcsatt-convert-product"><?php
+?><ul class="wcsatt-convert-product"><?php
 
 	foreach ( $options as $option ) {
 		?><li>
