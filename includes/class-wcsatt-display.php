@@ -314,7 +314,7 @@ class WCS_ATT_Display {
 				$suffix              = '';
 
 				if ( count( $subscription_schemes ) > 1 ) {
-					$suffix = ' <small class="wcsatt-sub-options">' . __( '(includes more subscription options)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+					$suffix = ' <small class="wcsatt-sub-options">' . __( '(additional subscription options available)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
 				}
 
 				$_cloned = clone $product;
@@ -328,7 +328,7 @@ class WCS_ATT_Display {
 				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 
 			} else {
-				$suffix = ' <small class="wcsatt-sub-options">' . __( '(subscription options available)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+				$suffix = ' <small class="wcsatt-sub-options">' . __( '(also available as subscription)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
 				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 			}
 		}
