@@ -86,6 +86,7 @@ class WCS_ATT {
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		add_action( 'init', array( $this, 'init_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'activate' ) );
+		add_filter( 'plugin_row_meta', array( $this, 'plugin_meta_links' ), 10, 4 );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
 
@@ -205,6 +206,23 @@ class WCS_ATT {
 		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 
+	/**
+	 * Show row meta on the plugin screen.
+	 *
+	 * @param	mixed $links Plugin Row Meta
+	 * @param	mixed $file  Plugin Base file
+	 * @return	array
+	 */
+	public function plugin_meta_links( $links, $file, $data, $status ) {
+
+		if ( $file == plugin_basename( __FILE__ ) ) {
+			$author1 = '<a href="' . $data[ 'AuthorURI' ] . '">' . $data[ 'Author' ] . '</a>';
+			$author2 = '<a href="http://somewherewarm.net/">SomewhereWarm</a>';
+			$links[ 1 ] = sprintf( __( 'By %s' ), sprintf( __( '%s and %s' ), $author1, $author2 ) );
+		}
+
+		return $links;
+	}
 }
 
 endif; // end class_exists check
