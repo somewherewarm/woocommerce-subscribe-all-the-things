@@ -3,7 +3,7 @@
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
 * Description: Experimental extension for linking WooCommerce Subscriptions with product types created by other extensions, like Composites and Bundles.
-* Version: 1.0.0
+* Version: 1.0.1
 * Author: Prospress
 * Author URI: http://prospress.com/
 *
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 class WCS_ATT {
 
 	/* plugin version */
-	const VERSION = '1.0.0';
+	const VERSION = '1.0.1';
 
 	/* required WC version */
 	const REQ_WC_VERSION = '2.3.0';
@@ -141,9 +141,9 @@ class WCS_ATT {
 	 *
 	 * @return void
 	 */
-	public function wcs_admin_notice() {
+	public function wc_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Cart Subscriptions requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -151,9 +151,9 @@ class WCS_ATT {
 	 *
 	 * @return void
 	 */
-	public function wc_admin_notice() {
+	public function wcs_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe to All the Things requires at least WooCommerce Subscriptions version 2.0 in order to function.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version 2.0+.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -204,6 +204,7 @@ class WCS_ATT {
 
 		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
+
 }
 
 endif; // end class_exists check
