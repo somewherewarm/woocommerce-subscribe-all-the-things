@@ -1,0 +1,198 @@
+# Copyright (C) 2015 Prospress
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Subscribe All the Things 1.0.1\n"
+"Report-Msgid-Bugs-To: "
+"https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
+"POT-Creation-Date: 2015-11-27 13:39:15+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"X-Generator: grunt-wp-i18n 0.5.3\n"
+
+#: includes/admin/class-wcsatt-admin.php:93
+#: includes/admin/class-wcsatt-admin.php:432
+msgid "Add Option"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:117
+msgid "Subscribe to Cart/Order"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:124
+msgid "Cart/Order Subscriptions"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:125
+msgid "Enable Cart/Order Subscriptions"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:129
+msgid ""
+"Enabling this option will allow customers to purchase their entire "
+"cart/order content as a Subscription."
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:133
+#: includes/admin/class-wcsatt-admin.php:414
+msgid "Subscription Options"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:134
+msgid ""
+"Configure the subscription options available for signing up to cart/order "
+"contents."
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:137
+msgid "Test."
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:262
+msgid "Subscription Periods"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:273
+msgid "Billing Period"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:285
+msgid "Subscription Length"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:382
+#: includes/admin/class-wcsatt-admin.php:406
+msgid "Subscription"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:401
+msgid "Force subscription"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:401
+msgid "Check this option to prevent one-time purchases"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:404
+msgid "Default to"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:405
+msgid "One-time purchase"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:410
+msgid "Subscription prompt"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:410
+msgid "Custom html/text to display before subscription options."
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:415
+msgid "Add one or more subscription options for this product."
+msgstr ""
+
+#: includes/admin/views/subscription-scheme.php:26
+msgid "Remove"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:92
+msgid "None"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:112
+msgid "%s"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:176
+msgid "only this time"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:249
+msgid "Cart Subscription"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:250
+msgid "Interested in subscribing to these items?"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:258
+msgid "No thanks."
+msgstr ""
+
+#: includes/class-wcsatt-display.php:276
+msgid "Yes, %s."
+msgstr ""
+
+#: includes/class-wcsatt-display.php:317
+msgid "(additional subscription options available)"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:328 includes/class-wcsatt-display.php:332
+msgid "%1$s%2$s"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:331
+msgid "(also available as subscription)"
+msgstr ""
+
+#: templates/product-options.php:19
+msgid "Select a &quot;%1$s&quot; subscription:"
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:69
+#: woocommerce-subscribe-all-the-things.php:78
+msgid "Foul!"
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:147
+msgid ""
+"WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
+"order to function. Please upgrade WooCommerce."
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:157
+msgid ""
+"WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
+"version 2.0+."
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:221
+msgid "By %s"
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:221
+msgid "%s and %s"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce Subscribe All the Things"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Experimental extension for linking WooCommerce Subscriptions with product "
+"types created by other extensions, like Composites and Bundles."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Prospress"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://prospress.com/"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:275
+msgctxt "for in \"Every month _for_ 12 months\""
+msgid "for"
+msgstr ""

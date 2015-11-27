@@ -1,5 +1,8 @@
 *** WooCommerce Subscribe All the Things ***
 
+2015.11.27 - version 1.0.2
+ * Fix - Minified scripts not in repo.
+
 2015.11.14 - version 1.0.1
  * Fix - WC missing notice in place of the Subs v2.0+ missing notice. Hush!
 

@@ -1,8 +1,9 @@
+/* global wcsatt_admin_params */
 jQuery( function($) {
 
-	$wcsatt_data_tab    = $( '#wcsatt_data' );
-	$wcsatt_schemes     = $wcsatt_data_tab.find( '.subscription_schemes' );
-	wcsatt_block_params = {
+	var $wcsatt_data_tab    = $( '#wcsatt_data' );
+	var $wcsatt_schemes     = $wcsatt_data_tab.find( '.subscription_schemes' );
+	var wcsatt_block_params = {
 			message:    null,
 			overlayCSS: {
 				background: wcsatt_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
