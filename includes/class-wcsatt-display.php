@@ -158,7 +158,7 @@ class WCS_ATT_Display {
 
 		// Allow one-time purchase option?
 		$allow_one_time_option     = true;
-		$product_level_schemes     = WCS_ATT_Schemes::get_subscription_schemes( $cart_item, 'cart-item' )
+		$product_level_schemes     = WCS_ATT_Schemes::get_subscription_schemes( $cart_item, 'cart-item' );
 		$has_product_level_schemes = empty( $product_level_schemes ) ? false : true;
 
 		if ( $has_product_level_schemes ) {
