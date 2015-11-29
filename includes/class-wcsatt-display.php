@@ -157,8 +157,9 @@ class WCS_ATT_Display {
 		}
 
 		// Allow one-time purchase option?
-		$allow_one_time_option         = true;
-		$has_product_level_schemes     = empty( WCS_ATT_Schemes::get_subscription_schemes( $cart_item, 'cart-item' ) ) ? false : true;
+		$allow_one_time_option     = true;
+		$product_level_schemes     = WCS_ATT_Schemes::get_subscription_schemes( $cart_item, 'cart-item' )
+		$has_product_level_schemes = empty( $product_level_schemes ) ? false : true;
 
 		if ( $has_product_level_schemes ) {
 			$force_subscription = get_post_meta( $cart_item[ 'product_id' ], '_wcsatt_force_subscription', true );
