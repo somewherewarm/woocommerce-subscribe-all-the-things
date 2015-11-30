@@ -2,6 +2,7 @@
 
 2015.11.27 - version 1.0.2
  * Fix - Minified scripts not in repo.
+ * Fix - "Function return value in write context" error.
 
 2015.11.14 - version 1.0.1
  * Fix - WC missing notice in place of the Subs v2.0+ missing notice. Hush!
