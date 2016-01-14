@@ -101,11 +101,28 @@ class WCS_ATT_Display {
 				$_cloned = clone $product;
 
 				$_cloned->is_converted_to_sub          = 'yes';
+				$_cloned->price                        = $product->price;
+				$_cloned->subscription_price           = $subscription_scheme[ 'subscription_price' ];
 				$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
+				if ( $_cloned->subscription_price == '' ) {
+          // The subscription option has no price so we use the regular price
+          $sub_price = false;
+          $price = $_cloned->price;
+        } else {
+          // The subsciption option has a price
+          $sub_price = true;
+          $price = $_cloned->subscription_price;
+        }
+
+        $price = woocommerce_price( $price );
+
+				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 
+          'subscription_price' => $sub_price, 
+          'price' => $price, 
+        ) );
 
 				$options[] = array(
 					'id'          => $subscription_scheme_id,
@@ -186,7 +203,25 @@ class WCS_ATT_Display {
 			if ( $cart_item[ 'data' ]->is_converted_to_sub === 'yes' && $subscription_scheme_id === $active_subscription_scheme_id ) {
 
 				// if the cart item is converted to a sub, create the subscription price suffix using the already-populated subscription properties
-				$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false ) );
+
+				$cart_item[ 'data' ]->subscription_price = $subscription_scheme[ 'subscription_price' ];
+
+				if ( $cart_item[ 'data' ]->subscription_price == '' ) {
+          // The subscription option has no price so we use the regular price instead
+          $sub_price = false;
+          $price = $cart_item[ 'data' ]->price;
+        } else {
+          // The subsciption option has a price
+          $sub_price = true;
+          $price = $cart_item[ 'data' ]->subscription_price;
+        }
+
+        $price = woocommerce_price( $price );
+
+				$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array(
+          'subscription_price' => $sub_price, 
+				  'price' => $price, 
+        ) );
 
 			} else {
 
@@ -194,11 +229,28 @@ class WCS_ATT_Display {
 				$_cloned = clone $cart_item[ 'data' ];
 
 				$_cloned->is_converted_to_sub              = 'yes';
+				$_cloned->price                            = $cart_item[ 'data' ]->price;
+				$_cloned->subscription_price               = $subscription_scheme[ 'subscription_price' ];
 				$_cloned->subscription_period              = $subscription_scheme[ 'subscription_period' ];
 				$_cloned->subscription_period_interval     = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length              = $subscription_scheme[ 'subscription_length' ];
 
-				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
+				if ( $_cloned->subscription_price == '' ) {
+          // The subscription option has no price so we use the regular price
+          $sub_price = false;
+          $price = $_cloned->price;
+        } else {
+          // The subsciption option has a price
+          $sub_price = true;
+          $price = $_cloned->subscription_price;
+        }
+
+        $price = woocommerce_price( $price );
+
+				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 
+          'subscription_price' => $sub_price,
+          'price' => $price, 
+        ) );
 			}
 
 			$options[] = array(
@@ -266,6 +318,7 @@ class WCS_ATT_Display {
 
 					$dummy_product                               = new WC_Product( '1' );
 					$dummy_product->is_converted_to_sub          = 'yes';
+					$dummy_product->subscription_price           = $subscription_scheme[ 'subscription_price' ];
 					$dummy_product->subscription_period          = $subscription_scheme[ 'subscription_period' ];
 					$dummy_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 					$dummy_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
@@ -321,12 +374,13 @@ class WCS_ATT_Display {
 				$_cloned = clone $product;
 
 				$_cloned->is_converted_to_sub          = 'yes';
+				$_cloned->subscription_price           = $subscription_scheme[ 'subscription_price' ];
 				$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-				$price = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'price' => $price ) );
-				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
+				$price = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'price' => woocommerce_price( $_cloned->subscription_price ) ) );
+				$price = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 
 			} else {
 				$suffix = ' <small class="wcsatt-sub-options">' . __( '(also available as subscription)', WCS_ATT::TEXT_DOMAIN ) . '</small>';

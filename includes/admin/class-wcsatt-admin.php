@@ -62,6 +62,7 @@ class WCS_ATT_Admin {
 		if ( ! $subscription_schemes ) {
 			$subscription_schemes = array(
 				array(
+          'subscription_price'           => 0,
 					'subscription_period_interval' => 1,
 					'subscription_period'          => 'month',
 					'subscription_length'          => 0,
@@ -169,7 +170,7 @@ class WCS_ATT_Admin {
 
 				foreach ( $posted_schemes as $posted_scheme ) {
 
-					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ] . '_' . $posted_scheme[ 'subscription_price' ];
 
 					if ( in_array( $scheme_id, $scheme_ids ) ) {
 						continue;
@@ -246,14 +247,32 @@ class WCS_ATT_Admin {
 		}
 
 		if ( ! empty( $scheme_data ) ) {
+			$subscription_price           = $scheme_data[ 'subscription_price' ];
 			$subscription_period          = $scheme_data[ 'subscription_period' ];
 			$subscription_period_interval = $scheme_data[ 'subscription_period_interval' ];
 			$subscription_length          = $scheme_data[ 'subscription_length' ];
 		} else {
+			$subscription_price           = '';
 			$subscription_period          = 'month';
 			$subscription_period_interval = '';
 			$subscription_length          = '';
 		}
+
+		// Subscription Price
+		woocommerce_wp_text_input( array(
+			'id'          => '_subscription_price',
+			'class'       => 'wc_input_subscription_price',
+			// translators: %s is a currency symbol / code
+			'label'       => sprintf( __( 'Subscription Price (%s)', 'woocommerce-subscriptions' ), get_woocommerce_currency_symbol() ),
+			'placeholder' => _x( 'e.g. 5.90', 'example price', 'woocommerce-subscriptions' ),
+			'type'        => 'text',
+			'custom_attributes' => array(
+					'step' => 'any',
+					'min'  => '0',
+			),
+			'name'        => 'wcsatt_schemes[' . $index . '][subscription_price]',
+			'value'       => $subscription_price
+		) );
 
 		// Subscription Period Interval
 		woocommerce_wp_select( array(
@@ -288,6 +307,8 @@ class WCS_ATT_Admin {
 			'name'    => 'wcsatt_schemes[' . $index . '][subscription_length]'
 			)
 		);
+
+    do_action( 'woocommerce_subscribe_to_all_things_product_options' );
 	}
 
 	/**
