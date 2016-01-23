@@ -13,7 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( $prompt ) {
+	do_action('wcsatt_before_subscription_prompt');
+
 	echo $prompt;
+
+	do_action('wcsatt_after_subscription_prompt');
 } else {
 	?><h3><?php
 		echo sprintf( __( 'Select a &quot;%1$s&quot; subscription:', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
