@@ -2,7 +2,7 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Subscribe All the Things 1.0.2\n"
+"Project-Id-Version: WooCommerce Subscribe All the Things 1.0.3\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
 "POT-Creation-Date: 2015-11-29 12:05:40+00:00\n"

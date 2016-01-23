@@ -1,4 +1,6 @@
 *** WooCommerce Subscribe All the Things ***
+2016.01.14 - version 1.0.3
+ * Added - Each subscription option can have it's own price.
 
 2015.11.27 - version 1.0.2
  * Fix - Minified scripts not in repo.

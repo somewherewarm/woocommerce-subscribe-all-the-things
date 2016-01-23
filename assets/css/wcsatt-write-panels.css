@@ -64,6 +64,22 @@
 	content: " ";
 }
 
+#wcsatt_data table.subscription_scheme_table p._subscription_price_field {
+  min-width: 198px !important;
+}
+
+#wcsatt_data table.subscription_scheme_table p._subscription_price_field label {
+  display: initial;
+  line-height: 2.3em;
+  width: initial;
+  margin: 0 0.8em 0 0 !important;
+}
+
+#wcsatt_data table.subscription_scheme_table p._subscription_price_field input,
+#wcsatt_data table.subscription_scheme_table .wc-metaboxes-wrapper .wc-metabox table td p._subscription_price_field input {
+  min-width: 1em;
+}
+
 /*
  * Admin settings
  */
