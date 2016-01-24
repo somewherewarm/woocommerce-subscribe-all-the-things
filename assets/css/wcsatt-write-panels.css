@@ -1,7 +1,7 @@
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme h3 select {
-	font-family: inherit;
-	max-width: inherit;
-	margin: inherit;
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme h3 span {
+	display: block;
+	float:left;
+	padding-top: 5px;
 }
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
@@ -12,7 +12,7 @@
 	font-style: normal;
 	display: inline;
 	clear: none;
-	margin-left: 5px;
+	margin: 0 8px 0 12px;
 }
 
 #wcsatt_data {
@@ -29,7 +29,7 @@
 	border-bottom: none;
 }
 
-#wcsatt_data .subscription_scheme .form-field {
+#wcsatt_data .subscription_scheme_data .form-field {
 	float: left;
 }
 
@@ -37,47 +37,41 @@
 	border-radius: 0;
 }
 
-#wcsatt_data .subscription_scheme_table td {
-	vertical-align: middle;
-	padding: 5px;
-}
-
-#wcsatt_data .subscription_scheme td.scheme-title {
-	text-align: left;
-}
-
-#wcsatt_data table.subscription_scheme_table {
-	padding: 0;
-}
-
 #wcsatt_data .subscription_scheme_data {
-	font-weight: normal;
+	margin: 0 90px 0 40px;
+	position: relative;
+	top: -40px;
+	margin-bottom: -30px;
+}
+
+#wcsatt_data .subscription_scheme_product_data {
+	margin-top: 10px;
+	display: block;
+	float: left;
 }
 
 #wcsatt_data .subscription_scheme_data .form-field {
 	margin: 0;
 }
 
-#wcsatt_data .subscription_scheme_data:after {
+#wcsatt_data .subscription_scheme_product_data label {
+	margin: 0 0 0 -220px;
+	width: 200px;
+}
+
+#wcsatt_data .subscription_scheme_product_data p.form-field {
+	margin: 0;
+	padding: 5px 20px 5px 227px !important;
+}
+
+#wcsatt_data .subscription_scheme_data:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_price, #wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_discount {
 	clear: both;
 	display: table;
 	content: " ";
 }
 
-#wcsatt_data table.subscription_scheme_table p._subscription_price_field {
-  min-width: 198px !important;
-}
-
-#wcsatt_data table.subscription_scheme_table p._subscription_price_field label {
-  display: initial;
-  line-height: 2.3em;
-  width: initial;
-  margin: 0 0.8em 0 0 !important;
-}
-
-#wcsatt_data table.subscription_scheme_table p._subscription_price_field input,
-#wcsatt_data table.subscription_scheme_table .wc-metaboxes-wrapper .wc-metabox table td p._subscription_price_field input {
-  min-width: 1em;
+#wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_price p.form-field label, #wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_discount p.form-field label {
+	margin: 0 !important;
 }
 
 /*
