@@ -147,10 +147,15 @@ class WCS_ATT_Cart {
 
 			$cart_item[ 'data' ]->is_converted_to_sub = 'yes';
 
-			$cart_item[ 'data' ]->price                        = $active_subscription_scheme[ 'subscription_price' ];
-			$cart_item[ 'data' ]->sale_price                   = $active_subscription_scheme[ 'subscription_price' ];
-			$cart_item[ 'data' ]->regular_price                = $active_subscription_scheme[ 'subscription_price' ];
-			$cart_item[ 'data' ]->subscription_price           = $active_subscription_scheme[ 'subscription_price' ];
+			$subscription_prices = WCS_ATT_Schemes::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
+
+			if ( ! empty( $subscription_prices ) ) {
+				$cart_item[ 'data' ]->price                    = $subscription_prices[ 'price' ];
+				$cart_item[ 'data' ]->regular_price            = $subscription_prices[ 'regular_price' ];
+				$cart_item[ 'data' ]->sale_price               = $subscription_prices[ 'sale_price' ];
+				$cart_item[ 'data' ]->subscription_price       = $subscription_prices[ 'price' ];
+			}
+
 			$cart_item[ 'data' ]->subscription_period          = $active_subscription_scheme[ 'subscription_period' ];
 			$cart_item[ 'data' ]->subscription_period_interval = $active_subscription_scheme[ 'subscription_period_interval' ];
 			$cart_item[ 'data' ]->subscription_length          = $active_subscription_scheme[ 'subscription_length' ];

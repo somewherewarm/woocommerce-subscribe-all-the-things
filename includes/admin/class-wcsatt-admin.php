@@ -3,7 +3,7 @@
  * Cart functionality for converting cart items to subscriptions.
  *
  * @class 	WCS_ATT_Admin
- * @version 1.0.0
+ * @version 1.0.3
  */
 
 class WCS_ATT_Admin {
@@ -172,10 +172,48 @@ class WCS_ATT_Admin {
 
 				foreach ( $posted_schemes as $posted_scheme ) {
 
+					// Format subscription prices.
+					if ( isset( $posted_scheme[ 'subscription_regular_price' ] ) ) {
+						$posted_scheme[ 'subscription_regular_price' ] = ( $posted_scheme[ 'subscription_regular_price'] === '' ) ? '' : wc_format_decimal( $posted_scheme[ 'subscription_regular_price' ] );
+					}
+
+					if ( isset( $posted_scheme[ 'subscription_sale_price' ] ) ) {
+						$posted_scheme[ 'subscription_sale_price' ] = ( $posted_scheme[ 'subscription_sale_price'] === '' ) ? '' : wc_format_decimal( $posted_scheme[ 'subscription_sale_price' ] );
+					}
+
+					if ( '' !== $posted_scheme[ 'subscription_sale_price' ] ) {
+						$posted_scheme[ 'subscription_price' ] = $posted_scheme[ 'subscription_sale_price' ];
+					} else {
+						$posted_scheme[ 'subscription_price' ] = ( $posted_scheme[ 'subscription_regular_price' ] === '' ) ? '' : $posted_scheme[ 'subscription_regular_price' ];
+					}
+
+					// Format subscription discount.
+					if ( isset( $posted_scheme[ 'subscription_discount' ] ) ) {
+
+						if ( is_numeric( $posted_scheme[ 'subscription_discount' ] ) ) {
+
+							$discount = (float) wc_format_decimal( $posted_scheme[ 'subscription_discount' ] );
+
+							if ( $discount < 0 || $discount > 100 ) {
+
+								WC_Admin_Meta_Boxes::add_error( __( 'Please enter positive subscription discount values, between 0-100.', WCS_ATT::TEXT_DOMAIN ) );
+								$posted_scheme[ 'subscription_discount' ] = '';
+
+							} else {
+								$posted_scheme[ 'subscription_discount' ] = $discount;
+							}
+						} else {
+							$posted_scheme[ 'subscription_discount' ] = '';
+						}
+					} else {
+						$posted_scheme[ 'subscription_discount' ] = '';
+					}
+
+					// Construct scheme id.
 					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
 
 					if ( $posted_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-						$scheme_id = $scheme_id . '_regular_price_' . $posted_scheme[ 'subscription_regular_price' ] . '_sale_price_' . $posted_scheme[ 'subscription_sale_price' ];
+						$scheme_id = $scheme_id . '_price_' . $posted_scheme[ 'subscription_price' ];
 					} elseif ( $posted_scheme[ 'subscription_pricing_method' ] === 'inherit' ) {
 						$scheme_id = $scheme_id . '_discount_' . $posted_scheme[ 'subscription_discount' ];
 					}

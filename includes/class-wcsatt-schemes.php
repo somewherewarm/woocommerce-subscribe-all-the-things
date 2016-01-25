@@ -53,6 +53,77 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
+	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
+	 *
+	 * @return string
+	 */
+	public static function get_active_subscription_scheme_prices( $cart_item, $active_subsctiption_scheme = array() ) {
+
+		$prices = array();
+
+		if ( empty( $active_subsctiption_scheme ) ) {
+			$active_subsctiption_scheme = self::get_active_subscription_scheme( $cart_item );
+		}
+
+		if ( ! empty( $active_subsctiption_scheme ) ) {
+			if ( isset( $active_subsctiption_scheme[ 'subscription_pricing_method' ] ) ) {
+				if ( $active_subsctiption_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+					$prices[ 'regular_price' ] = $active_subsctiption_scheme[ 'subscription_regular_price' ];
+					$prices[ 'sale_price' ]    = $active_subsctiption_scheme[ 'sale_price' ];
+					$prices[ 'price' ]         = $active_subsctiption_scheme[ 'price' ];
+				} else if ( $active_subsctiption_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $active_subsctiption_scheme[ 'subscription_discount' ] ) ) {
+					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $cart_item[ 'data' ], $active_subsctiption_scheme[ 'subscription_discount' ] );
+					$prices[ 'price' ]         = self::get_discounted_scheme_price( $cart_item[ 'data' ], $active_subsctiption_scheme[ 'subscription_discount' ] );
+
+					if ( $prices[ 'price' ] < $prices[ 'regular_price' ] ) {
+						$prices[ 'sale_price' ] = $prices[ 'price' ] ;
+					}
+				}
+			}
+		}
+
+		return $prices;
+	}
+
+	/**
+	 * Get product regular price (before discount).
+	 *
+	 * @return mixed
+	 */
+	private function get_discounted_scheme_regular_price( $product, $discount ) {
+
+		$regular_price = $product->regular_price;
+
+		$regular_price = empty( $regular_price ) ? $product->price : $regular_price;
+
+		return $regular_price;
+	}
+
+	/**
+	 * Get product price after discount.
+	 *
+	 * @return mixed
+	 */
+	private function get_discounted_scheme_price( $product, $discount ) {
+
+		$price = $product->price;
+
+		if ( $price === '' ) {
+			return $price;
+		}
+
+		if ( apply_filters( 'wcsatt_discount_from_regular', true, $this ) ) {
+			$regular_price = $product->regular_price;
+		} else {
+			$regular_price = $price;
+		}
+
+		$price = empty( $discount ) ? $price : ( empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, WC_PB_Core_Compatibility::wc_get_price_decimals() ) );
+
+		return $price;
+	}
+
+	/**
 	 * Returns all available subscription schemes (product-level and cart-level).
 	 *
 	 * @return array
@@ -264,5 +335,4 @@ class WCS_ATT_Schemes {
 
 		return $cart_level_schemes;
 	}
-
 }
