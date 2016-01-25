@@ -56,16 +56,16 @@ jQuery( function($) {
 	}
 
 	// Price override method.
-	$wcsatt_schemes.on( 'change', 'select.subscription_price_override_method_input', function() {
+	$wcsatt_schemes.on( 'change', 'select.subscription_pricing_method_input', function() {
 
 		var override_method = $( this ).val();
 
-		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_price_override_method' ).hide();
-		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_price_override_method_' + override_method ).show();
+		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method' ).hide();
+		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method_' + override_method ).show();
 
 	} );
 
-	$wcsatt_schemes.find( 'select.subscription_price_override_method_input' ).change();
+	$wcsatt_schemes.find( 'select.subscription_pricing_method_input' ).change();
 
 	// Hide "default to" option when "force subscription" is checked.
 	$wcsatt_data_tab.find( 'input#_wcsatt_force_subscription' ).on( 'change', function() {
@@ -124,7 +124,7 @@ jQuery( function($) {
 
 			added.wcsatt_scripts();
 
-			added.find( 'select.subscription_price_override_method_input' ).change();
+			added.find( 'select.subscription_pricing_method_input' ).change();
 
 			subscription_schemes_row_indexes();
 

@@ -64,13 +64,13 @@
 	padding: 5px 20px 5px 227px !important;
 }
 
-#wcsatt_data .subscription_scheme_data:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_price, #wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_discount {
+#wcsatt_data .subscription_scheme_data:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit {
 	clear: both;
 	display: table;
 	content: " ";
 }
 
-#wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_price p.form-field label, #wcsatt_data .subscription_scheme_product_data .subscription_price_override_method_discount p.form-field label {
+#wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override p.form-field label, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit p.form-field label {
 	margin: 0 !important;
 }
 
