@@ -66,14 +66,30 @@ class WCS_ATT_Schemes {
 		}
 
 		if ( ! empty( $active_subsctiption_scheme ) ) {
-			if ( isset( $active_subsctiption_scheme[ 'subscription_pricing_method' ] ) ) {
-				if ( $active_subsctiption_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-					$prices[ 'regular_price' ] = $active_subsctiption_scheme[ 'subscription_regular_price' ];
-					$prices[ 'sale_price' ]    = $active_subsctiption_scheme[ 'sale_price' ];
-					$prices[ 'price' ]         = $active_subsctiption_scheme[ 'price' ];
-				} else if ( $active_subsctiption_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $active_subsctiption_scheme[ 'subscription_discount' ] ) ) {
-					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $cart_item[ 'data' ], $active_subsctiption_scheme[ 'subscription_discount' ] );
-					$prices[ 'price' ]         = self::get_discounted_scheme_price( $cart_item[ 'data' ], $active_subsctiption_scheme[ 'subscription_discount' ] );
+			$prices = self::get_subscription_scheme_prices( $cart_item, $active_subsctiption_scheme );
+		}
+
+		return $prices;
+	}
+
+	/**
+	 * Returns cart item pricing data based on a subscription scheme's settings.
+	 *
+	 * @return string
+	 */
+	public static function get_subscription_scheme_prices( $cart_item, $subsctiption_scheme ) {
+
+		$prices = array();
+
+		if ( ! empty( $subsctiption_scheme ) ) {
+			if ( isset( $subsctiption_scheme[ 'subscription_pricing_method' ] ) ) {
+				if ( $subsctiption_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+					$prices[ 'regular_price' ] = $subsctiption_scheme[ 'subscription_regular_price' ];
+					$prices[ 'sale_price' ]    = $subsctiption_scheme[ 'subscription_sale_price' ];
+					$prices[ 'price' ]         = $subsctiption_scheme[ 'subscription_price' ];
+				} else if ( $subsctiption_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subsctiption_scheme[ 'subscription_discount' ] ) ) {
+					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $cart_item[ 'data' ] );
+					$prices[ 'price' ]         = self::get_discounted_scheme_price( $cart_item[ 'data' ], $subsctiption_scheme[ 'subscription_discount' ] );
 
 					if ( $prices[ 'price' ] < $prices[ 'regular_price' ] ) {
 						$prices[ 'sale_price' ] = $prices[ 'price' ] ;
@@ -90,7 +106,7 @@ class WCS_ATT_Schemes {
 	 *
 	 * @return mixed
 	 */
-	private function get_discounted_scheme_regular_price( $product, $discount ) {
+	private static function get_discounted_scheme_regular_price( $product ) {
 
 		$regular_price = $product->regular_price;
 
@@ -104,7 +120,7 @@ class WCS_ATT_Schemes {
 	 *
 	 * @return mixed
 	 */
-	private function get_discounted_scheme_price( $product, $discount ) {
+	private static function get_discounted_scheme_price( $product, $discount ) {
 
 		$price = $product->price;
 
@@ -112,13 +128,13 @@ class WCS_ATT_Schemes {
 			return $price;
 		}
 
-		if ( apply_filters( 'wcsatt_discount_from_regular', true, $this ) ) {
-			$regular_price = $product->regular_price;
+		if ( apply_filters( 'wcsatt_discount_from_regular', true, $product ) ) {
+			$regular_price = self::get_discounted_scheme_regular_price( $product );
 		} else {
 			$regular_price = $price;
 		}
 
-		$price = empty( $discount ) ? $price : ( empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, WC_PB_Core_Compatibility::wc_get_price_decimals() ) );
+		$price = empty( $discount ) ? $price : ( empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, wc_get_price_decimals() ) );
 
 		return $price;
 	}

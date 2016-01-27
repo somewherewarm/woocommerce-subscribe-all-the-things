@@ -212,12 +212,6 @@ class WCS_ATT_Admin {
 					// Construct scheme id.
 					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
 
-					if ( $posted_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-						$scheme_id = $scheme_id . '_price_' . $posted_scheme[ 'subscription_price' ];
-					} elseif ( $posted_scheme[ 'subscription_pricing_method' ] === 'inherit' ) {
-						$scheme_id = $scheme_id . '_discount_' . $posted_scheme[ 'subscription_discount' ];
-					}
-
 					if ( in_array( $scheme_id, $scheme_ids ) ) {
 						continue;
 					}
@@ -348,15 +342,15 @@ class WCS_ATT_Admin {
 	public static function subscription_scheme_product_content( $index, $scheme_data, $post_id ) {
 
 		if ( ! empty( $scheme_data ) ) {
-			$subscription_pricing_method = ! empty( $scheme_data[ 'subscription_pricing_method' ] ) ? $scheme_data[ 'subscription_pricing_method' ] : '';
-			$subscription_regular_price         = isset( $scheme_data[ 'subscription_pricing_method' ] ) && $scheme_data[ 'subscription_pricing_method' ] === 'override' && isset( $scheme_data[ 'subscription_regular_price' ] ) ? $scheme_data[ 'subscription_regular_price' ] : '';
-			$subscription_sale_price            = isset( $scheme_data[ 'subscription_pricing_method' ] ) && $scheme_data[ 'subscription_pricing_method' ] === 'override' && isset( $scheme_data[ 'subscription_sale_price' ] ) ? $scheme_data[ 'subscription_sale_price' ] : '';
-			$subscription_discount              = isset( $scheme_data[ 'subscription_pricing_method' ] ) && $scheme_data[ 'subscription_pricing_method' ] === 'inherit' && isset( $scheme_data[ 'subscription_discount' ] ) ? $scheme_data[ 'subscription_discount' ] : '';
+			$subscription_pricing_method = ! empty( $scheme_data[ 'subscription_pricing_method' ] ) ? $scheme_data[ 'subscription_pricing_method' ] : 'inherit';
+			$subscription_regular_price  = isset( $scheme_data[ 'subscription_regular_price' ] ) ? $scheme_data[ 'subscription_regular_price' ] : '';
+			$subscription_sale_price     = isset( $scheme_data[ 'subscription_sale_price' ] ) ? $scheme_data[ 'subscription_sale_price' ] : '';
+			$subscription_discount       = isset( $scheme_data[ 'subscription_discount' ] ) ? $scheme_data[ 'subscription_discount' ] : '';
 		} else {
 			$subscription_pricing_method = '';
-			$subscription_regular_price         = '';
-			$subscription_sale_price            = '';
-			$subscription_discount              = '';
+			$subscription_regular_price  = '';
+			$subscription_sale_price     = '';
+			$subscription_discount       = '';
 		}
 
 		// Subscription Price Override Method
@@ -498,7 +492,7 @@ class WCS_ATT_Admin {
 	public static function product_write_panel_tab() {
 
 		?><li class="cart_subscription_options cart_subscriptions_tab show_if_simple show_if_variable show_if_bundle hide_if_variable hide_if_subscription hide_if_variable-subscription">
-			<a href="#wcsatt_data"><?php _e( 'Subscription', WCS_ATT::VERSION ); ?></a>
+			<a href="#wcsatt_data"><?php _e( 'Subscriptions', WCS_ATT::VERSION ); ?></a>
 		</li><?php
 	}
 
