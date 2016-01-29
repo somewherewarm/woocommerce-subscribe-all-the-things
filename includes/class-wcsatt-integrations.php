@@ -37,6 +37,7 @@ class WCS_ATT_Integrations {
 		}
 
 		if ( $bundle_type_exists ) {
+			add_filter( 'wcsatt_show_cart_item_options', __CLASS__ . '::hide_bundle_options', 10, 3 );
 			add_filter( 'wcsatt_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
 			add_filter( 'wcsatt_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
 			add_filter( 'wcsatt_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
@@ -126,6 +127,29 @@ class WCS_ATT_Integrations {
 		}
 
 		return $schemes;
+	}
+
+	/**
+	 * Hide bundle container cart item subscription options if bundle has a per-item price.
+	 *
+	 * @param  boolean $show
+	 * @param  array   $cart_item
+	 * @param  string  $cart_item_key
+	 * @return boolean
+	 */
+	public static function hide_bundle_options( $show, $cart_item, $cart_item_key ) {
+
+		foreach ( self::$child_keys_names as $child_key_name ) {
+
+			if ( ! empty( $cart_item[ $child_key_name ] ) ) {
+
+				if ( $cart_item[ 'data' ]->is_priced_per_product() ) {
+					$show = false;
+				}
+			}
+		}
+
+		return $show;
 	}
 
 	/**
