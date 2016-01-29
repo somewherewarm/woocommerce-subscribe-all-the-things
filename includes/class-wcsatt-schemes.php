@@ -57,16 +57,16 @@ class WCS_ATT_Schemes {
 	 *
 	 * @return string
 	 */
-	public static function get_active_subscription_scheme_prices( $cart_item, $active_subsctiption_scheme = array() ) {
+	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
 
 		$prices = array();
 
-		if ( empty( $active_subsctiption_scheme ) ) {
-			$active_subsctiption_scheme = self::get_active_subscription_scheme( $cart_item );
+		if ( empty( $active_subscription_scheme ) ) {
+			$active_subscription_scheme = self::get_active_subscription_scheme( $cart_item );
 		}
 
-		if ( ! empty( $active_subsctiption_scheme ) ) {
-			$prices = self::get_subscription_scheme_prices( $cart_item, $active_subsctiption_scheme );
+		if ( ! empty( $active_subscription_scheme ) ) {
+			$prices = self::get_subscription_scheme_prices( $cart_item[ 'data' ], $active_subscription_scheme );
 		}
 
 		return $prices;
@@ -77,19 +77,19 @@ class WCS_ATT_Schemes {
 	 *
 	 * @return string
 	 */
-	public static function get_subscription_scheme_prices( $cart_item, $subsctiption_scheme ) {
+	public static function get_subscription_scheme_prices( $product, $subscription_scheme ) {
 
 		$prices = array();
 
-		if ( ! empty( $subsctiption_scheme ) ) {
-			if ( isset( $subsctiption_scheme[ 'subscription_pricing_method' ] ) ) {
-				if ( $subsctiption_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-					$prices[ 'regular_price' ] = $subsctiption_scheme[ 'subscription_regular_price' ];
-					$prices[ 'sale_price' ]    = $subsctiption_scheme[ 'subscription_sale_price' ];
-					$prices[ 'price' ]         = $subsctiption_scheme[ 'subscription_price' ];
-				} else if ( $subsctiption_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subsctiption_scheme[ 'subscription_discount' ] ) ) {
-					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $cart_item[ 'data' ] );
-					$prices[ 'price' ]         = self::get_discounted_scheme_price( $cart_item[ 'data' ], $subsctiption_scheme[ 'subscription_discount' ] );
+		if ( ! empty( $subscription_scheme ) ) {
+			if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
+				if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+					$prices[ 'regular_price' ] = $subscription_scheme[ 'subscription_regular_price' ];
+					$prices[ 'sale_price' ]    = $subscription_scheme[ 'subscription_sale_price' ];
+					$prices[ 'price' ]         = $subscription_scheme[ 'subscription_price' ];
+				} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
+					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $product );
+					$prices[ 'price' ]         = self::get_discounted_scheme_price( $product, $subscription_scheme[ 'subscription_discount' ] );
 
 					if ( $prices[ 'price' ] < $prices[ 'regular_price' ] ) {
 						$prices[ 'sale_price' ] = $prices[ 'price' ] ;
@@ -99,6 +99,29 @@ class WCS_ATT_Schemes {
 		}
 
 		return $prices;
+	}
+
+	/**
+	 * True if any of the subscription schemes overrides the basic price.
+	 *
+	 * @param  array  $subscription_schemes
+	 * @return boolean
+	 */
+	public static function subscription_price_overrides_exist( $subscription_schemes ) {
+
+		$has_price_overrides = false;
+
+		foreach ( $subscription_schemes as $subscription_scheme ) {
+			if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+				$has_price_overrides = true;
+				break;
+			} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
+				$has_price_overrides = true;
+				break;
+			}
+		}
+
+		return $has_price_overrides;
 	}
 
 	/**

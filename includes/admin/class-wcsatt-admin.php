@@ -156,14 +156,13 @@ class WCS_ATT_Admin {
 	 */
 	public static function process_product_meta( $post_id ) {
 
-		// Get type
+		// Get type.
 		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) );
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product_type, $supported_types ) ) {
 
-			// Save subscription scheme options
-
+			// Save subscription scheme options.
 			if ( isset( $_POST[ 'wcsatt_schemes' ] ) ) {
 
 				$posted_schemes = stripslashes_deep( $_POST[ 'wcsatt_schemes' ] );
@@ -207,6 +206,15 @@ class WCS_ATT_Admin {
 						}
 					} else {
 						$posted_scheme[ 'subscription_discount' ] = '';
+					}
+
+					// Validate price override method.
+					if ( isset( $posted_scheme[ 'subscription_pricing_method' ] ) && $posted_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+						if ( $posted_scheme[ 'subscription_price' ] === '' && $posted_scheme[ 'subscription_regular_price' ] === '' ) {
+							$posted_scheme[ 'subscription_pricing_method' ] = 'inherit';
+						}
+					} else {
+						$posted_scheme[ 'subscription_pricing_method' ] = 'inherit';
 					}
 
 					// Construct scheme id.

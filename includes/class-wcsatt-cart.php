@@ -20,7 +20,7 @@ class WCS_ATT_Cart {
 		add_filter( 'woocommerce_get_cart_item_from_session', __CLASS__ . '::load_convert_to_sub_session_data', 5, 2 );
 
 		// Finalize covert-to-sub product-level/cart-level session data
-		add_filter( 'woocommerce_cart_loaded_from_session', __CLASS__ . '::apply_convert_to_sub_session_data', 5 );
+		add_action( 'woocommerce_cart_loaded_from_session', __CLASS__ . '::apply_convert_to_sub_session_data', 5 );
 
 		// Save the convert to sub radio button setting when clicking the 'update cart' button
 		add_filter( 'woocommerce_update_cart_action_cart_updated', __CLASS__ . '::update_convert_to_sub_options', 10 );
