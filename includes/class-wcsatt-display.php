@@ -3,7 +3,7 @@
  * Templating and styling functions.
  *
  * @class 	WCS_ATT_Display
- * @version 1.0.0
+ * @version 1.0.3
  */
 
 class WCS_ATT_Display {
@@ -384,11 +384,8 @@ class WCS_ATT_Display {
 			if ( $force_subscription === 'yes' ) {
 
 				$subscription_scheme = current( $subscription_schemes );
+				$overridden_prices   = WCS_ATT_Schemes::get_subscription_scheme_prices( $product, $subscription_scheme );
 				$suffix              = '';
-
-				if ( count( $subscription_schemes ) > 1 ) {
-					$suffix = ' <small class="wcsatt-sub-options">' . __( '(additional subscription options available)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
-				}
 
 				$_cloned = clone $product;
 
@@ -397,11 +394,24 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
+				if ( ! empty( $overridden_prices ) ) {
+					$_cloned->regular_price            = $overridden_prices[ 'regular_price' ];
+					$_cloned->price                    = $overridden_prices[ 'price' ];
+					$_cloned->sale_price               = $overridden_prices[ 'sale_price' ];
+					$_cloned->subscription_price       = $overridden_prices[ 'price' ];
+				}
+
+				self::$bypass_price_html_filter = true;
+				$price = $_cloned->get_price_html();
+				self::$bypass_price_html_filter = false;
 				$price = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'price' => $price ) );
-				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
+
+				if ( count( $subscription_schemes ) > 1 && false === strpos( $price, $_cloned->get_price_html_from_text() ) ) {
+					$price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), $_cloned->get_price_html_from_text(), $price );
+				}
 
 			} else {
-				$suffix = ' <small class="wcsatt-sub-options">' . __( '(also available as subscription)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+				$suffix = ' <small class="wcsatt-sub-options">' . __( '(subscription plans available)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
 				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 			}
 		}
