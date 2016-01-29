@@ -94,6 +94,9 @@ class WCS_ATT_Integrations {
 
 					if ( self::overrides_child_schemes( $container_cart_item ) ) {
 						$schemes = WCS_ATT_Schemes::get_subscription_schemes( $container_cart_item, $scope );
+						foreach ( $schemes as &$scheme ) {
+							$scheme[ 'subscription_pricing_method' ] = 'inherit';
+						}
 					}
 				}
 			}

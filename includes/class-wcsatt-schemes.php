@@ -87,7 +87,7 @@ class WCS_ATT_Schemes {
 					$prices[ 'regular_price' ] = $subscription_scheme[ 'subscription_regular_price' ];
 					$prices[ 'sale_price' ]    = $subscription_scheme[ 'subscription_sale_price' ];
 					$prices[ 'price' ]         = $subscription_scheme[ 'subscription_price' ];
-				} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
+				} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) && $product->price > 0 ) {
 					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $product );
 					$prices[ 'price' ]         = self::get_discounted_scheme_price( $product, $subscription_scheme[ 'subscription_discount' ] );
 
