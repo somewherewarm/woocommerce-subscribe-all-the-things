@@ -279,8 +279,8 @@ class WCS_ATT_Display {
 		remove_filter( 'woocommerce_cart_product_price', 'WC_Subscriptions_Cart' . '::cart_product_price', 10, 2 );
 		remove_filter( 'woocommerce_cart_item_price', __CLASS__ . '::convert_to_sub_cart_item_options', 1000, 3 );
 		$price = apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $cart_item[ 'data' ] ), $cart_item, $cart_item_key );
-		add_filter( 'woocommerce_cart_item_price', __CLASS__ . '::convert_to_sub_cart_item_options', 1000, 2 );
-		add_filter( 'woocommerce_cart_item_price', 'WC_Subscriptions_Cart' . '::convert_to_sub_cart_item_options', 10, 2 );
+		add_filter( 'woocommerce_cart_item_price', __CLASS__ . '::convert_to_sub_cart_item_options', 1000, 3 );
+		add_filter( 'woocommerce_cart_product_price', 'WC_Subscriptions_Cart' . '::cart_product_price', 10, 2 );
 
 		ob_start();
 
