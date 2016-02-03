@@ -468,7 +468,7 @@ class WCS_ATT_Admin {
 
 		// Product metaboxes
 		if ( in_array( $screen->id, array( 'edit-product', 'product' ) ) ) {
-			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-write-panels' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'wc-admin-meta-boxes' ), WCS_ATT::VERSION );
+			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-write-panels' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'wc-admin-meta-boxes', 'wc-admin-product-meta-boxes' ), WCS_ATT::VERSION );
 			wp_register_style( 'wcsatt_writepanel_css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-write-panels.css', array( 'woocommerce_admin_styles' ), WCS_ATT::VERSION );
 		}
 
@@ -479,6 +479,7 @@ class WCS_ATT_Admin {
 
 			$params = array(
 				'add_subscription_scheme_nonce' => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
+				'subscription_lengths'          => wcs_get_subscription_ranges(),
 				'wc_ajax_url'                   => admin_url( 'admin-ajax.php' ),
 				'post_id'                       => $post->ID,
 				'wc_plugin_url'                 => WC()->plugin_url(),

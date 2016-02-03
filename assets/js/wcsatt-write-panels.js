@@ -25,6 +25,37 @@ jQuery( function($) {
 		} );
 	};
 
+	$.fn.wcsatt_refresh_scheme_lengths = function() {
+
+		var $lengthElement    = $( this ).find( '.wc_input_subscription_length' ),
+			$periodSelector   = $( this ).find( '.wc_input_subscription_period' ),
+			$intervalSelector = $( this ).find( '.wc_input_subscription_period_interval' ),
+			selectedLength    = $lengthElement.val(),
+			billingInterval   = parseInt( $intervalSelector.val() ),
+			hasSelectedLength = false;
+
+		$lengthElement.empty();
+
+		$.each( wcsatt_admin_params.subscription_lengths[ $periodSelector.val() ], function( length, description ) {
+			if ( parseInt( length ) == 0 || 0 == ( parseInt( length ) % billingInterval ) ) {
+				$lengthElement.append( $( '<option></option>' ).attr( 'value',length ).text( description ) );
+			}
+		} );
+
+		$lengthElement.children( 'option' ).each(function(){
+			if ( this.value == selectedLength ) {
+				hasSelectedLength = true;
+				return false;
+			}
+		} );
+
+		if ( hasSelectedLength ) {
+			$lengthElement.val( selectedLength );
+		} else {
+			$lengthElement.val( 0 );
+		}
+	};
+
 	// Unused (for now).
 	if ( wcsatt_admin_params.post_id === '' ) {
 
@@ -77,6 +108,11 @@ jQuery( function($) {
 		}
 
 	} ).change();
+
+	// Update subscription ranges when subscription period or interval is changed.
+	$wcsatt_schemes.on( 'change', '.wc_input_subscription_period', function() {
+		$( this ).closest( '.subscription_scheme' ).wcsatt_refresh_scheme_lengths();
+	} );
 
 	// Remove.
 	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
@@ -146,7 +182,6 @@ jQuery( function($) {
 			$( '.scheme-title', el ).html( ind );
 		} );
 	}
-
 
 	function init_subscription_schemes_metaboxes() {
 
