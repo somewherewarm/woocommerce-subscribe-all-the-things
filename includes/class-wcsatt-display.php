@@ -411,7 +411,59 @@ class WCS_ATT_Display {
 				}
 
 			} else {
-				$suffix = ' <small class="wcsatt-sub-options">' . __( '(subscription plans available)', WCS_ATT::TEXT_DOMAIN ) . '</small>';
+
+				$price_overrides_exist       = WCS_ATT_Schemes::subscription_price_overrides_exist( $subscription_schemes );
+				$lowest_scheme_price         = $product->price;
+				$lowest_scheme_sale_price    = $product->sale_price;
+				$lowest_scheme_regular_price = $product->regular_price;
+
+				$lowest_scheme_price_html    = '';
+				$from_price                  = '';
+
+				if ( $price_overrides_exist ) {
+					foreach ( $subscription_schemes as $subscription_scheme ) {
+						$overridden_prices = WCS_ATT_Schemes::get_subscription_scheme_prices( $product, $subscription_scheme );
+						if ( ! empty( $overridden_prices ) ) {
+							if ( $overridden_prices[ 'price' ] < $lowest_scheme_price ) {
+								$lowest_scheme_price         = $overridden_prices[ 'price' ];
+								$lowest_scheme_sale_price    = $overridden_prices[ 'sale_price' ];
+								$lowest_scheme_regular_price = $overridden_prices[ 'regular_price' ];
+							}
+						}
+					}
+
+					if ( $lowest_scheme_price < $product->price ) {
+
+						$_cloned                               = clone $product;
+
+						$_cloned->is_converted_to_sub          = 'yes';
+						$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
+						$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
+						$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+
+						$_cloned->price                        = $lowest_scheme_price;
+						$_cloned->sale_price                   = $lowest_scheme_price;
+						$_cloned->regular_price                = $lowest_scheme_regular_price;
+
+						self::$bypass_price_html_filter        = true;
+						$lowest_scheme_price_html              = $_cloned->get_price_html();
+						$lowest_scheme_price_html              = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'price' => $lowest_scheme_price_html ) );
+						self::$bypass_price_html_filter        = false;
+
+						if ( count( $subscription_schemes ) > 1 ) {
+							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'min-price: 1 plan available', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+						} else {
+							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'min-price: multiple plans available', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+						}
+					}
+				}
+
+				if ( $price_overrides_exist ) {
+					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or subscribe %s', '&ndash; or subscribe %s', count( $subscription_schemes ), WCS_ATT::TEXT_DOMAIN ), $from_price ) . '</small>';
+				} else {
+					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription plan available', '&ndash; subscription plans available', count( $subscription_schemes ), WCS_ATT::TEXT_DOMAIN ), $from_price ) . '</small>';
+				}
+
 				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 			}
 		}

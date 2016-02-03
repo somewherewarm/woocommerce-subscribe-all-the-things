@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 1.0.3\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2016-02-02 21:07:20+00:00\n"
+"POT-Creation-Date: 2016-02-03 12:24:29+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -160,11 +160,19 @@ msgstr ""
 msgid "Yes, %s."
 msgstr ""
 
-#: includes/class-wcsatt-display.php:414
-msgid "(subscription plans available)"
-msgstr ""
+#: includes/class-wcsatt-display.php:462
+msgid "&ndash; or subscribe %s"
+msgid_plural "&ndash; or subscribe %s"
+msgstr[0] ""
+msgstr[1] ""
 
-#: includes/class-wcsatt-display.php:415
+#: includes/class-wcsatt-display.php:464
+msgid "&ndash; subscription plan available"
+msgid_plural "&ndash; subscription plans available"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-wcsatt-display.php:467
 msgid "%1$s%2$s"
 msgstr ""
 
@@ -224,7 +232,18 @@ msgctxt "for in \"Every month _for_ 12 months\""
 msgid "for"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:410
+#: includes/class-wcsatt-display.php:410 includes/class-wcsatt-display.php:454
+#: includes/class-wcsatt-display.php:456
 msgctxt "Price range: from"
 msgid "%1$s%2$s"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:454
+msgctxt "min-price: 1 plan available"
+msgid "<span class=\"from\">from </span>"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:456
+msgctxt "min-price: multiple plans available"
+msgid "<span class=\"for\">for </span>"
 msgstr ""
