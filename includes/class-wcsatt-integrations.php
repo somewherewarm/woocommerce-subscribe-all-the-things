@@ -37,11 +37,34 @@ class WCS_ATT_Integrations {
 		}
 
 		if ( $bundle_type_exists ) {
+			add_filter( 'wcsatt_show_cart_item_options', __CLASS__ . '::hide_bundle_options', 10, 3 );
 			add_filter( 'wcsatt_show_cart_item_options', __CLASS__ . '::hide_bundled_item_options', 10, 3 );
 			add_filter( 'wcsatt_subscription_schemes', __CLASS__ . '::get_bundled_item_schemes', 10, 3 );
 			add_filter( 'wcsatt_subscription_schemes', __CLASS__ . '::get_bundle_schemes', 10, 3 );
 			add_filter( 'wcsatt_set_subscription_scheme_id', __CLASS__ . '::set_bundled_item_subscription_scheme_id', 10, 3 );
+			add_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::show_ppp_bundle_subtotal_details', 1000, 3 );
 		}
+	}
+
+	/**
+	 * Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
+	 *
+	 * @param  string $subtotal
+	 * @param  array  $cart_item
+	 * @param  string $cart_item_key
+	 * @return string
+	 */
+	public static function show_ppp_bundle_subtotal_details( $subtotal, $cart_item, $cart_item_key ) {
+
+		foreach ( self::$child_keys_names as $child_keys_name ) {
+			if ( ! empty( $cart_item[ $child_keys_name ] ) ) {
+				if ( self::overrides_child_schemes( $cart_item ) ) {
+					$subtotal = WC_Subscriptions_Cart::get_formatted_product_subtotal( $subtotal, $cart_item[ 'data' ], $cart_item[ 'quantity' ], WC()->cart );
+				}
+			}
+		}
+
+		return $subtotal;
 	}
 
 	/**
@@ -94,6 +117,9 @@ class WCS_ATT_Integrations {
 
 					if ( self::overrides_child_schemes( $container_cart_item ) ) {
 						$schemes = WCS_ATT_Schemes::get_subscription_schemes( $container_cart_item, $scope );
+						foreach ( $schemes as &$scheme ) {
+							$scheme[ 'subscription_pricing_method' ] = 'inherit';
+						}
 					}
 				}
 			}
@@ -123,6 +149,27 @@ class WCS_ATT_Integrations {
 		}
 
 		return $schemes;
+	}
+
+	/**
+	 * Hide bundle container cart item subscription options if bundle has a per-item price.
+	 *
+	 * @param  boolean $show
+	 * @param  array   $cart_item
+	 * @param  string  $cart_item_key
+	 * @return boolean
+	 */
+	public static function hide_bundle_options( $show, $cart_item, $cart_item_key ) {
+
+		foreach ( self::$child_keys_names as $child_key_name ) {
+			if ( ! empty( $cart_item[ $child_key_name ] ) ) {
+				if ( $cart_item[ 'data' ]->is_priced_per_product() ) {
+					$show = false;
+				}
+			}
+		}
+
+		return $show;
 	}
 
 	/**

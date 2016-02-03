@@ -7,6 +7,10 @@ ul.wcsatt-convert {
 	min-width: 120px;
 }
 
+ul.wcsatt-convert.overrides_exist {
+	margin: 0 0 0;
+}
+
 ul.wcsatt-convert-cart {
 	margin: 0 0 2em 0;
 }

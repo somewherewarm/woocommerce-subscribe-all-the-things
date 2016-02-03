@@ -16,7 +16,7 @@ if ( $prompt ) {
 	echo $prompt;
 } else {
 	?><h3><?php
-		echo sprintf( __( 'Select a &quot;%1$s&quot; subscription:', WCS_ATT::TEXT_DOMAIN ), $product->get_title() );
+		_e( 'Choose a subscription plan:', WCS_ATT::TEXT_DOMAIN );
 	?></h3><?php
 }
 
