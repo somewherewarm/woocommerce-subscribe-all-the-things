@@ -63,10 +63,9 @@ class WCS_ATT_Display {
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 		// Allow one-time purchase option?
-		$allow_one_time_option         = true;
-		$has_product_level_schemes     = empty( $subscription_schemes ) ? false : true;
+		$allow_one_time_option = true;
 
-		if ( $has_product_level_schemes ) {
+		if ( ! empty( $subscription_schemes ) ) {
 
 			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 			$default_status     = get_post_meta( $product->id, '_wcsatt_default_status', true );
