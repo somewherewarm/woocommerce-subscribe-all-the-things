@@ -1,6 +1,6 @@
 *** WooCommerce Subscribe All the Things ***
 
-2015.03.28 - version 1.0.3
+2016.03.28 - version 1.0.3
  * Feature - Ability to override product prices from subscription options.
  * Feature - Subscribe to cart feature.
  * Fix - Subscriptions admin tab: Refresh subscription length options when changing subscription period.
