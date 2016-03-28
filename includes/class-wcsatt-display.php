@@ -251,18 +251,14 @@ class WCS_ATT_Display {
 				);
 
 				foreach ( $subscription_schemes as $subscription_scheme_id => $subscription_scheme ) {
-
-					$dummy_product                               = new WC_Product( '1' );
-					$dummy_product->is_converted_to_sub          = 'yes';
-					$dummy_product->subscription_period          = $subscription_scheme[ 'subscription_period' ];
-					$dummy_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
-					$dummy_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
-
-					$sub_suffix  = WC_Subscriptions_Product::get_price_string( $dummy_product, array( 'subscription_price' => false ) );
-
 					$options[ $subscription_scheme_id ] = array(
-						'description' => sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
-						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
+						'description' => wcs_price_string( array(
+							'subscription_interval' => $subscription_scheme[ 'subscription_period_interval' ],
+							'subscription_period'   => $subscription_scheme[ 'subscription_period' ],
+							'subscription_length'   => $subscription_scheme[ 'subscription_length' ],
+							'use_per_slash'         => false,
+						) ),
+						'selected' => $active_subscription_scheme_id === $subscription_scheme_id,
 					);
 				}
 
