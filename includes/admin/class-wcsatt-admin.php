@@ -115,7 +115,7 @@ class WCS_ATT_Admin {
 
 			array(
 				'name' => __( 'Subscribe to Cart Options', WCS_ATT::TEXT_DOMAIN ),
-				'desc' => __( 'Offer customers the following options for subscribing to the contents of their cart, regardless of whether the cart contents are subscription products or not.', WCS_ATT::TEXT_DOMAIN ),
+				'desc' => __( 'Offer customers the following options for subscribing to the contents of their cart.', WCS_ATT::TEXT_DOMAIN ),
 				'id'   => 'wcsatt_subscribe_to_cart_schemes',
 				'type' => 'subscription_schemes',
 			),
