@@ -59,8 +59,8 @@ class WCS_ATT_Display {
 
 		global $product;
 
-		$subscription_schemes          = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
-		$show_convert_to_sub_options   = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
+		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 		// Allow one-time purchase option?
 		$allow_one_time_option         = true;
