@@ -22,10 +22,10 @@ if ( $prompt ) {
 
 ?><ul class="wcsatt-convert-product"><?php
 
-	foreach ( $options as $option ) {
+	foreach ( $options as $option_id => $option ) {
 		?><li>
 			<label>
-				<input type="radio" name="convert_to_sub_<?php echo $product->id; ?>" value="<?php echo $option[ 'id' ]; ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+				<input type="radio" name="convert_to_sub_<?php echo $product->id; ?>" value="<?php echo $option_id; ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 				<?php echo $option[ 'description' ]; ?>
 			</label>
 		</li><?php

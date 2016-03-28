@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?><ul class="wcsatt-convert"><?php
 
-	foreach ( $options as $option ) {
+	foreach ( $options as $option_id => $option ) {
 		?><li>
 			<label>
-				<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo $option[ 'id' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+				<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 				<?php echo $option[ 'description' ]; ?>
 			</label>
 		</li><?php

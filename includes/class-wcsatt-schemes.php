@@ -42,8 +42,8 @@ class WCS_ATT_Schemes {
 
 		$active_scheme    = false;
 
-		foreach ( $schemes as $scheme ) {
-			if ( $scheme[ 'id' ] === $active_scheme_id ) {
+		foreach ( $schemes as $scheme_id => $scheme ) {
+			if ( $scheme_id === $active_scheme_id ) {
 				$active_scheme = $scheme;
 				break;
 			}
@@ -71,9 +71,9 @@ class WCS_ATT_Schemes {
 				$product_schemes = get_post_meta( $product_id, '_wcsatt_schemes', true );
 
 				if ( $product_schemes ) {
-					foreach ( $product_schemes as $scheme ) {
-						$scheme[ 'scope' ] = 'cart-item';
-						$schemes[]         = $scheme;
+					foreach ( $product_schemes as $scheme_id => $scheme ) {
+						$scheme[ 'scope' ]     = 'cart-item';
+						$schemes[ $scheme_id ] = $scheme;
 					}
 				}
 			}
@@ -85,15 +85,10 @@ class WCS_ATT_Schemes {
 
 				$cart_level_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
-				if ( $cart_level_subs_active === 'yes' ) {
-
-					$cart_level_schemes = get_option( $wcs_prefix . '_subscribe_to_cart_schemes', array() );
-
-					if ( ! empty( $cart_level_schemes ) ) {
-						foreach ( $cart_level_schemes as $scheme ) {
-							$scheme[ 'scope' ] = 'cart';
-							$schemes[]         = $scheme;
-						}
+				if ( ! empty( $cart_level_schemes ) ) {
+					foreach ( $cart_level_schemes as $scheme_id => $scheme ) {
+						$scheme[ 'scope' ]     = 'cart';
+						$schemes[ $scheme_id ] = $scheme;
 					}
 				}
 			}
@@ -120,9 +115,9 @@ class WCS_ATT_Schemes {
 			$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
 
 			if ( $product_schemes ) {
-				foreach ( $product_schemes as $scheme ) {
-					$scheme[ 'scope' ] = 'cart-item';
-					$schemes[]         = $scheme;
+				foreach ( $product_schemes as $scheme_id => $scheme ) {
+					$scheme[ 'scope' ]     = 'cart-item';
+					$schemes[ $scheme_id ] = $scheme;
 				}
 			}
 		}
@@ -151,7 +146,7 @@ class WCS_ATT_Schemes {
 				if ( apply_filters( 'wcsatt_enable_cart_subscription_by_default', false ) ) {
 
 					$default_scheme    = current( $cart_level_schemes );
-					$default_scheme_id = $default_scheme[ 'id' ];
+					$default_scheme_id = key( $cart_level_schemes );
 
 				// default to one-time
 
@@ -178,7 +173,7 @@ class WCS_ATT_Schemes {
 					if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {
 						if ( ! empty( $subscription_schemes ) ) {
 							$default_scheme    = current( $subscription_schemes );
-							$default_scheme_id = $default_scheme[ 'id' ];
+							$default_scheme_id = key( $subscription_schemes );
 						}
 					}
 				}
@@ -236,8 +231,8 @@ class WCS_ATT_Schemes {
 			return false;
 		}
 
-		foreach ( $cart_level_schemes as $cart_level_scheme ) {
-			$cart_level_schemes_keys[] = $cart_level_scheme[ 'id' ];
+		foreach ( $cart_level_schemes as $scheme_id => $cart_level_scheme ) {
+			$cart_level_schemes_keys[] = $scheme_id;
 		}
 
 		foreach ( WC()->cart->cart_contents as $cart_item ) {

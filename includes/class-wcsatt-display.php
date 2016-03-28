@@ -81,22 +81,19 @@ class WCS_ATT_Display {
 			if ( $allow_one_time_option && $default_status !== 'subscription' ) {
 				$default_subscription_scheme_id = '0';
 			} else {
-				$default_subscription_scheme_id = $default_subscription_scheme[ 'id' ];
+				$default_subscription_scheme_id = key( $subscription_schemes );
 			}
 
 			$default_subscription_scheme_id = apply_filters( 'wcsatt_get_default_subscription_scheme_id', $default_subscription_scheme_id, $subscription_schemes, $allow_one_time_option, $product );
 
 			if ( $allow_one_time_option ) {
-				$options[] = array(
-					'id'          => '0',
+				$options['0'] = array(
 					'description' => _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $default_subscription_scheme_id === '0',
 				);
 			}
 
-			foreach ( $subscription_schemes as $subscription_scheme ) {
-
-				$subscription_scheme_id = $subscription_scheme[ 'id' ];
+			foreach ( $subscription_schemes as $subscription_scheme_id => $subscription_scheme ) {
 
 				$_cloned = clone $product;
 
@@ -107,8 +104,7 @@ class WCS_ATT_Display {
 
 				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
 
-				$options[] = array(
-					'id'          => $subscription_scheme_id,
+				$options[ $subscription_scheme_id ] = array(
 					'description' => ucfirst( $allow_one_time_option ? sprintf( _x( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ) : $sub_suffix ),
 					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
 				);
@@ -172,16 +168,13 @@ class WCS_ATT_Display {
 		$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_subscription_scheme_id( $cart_item );
 
 		if ( $allow_one_time_option ) {
-			$options[] = array(
-				'id'          => '0',
+			$options['0'] = array(
 				'description' => __( 'only this time', WCS_ATT::TEXT_DOMAIN ),
 				'selected'    => $active_subscription_scheme_id === '0',
 			);
 		}
 
-		foreach ( $subscription_schemes as $subscription_scheme ) {
-
-			$subscription_scheme_id = $subscription_scheme[ 'id' ];
+		foreach ( $subscription_schemes as $subscription_scheme_id => $subscription_scheme ) {
 
 			if ( $cart_item[ 'data' ]->is_converted_to_sub === 'yes' && $subscription_scheme_id === $active_subscription_scheme_id ) {
 
@@ -201,8 +194,7 @@ class WCS_ATT_Display {
 				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
 			}
 
-			$options[] = array(
-				'id'          => $subscription_scheme_id,
+			$options[ $subscription_scheme_id ] = array(
 				'description' => $sub_suffix,
 				'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 			);
@@ -219,7 +211,6 @@ class WCS_ATT_Display {
 		$subtotal = apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $cart_item[ 'data' ], $cart_item[ 'quantity' ] ), $cart_item, $cart_item_key );
 		add_filter( 'woocommerce_cart_item_subtotal', __CLASS__ . '::convert_to_sub_options', 1000, 3 );
 		add_filter( 'woocommerce_cart_product_subtotal', 'WC_Subscriptions_Cart' . '::get_formatted_product_subtotal', 11, 4 );
-
 
 		ob_start();
 
@@ -254,15 +245,12 @@ class WCS_ATT_Display {
 				$options                       = array();
 				$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_cart_subscription_scheme_id();
 
-				$options[] = array(
-					'id'          => '0',
+				$options['0'] = array(
 					'description' => _x( 'No thanks.', 'cart subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $active_subscription_scheme_id === '0',
 				);
 
-				foreach ( $subscription_schemes as $subscription_scheme ) {
-
-					$subscription_scheme_id = $subscription_scheme[ 'id' ];
+				foreach ( $subscription_schemes as $subscription_scheme_id => $subscription_scheme ) {
 
 					$dummy_product                               = new WC_Product( '1' );
 					$dummy_product->is_converted_to_sub          = 'yes';
@@ -272,17 +260,16 @@ class WCS_ATT_Display {
 
 					$sub_suffix  = WC_Subscriptions_Product::get_price_string( $dummy_product, array( 'subscription_price' => false ) );
 
-					$options[] = array(
-						'id'          => $subscription_scheme[ 'id' ],
+					$options[ $subscription_scheme_id ] = array(
 						'description' => sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
 						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 					);
 				}
 
-				foreach ( $options as $option ) {
+				foreach ( $options as $option_id => $option ) {
 					?><li>
 						<label>
-							<input type="radio" name="convert_to_sub" value="<?php echo $option[ 'id' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+							<input type="radio" name="convert_to_sub" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 							<?php echo $option[ 'description' ]; ?>
 						</label>
 					</li><?php
