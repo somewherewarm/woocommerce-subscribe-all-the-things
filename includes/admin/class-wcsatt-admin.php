@@ -98,7 +98,9 @@ class WCS_ATT_Admin {
 	public static function cart_level_admin_settings( $settings ) {
 
 		// Insert before miscellaneous settings
-		$spliced_array = array_splice( $settings, 23, 0, array(
+		$misc_section_start = wp_list_filter( $settings, array( 'id' => 'woocommerce_subscriptions_miscellaneous', 'type' => 'title' ) );
+
+		$spliced_array = array_splice( $settings, key( $misc_section_start ), 0, array(
 			array(
 				'name' => __( 'Subscribe to Cart', WCS_ATT::TEXT_DOMAIN ),
 				'type' => 'title',
