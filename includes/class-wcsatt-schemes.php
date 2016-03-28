@@ -83,8 +83,7 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart' ) ) ) {
 
-				$wcs_prefix             = WC_Subscriptions_Admin::$option_prefix;
-				$cart_level_subs_active = get_option( $wcs_prefix . '_enable_cart_subscriptions', 'no' );
+				$cart_level_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
 				if ( $cart_level_subs_active === 'yes' ) {
 
@@ -230,14 +229,8 @@ class WCS_ATT_Schemes {
 	 */
 	public static function get_cart_subscription_schemes() {
 
-		$wcs_prefix              = WC_Subscriptions_Admin::$option_prefix;
-		$cart_level_subs_active  = get_option( $wcs_prefix . '_enable_cart_subscriptions', 'no' );
-		$cart_level_schemes      = array();
+		$cart_level_schemes      = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 		$cart_level_schemes_keys = array();
-
-		if ( $cart_level_subs_active === 'yes' ) {
-			$cart_level_schemes = get_option( $wcs_prefix . '_subscribe_to_cart_schemes', array() );
-		}
 
 		if ( empty( $cart_level_schemes ) ) {
 			return false;
