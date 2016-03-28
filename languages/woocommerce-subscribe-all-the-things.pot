@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 1.0.3\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2016-02-03 14:07:32+00:00\n"
+"POT-Creation-Date: 2016-03-28 09:31:50+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,126 +14,108 @@ msgstr ""
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Generator: grunt-wp-i18n 0.5.3\n"
 
-#: includes/admin/class-wcsatt-admin.php:96
-#: includes/admin/class-wcsatt-admin.php:554
+#: includes/admin/class-wcsatt-admin.php:90
+#: includes/admin/class-wcsatt-admin.php:561
 msgid "Add Option"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:120
-msgid "Subscribe to Cart/Order"
+#: includes/admin/class-wcsatt-admin.php:108
+msgid "Subscribe to Cart"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:127
-msgid "Cart/Order Subscriptions"
+#: includes/admin/class-wcsatt-admin.php:115
+msgid "Subscribe to Cart Options"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:128
-msgid "Enable Cart/Order Subscriptions"
-msgstr ""
-
-#: includes/admin/class-wcsatt-admin.php:132
+#: includes/admin/class-wcsatt-admin.php:116
 msgid ""
-"Enabling this option will allow customers to purchase their entire "
-"cart/order content as a Subscription."
+"Offer customers the following options for subscribing to the contents of "
+"their cart, regardless of whether the cart contents are subscription "
+"products or not."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:136
-#: includes/admin/class-wcsatt-admin.php:536
-msgid "Subscription Options"
-msgstr ""
-
-#: includes/admin/class-wcsatt-admin.php:137
-msgid ""
-"Configure the subscription options available for signing up to cart/order "
-"contents."
-msgstr ""
-
-#: includes/admin/class-wcsatt-admin.php:140
-msgid "Test."
-msgstr ""
-
-#: includes/admin/class-wcsatt-admin.php:198
+#: includes/admin/class-wcsatt-admin.php:176
 msgid "Please enter positive subscription discount values, between 0-100."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:311
+#: includes/admin/class-wcsatt-admin.php:312
 msgid "Subscription Periods"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:322
+#: includes/admin/class-wcsatt-admin.php:323
 msgid "Billing Period"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:334
+#: includes/admin/class-wcsatt-admin.php:335
 msgid "Subscription Length"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:368
+#: includes/admin/class-wcsatt-admin.php:369
 msgid "Subscription Price"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:371
+#: includes/admin/class-wcsatt-admin.php:372
 msgid "Inherit from product"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:372
+#: includes/admin/class-wcsatt-admin.php:373
 msgid "Override product"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:386
+#: includes/admin/class-wcsatt-admin.php:387
 msgid "Regular Price"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:396
+#: includes/admin/class-wcsatt-admin.php:397
 msgid "Sale Price"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:408
+#: includes/admin/class-wcsatt-admin.php:409
 msgid "Discount %"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:504
+#: includes/admin/class-wcsatt-admin.php:511
 msgid "Subscriptions"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:523
+#: includes/admin/class-wcsatt-admin.php:530
 msgid "Force subscription"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:523
+#: includes/admin/class-wcsatt-admin.php:530
 msgid "Check this option to prevent one-time purchases"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:526
+#: includes/admin/class-wcsatt-admin.php:533
 msgid "Default to"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:527
+#: includes/admin/class-wcsatt-admin.php:534
 msgid "One-time purchase"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:528
+#: includes/admin/class-wcsatt-admin.php:535
 msgid "Subscription"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:532
+#: includes/admin/class-wcsatt-admin.php:539
 msgid "Subscription prompt"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:532
+#: includes/admin/class-wcsatt-admin.php:539
 msgid "Custom html/text to display before subscription options."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:537
+#: includes/admin/class-wcsatt-admin.php:543
+msgid "Subscription Options"
+msgstr ""
+
+#: includes/admin/class-wcsatt-admin.php:544
 msgid "Add one or more subscription options for this product."
 msgstr ""
 
 #: includes/admin/views/subscription-scheme.php:15
 msgid "Remove"
-msgstr ""
-
-#: includes/class-wcsatt-display.php:105
-msgid "None"
 msgstr ""
 
 #: includes/class-wcsatt-display.php:139
@@ -152,10 +134,6 @@ msgstr ""
 msgid "Interested in subscribing to these items?"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:327
-msgid "No thanks."
-msgstr ""
-
 #: includes/class-wcsatt-display.php:345
 msgid "Yes, %s."
 msgstr ""
@@ -171,10 +149,6 @@ msgid "&ndash; subscription plan available"
 msgid_plural "&ndash; subscription plans available"
 msgstr[0] ""
 msgstr[1] ""
-
-#: includes/class-wcsatt-display.php:467
-msgid "%1$s%2$s"
-msgstr ""
 
 #: templates/product-options.php:19
 msgid "Choose a subscription plan:"
@@ -227,9 +201,19 @@ msgstr ""
 msgid "http://prospress.com/"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:324
+#: includes/admin/class-wcsatt-admin.php:325
 msgctxt "for in \"Every month _for_ 12 months\""
 msgid "for"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:105
+msgctxt "product subscription selection - negative response"
+msgid "None"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:327
+msgctxt "cart subscription selection - negative response"
+msgid "No thanks."
 msgstr ""
 
 #: includes/class-wcsatt-display.php:410 includes/class-wcsatt-display.php:454
@@ -246,4 +230,9 @@ msgstr ""
 #: includes/class-wcsatt-display.php:456
 msgctxt "min-price: multiple plans available"
 msgid "<span class=\"for\">for </span>"
+msgstr ""
+
+#: includes/class-wcsatt-display.php:467
+msgctxt "price html sub options suffix"
+msgid "%1$s%2$s"
 msgstr ""

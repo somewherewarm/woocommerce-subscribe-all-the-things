@@ -61,12 +61,12 @@ class WCS_ATT_Display {
 
 		global $product;
 
-		$subscription_schemes          = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
-		$show_convert_to_sub_options   = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
+		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 		// Allow one-time purchase option?
-		$allow_one_time_option         = true;
-		$has_product_level_schemes     = empty( $subscription_schemes ) ? false : true;
+		$allow_one_time_option       = true;
+		$has_product_level_schemes   = ! empty( $subscription_schemes );
 
 		if ( $has_product_level_schemes ) {
 
@@ -102,7 +102,7 @@ class WCS_ATT_Display {
 			if ( $allow_one_time_option ) {
 				$options[] = array(
 					'id'          => '0',
-					'description' => __( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
+					'description' => _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $default_subscription_scheme_id === '0',
 				);
 			}
@@ -324,7 +324,7 @@ class WCS_ATT_Display {
 
 				$options[] = array(
 					'id'          => '0',
-					'description' => __( 'No thanks.', 'cart subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
+					'description' => _x( 'No thanks.', 'cart subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $active_subscription_scheme_id === '0',
 				);
 
@@ -464,7 +464,7 @@ class WCS_ATT_Display {
 					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription plan available', '&ndash; subscription plans available', count( $subscription_schemes ), WCS_ATT::TEXT_DOMAIN ), $from_price ) . '</small>';
 				}
 
-				$price  = sprintf( __( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
+				$price  = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
 			}
 		}
 

@@ -112,6 +112,11 @@ class WCS_ATT_Schemes {
 		$has_price_overrides = false;
 
 		foreach ( $subscription_schemes as $subscription_scheme ) {
+
+			if ( ! isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
+				continue;
+			}
+
 			if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
 				$has_price_overrides = true;
 				break;
@@ -193,18 +198,12 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart' ) ) ) {
 
-				$wcs_prefix             = WC_Subscriptions_Admin::$option_prefix;
-				$cart_level_subs_active = get_option( $wcs_prefix . '_enable_cart_subscriptions', 'no' );
+				$cart_level_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
-				if ( $cart_level_subs_active === 'yes' ) {
-
-					$cart_level_schemes = get_option( $wcs_prefix . '_subscribe_to_cart_schemes', array() );
-
-					if ( ! empty( $cart_level_schemes ) ) {
-						foreach ( $cart_level_schemes as $scheme ) {
-							$scheme[ 'scope' ] = 'cart';
-							$schemes[]         = $scheme;
-						}
+				if ( ! empty( $cart_level_schemes ) ) {
+					foreach ( $cart_level_schemes as $scheme ) {
+						$scheme[ 'scope' ] = 'cart';
+						$schemes[]         = $scheme;
 					}
 				}
 			}
@@ -340,14 +339,9 @@ class WCS_ATT_Schemes {
 	 */
 	public static function get_cart_subscription_schemes() {
 
-		$wcs_prefix              = WC_Subscriptions_Admin::$option_prefix;
-		$cart_level_subs_active  = get_option( $wcs_prefix . '_enable_cart_subscriptions', 'no' );
 		$cart_level_schemes      = array();
 		$cart_level_schemes_keys = array();
-
-		if ( $cart_level_subs_active === 'yes' ) {
-			$cart_level_schemes = get_option( $wcs_prefix . '_subscribe_to_cart_schemes', array() );
-		}
+		$cart_level_schemes      = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
 		if ( empty( $cart_level_schemes ) ) {
 			return false;

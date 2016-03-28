@@ -56,7 +56,7 @@ jQuery( function($) {
 		}
 	};
 
-	// Unused (for now).
+	// Cart level settings.
 	if ( wcsatt_admin_params.post_id === '' ) {
 
 		$wcsatt_data_tab.on( 'click', 'h3', function() {

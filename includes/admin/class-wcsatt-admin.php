@@ -43,12 +43,13 @@ class WCS_ATT_Admin {
 		 */
 
 		// Append "Subscribe to Cart/Order" section in the Subscriptions settings tab
-		// add_filter( 'woocommerce_subscription_settings', __CLASS__ . '::cart_level_admin_settings' );
+		add_filter( 'woocommerce_subscription_settings', __CLASS__ . '::cart_level_admin_settings' );
+
+		// Save posted cart subscription scheme settings
+		add_action( 'woocommerce_update_options_subscriptions', __CLASS__ . '::save_cart_level_settings' );
 
 		// Display subscription scheme admin metaboxes in the "Subscribe to Cart/Order" section
-		// add_action( 'woocommerce_admin_field_subscription_schemes_metaboxes', __CLASS__ . '::subscription_schemes_metaboxes_content' );
-
-		// Process posted subscription scheme admin metaboxes - TODO
+		add_action( 'woocommerce_admin_field_subscription_schemes', __CLASS__ . '::subscription_schemes_content' );
 	}
 
 	/**
@@ -57,22 +58,18 @@ class WCS_ATT_Admin {
 	 * @param  array $values
 	 * @return void
 	 */
-	public static function subscription_schemes_metaboxes_content( $values ) {
+	public static function subscription_schemes_content( $values ) {
 
-		$field_name           = WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_schemes';
-		$subscription_schemes = get_option( $field_name, false );
-
-		if ( ! $subscription_schemes ) {
-			$subscription_schemes = array(
-				array(
-					'subscription_period_interval' => 1,
-					'subscription_period'          => 'month',
-					'subscription_length'          => 0,
-					'id'                           => '1_month_0',
-					'position'                     => 0,
-				)
-			);
-		}
+		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array(
+			// Default to "every month" scheme
+			array(
+				'subscription_period_interval' => 1,
+				'subscription_period'          => 'month',
+				'subscription_length'          => 0,
+				'id'                           => '1_month_0',
+				'position'                     => 0,
+			)
+		) );
 
 		?><tr valign="top">
 			<th scope="row" class="titledesc"><?php echo esc_html( $values['title'] ) ?></th>
@@ -81,14 +78,11 @@ class WCS_ATT_Admin {
 				<div id="wcsatt_data" class="wc-metaboxes-wrapper">
 					<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
-						if ( $subscription_schemes ) {
+						$i = 0;
 
-							$i = 0;
-
-							foreach ( $subscription_schemes as $subscription_scheme ) {
-								do_action( 'wcsatt_subscription_scheme', $i, $subscription_scheme, '' );
-								$i++;
-							}
+						foreach ( $subscription_schemes as $subscription_scheme ) {
+							do_action( 'wcsatt_subscription_scheme', $i, $subscription_scheme, '' );
+							$i++;
 						}
 
 					?></div>
@@ -108,44 +102,29 @@ class WCS_ATT_Admin {
 	 */
 	public static function cart_level_admin_settings( $settings ) {
 
-		$new_settings = array();
+		// Insert before miscellaneous settings
+		$spliced_array = array_splice( $settings, 23, 0, array(
+			array(
+				'name' => __( 'Subscribe to Cart', WCS_ATT::TEXT_DOMAIN ),
+				'type' => 'title',
+				'desc' => '',
+				'id'   => 'wcsatt_subscribe_to_cart_options',
+			),
 
-		foreach ( $settings as $setting ) {
+			array(
+				'name' => __( 'Subscribe to Cart Options', WCS_ATT::TEXT_DOMAIN ),
+				'desc' => __( 'Offer customers the following options for subscribing to the contents of their cart, regardless of whether the cart contents are subscription products or not.', WCS_ATT::TEXT_DOMAIN ),
+				'id'   => 'wcsatt_subscribe_to_cart_schemes',
+				'type' => 'subscription_schemes',
+			),
 
-			$new_settings[] = $setting;
+			array(
+				'type' => 'sectionend',
+				'id'   => 'wcsatt_subscribe_to_cart_options',
+			),
+		) );
 
-			if ( $setting[ 'type' ] === 'sectionend' && $setting[ 'id' ] === WC_Subscriptions_Admin::$option_prefix . '_miscellaneous' ) {
-
-				$new_settings[] = array(
-					'name'     => __( 'Subscribe to Cart/Order', WCS_ATT::TEXT_DOMAIN ),
-					'type'     => 'title',
-					'desc'     => '',
-					'id'       => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_options',
-				);
-
-				$new_settings[] = array(
-					'name'            => __( 'Cart/Order Subscriptions', WCS_ATT::TEXT_DOMAIN ),
-					'desc'            => __( 'Enable Cart/Order Subscriptions', WCS_ATT::TEXT_DOMAIN ),
-					'id'              => WC_Subscriptions_Admin::$option_prefix . '_enable_cart_subscriptions',
-					'default'         => 'no',
-					'type'            => 'checkbox',
-					'desc_tip'        => __( 'Enabling this option will allow customers to purchase their entire cart/order content as a Subscription.', WCS_ATT::TEXT_DOMAIN ),
-				);
-
-				$new_settings[] = array(
-					'name'            => __( 'Subscription Options', WCS_ATT::TEXT_DOMAIN ),
-					'desc'            => __( 'Configure the subscription options available for signing up to cart/order contents.', WCS_ATT::TEXT_DOMAIN ),
-					'id'              => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_schemes',
-					'type'            => 'subscription_schemes_metaboxes',
-					'desc_tip'        => __( 'Test.', WCS_ATT::TEXT_DOMAIN ),
-				);
-
-				$new_settings[] = array( 'type' => 'sectionend', 'id' => WC_Subscriptions_Admin::$option_prefix . '_subscribe_to_cart_options' );
-
-			}
-		}
-
-		return $new_settings;
+		return $settings;
 	}
 
 	/**
@@ -166,8 +145,7 @@ class WCS_ATT_Admin {
 			if ( isset( $_POST[ 'wcsatt_schemes' ] ) ) {
 
 				$posted_schemes = stripslashes_deep( $_POST[ 'wcsatt_schemes' ] );
-				$scheme_ids     = array();
-				$clean_schemes  = array();
+				$unique_schemes = array();
 
 				foreach ( $posted_schemes as $posted_scheme ) {
 
@@ -220,16 +198,11 @@ class WCS_ATT_Admin {
 					// Construct scheme id.
 					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
 
-					if ( in_array( $scheme_id, $scheme_ids ) ) {
-						continue;
-					}
-
-					$posted_scheme[ 'id' ] = $scheme_id;
-					$scheme_ids[]          = $scheme_id;
-					$clean_schemes[]       = $posted_scheme;
+					$unique_schemes[ $scheme_id ]         = $posted_scheme;
+					$unique_schemes[ $scheme_id ][ 'id' ] = $scheme_id;
 				}
 
-				update_post_meta( $post_id, '_wcsatt_schemes', $clean_schemes );
+				update_post_meta( $post_id, '_wcsatt_schemes', $unique_schemes );
 
 			} else {
 				delete_post_meta( $post_id, '_wcsatt_schemes' );
@@ -263,7 +236,35 @@ class WCS_ATT_Admin {
 			delete_post_meta( $post_id, '_wcsatt_default_status' );
 			delete_post_meta( $post_id, '_wcsatt_subscription_prompt' );
 		}
+	}
 
+	/**
+	 * Save subscription scheme option from the WooCommerce > Settings > Subscriptions administration screen.
+	 *
+	 * @param  int  $post_id
+	 * @return void
+	 */
+	public static function save_cart_level_settings() {
+
+		if ( isset( $_POST[ 'wcsatt_schemes' ] ) ) {
+			$posted_schemes = $_POST[ 'wcsatt_schemes' ];
+		} else {
+			$posted_schemes = array();
+		}
+
+		$posted_schemes        = stripslashes_deep( $posted_schemes );
+		$unique_schemes = array();
+
+		foreach ( $posted_schemes as $posted_scheme ) {
+
+			// Construct scheme id.
+			$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+
+			$unique_schemes[ $scheme_id ]         = $posted_scheme;
+			$unique_schemes[ $scheme_id ][ 'id' ] = $scheme_id;
+		}
+
+		update_option( 'wcsatt_subscribe_to_cart_schemes', $unique_schemes );
 	}
 
 	/**
@@ -461,19 +462,29 @@ class WCS_ATT_Admin {
 
 		global $post;
 
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
 		// Get admin screen id
-		$screen = get_current_screen();
+		$screen      = get_current_screen();
+		$screen_id   = $screen ? $screen->id : '';
 
-		// Product metaboxes
-		if ( in_array( $screen->id, array( 'edit-product', 'product' ) ) ) {
-			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-write-panels' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'wc-admin-meta-boxes', 'wc-admin-product-meta-boxes' ), WCS_ATT::VERSION );
+		$add_scripts = false;
+		$suffix      = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		if ( in_array( $screen_id, array( 'edit-product', 'product' ) ) ) {
+			$add_scripts = true;
+			$writepanel_dependencies = array( 'jquery', 'jquery-ui-datepicker', 'wc-admin-meta-boxes', 'wc-admin-product-meta-boxes' );
+		} elseif ( $screen_id === 'woocommerce_page_wc-settings' && isset( $_GET[ 'tab' ] ) && $_GET[ 'tab' ] === 'subscriptions' ) {
+			$add_scripts = true;
+			$writepanel_dependencies = array( 'jquery', 'jquery-ui-datepicker' );
+		}
+
+		if ( $add_scripts ) {
+			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-write-panels' . $suffix . '.js', $writepanel_dependencies, WCS_ATT::VERSION );
 			wp_register_style( 'wcsatt_writepanel_css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-write-panels.css', array( 'woocommerce_admin_styles' ), WCS_ATT::VERSION );
+			wp_enqueue_style( 'wcsatt_writepanel_css' );
 		}
 
 		// WooCommerce admin pages
-		if ( in_array( $screen->id, array( 'product' ) ) ) {
+		if ( in_array( $screen_id, array( 'product', 'woocommerce_page_wc-settings' ) ) ) {
 
 			wp_enqueue_script( 'wcsatt_writepanel' );
 
@@ -481,15 +492,11 @@ class WCS_ATT_Admin {
 				'add_subscription_scheme_nonce' => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
 				'subscription_lengths'          => wcs_get_subscription_ranges(),
 				'wc_ajax_url'                   => admin_url( 'admin-ajax.php' ),
-				'post_id'                       => $post->ID,
-				'wc_plugin_url'                 => WC()->plugin_url(),
+				'post_id'                       => is_object( $post ) ? $post->ID : '',
+				'wc_plugin_url'                 => WC()->plugin_url()
 			);
 
 			wp_localize_script( 'wcsatt_writepanel', 'wcsatt_admin_params', $params );
-		}
-
-		if ( in_array( $screen->id, array( 'edit-product', 'product' ) ) ) {
-			wp_enqueue_style( 'wcsatt_writepanel_css' );
 		}
 	}
 
