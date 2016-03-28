@@ -101,7 +101,7 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
+				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false, 'price' => '' ) );
 
 				$options[ $subscription_scheme_id ] = array(
 					'description' => ucfirst( $allow_one_time_option ? sprintf( _x( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ) : $sub_suffix ),
@@ -178,7 +178,7 @@ class WCS_ATT_Display {
 			if ( $cart_item[ 'data' ]->is_converted_to_sub === 'yes' && $subscription_scheme_id === $active_subscription_scheme_id ) {
 
 				// if the cart item is converted to a sub, create the subscription price suffix using the already-populated subscription properties
-				$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false ) );
+				$sub_suffix  = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array( 'subscription_price' => false, 'price' => ''  ) );
 
 			} else {
 
@@ -190,7 +190,7 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval     = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length              = $subscription_scheme[ 'subscription_length' ];
 
-				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false ) );
+				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array( 'subscription_price' => false, 'price' => ''  ) );
 			}
 
 			$options[ $subscription_scheme_id ] = array(
