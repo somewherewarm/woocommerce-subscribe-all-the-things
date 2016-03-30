@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-?><ul class="wcsatt-convert"><?php
+?><ul class="wcsatt-convert <?php echo esc_attr( $classes ); ?>"><?php
 
 	foreach ( $options as $option ) {
 		?><li>

@@ -53,6 +53,121 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
+	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
+	 *
+	 * @return string
+	 */
+	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
+
+		$prices = array();
+
+		if ( empty( $active_subscription_scheme ) ) {
+			$active_subscription_scheme = self::get_active_subscription_scheme( $cart_item );
+		}
+
+		if ( ! empty( $active_subscription_scheme ) ) {
+			$prices = self::get_subscription_scheme_prices( $cart_item[ 'data' ], $active_subscription_scheme );
+		}
+
+		return $prices;
+	}
+
+	/**
+	 * Returns cart item pricing data based on a subscription scheme's settings.
+	 *
+	 * @return string
+	 */
+	public static function get_subscription_scheme_prices( $product, $subscription_scheme ) {
+
+		$prices = array();
+
+		if ( ! empty( $subscription_scheme ) ) {
+			if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
+				if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+					$prices[ 'regular_price' ] = $subscription_scheme[ 'subscription_regular_price' ];
+					$prices[ 'sale_price' ]    = $subscription_scheme[ 'subscription_sale_price' ];
+					$prices[ 'price' ]         = $subscription_scheme[ 'subscription_price' ];
+				} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) && $product->price > 0 ) {
+					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $product );
+					$prices[ 'price' ]         = self::get_discounted_scheme_price( $product, $subscription_scheme[ 'subscription_discount' ] );
+
+					if ( $prices[ 'price' ] < $prices[ 'regular_price' ] ) {
+						$prices[ 'sale_price' ] = $prices[ 'price' ] ;
+					}
+				}
+			}
+		}
+
+		return $prices;
+	}
+
+	/**
+	 * True if any of the subscription schemes overrides the basic price.
+	 *
+	 * @param  array  $subscription_schemes
+	 * @return boolean
+	 */
+	public static function subscription_price_overrides_exist( $subscription_schemes ) {
+
+		$has_price_overrides = false;
+
+		foreach ( $subscription_schemes as $subscription_scheme ) {
+
+			if ( ! isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
+				continue;
+			}
+
+			if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+				$has_price_overrides = true;
+				break;
+			} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
+				$has_price_overrides = true;
+				break;
+			}
+		}
+
+		return $has_price_overrides;
+	}
+
+	/**
+	 * Get product regular price (before discount).
+	 *
+	 * @return mixed
+	 */
+	private static function get_discounted_scheme_regular_price( $product ) {
+
+		$regular_price = $product->regular_price;
+
+		$regular_price = empty( $regular_price ) ? $product->price : $regular_price;
+
+		return $regular_price;
+	}
+
+	/**
+	 * Get product price after discount.
+	 *
+	 * @return mixed
+	 */
+	private static function get_discounted_scheme_price( $product, $discount ) {
+
+		$price = $product->price;
+
+		if ( $price === '' ) {
+			return $price;
+		}
+
+		if ( apply_filters( 'wcsatt_discount_from_regular', true, $product ) ) {
+			$regular_price = self::get_discounted_scheme_regular_price( $product );
+		} else {
+			$regular_price = $price;
+		}
+
+		$price = empty( $discount ) ? $price : ( empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, wc_get_price_decimals() ) );
+
+		return $price;
+	}
+
+	/**
 	 * Returns all available subscription schemes (product-level and cart-level).
 	 *
 	 * @return array
@@ -83,18 +198,12 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart' ) ) ) {
 
-				$wcs_prefix             = WC_Subscriptions_Admin::$option_prefix;
-				$cart_level_subs_active = get_option( $wcs_prefix . '_enable_cart_subscriptions', 'no' );
+				$cart_level_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
-				if ( $cart_level_subs_active === 'yes' ) {
-
-					$cart_level_schemes = get_option( $wcs_prefix . '_subscribe_to_cart_schemes', array() );
-
-					if ( ! empty( $cart_level_schemes ) ) {
-						foreach ( $cart_level_schemes as $scheme ) {
-							$scheme[ 'scope' ] = 'cart';
-							$schemes[]         = $scheme;
-						}
+				if ( ! empty( $cart_level_schemes ) ) {
+					foreach ( $cart_level_schemes as $scheme ) {
+						$scheme[ 'scope' ] = 'cart';
+						$schemes[]         = $scheme;
 					}
 				}
 			}
@@ -230,14 +339,9 @@ class WCS_ATT_Schemes {
 	 */
 	public static function get_cart_subscription_schemes() {
 
-		$wcs_prefix              = WC_Subscriptions_Admin::$option_prefix;
-		$cart_level_subs_active  = get_option( $wcs_prefix . '_enable_cart_subscriptions', 'no' );
 		$cart_level_schemes      = array();
 		$cart_level_schemes_keys = array();
-
-		if ( $cart_level_subs_active === 'yes' ) {
-			$cart_level_schemes = get_option( $wcs_prefix . '_subscribe_to_cart_schemes', array() );
-		}
+		$cart_level_schemes      = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
 		if ( empty( $cart_level_schemes ) ) {
 			return false;
@@ -264,5 +368,4 @@ class WCS_ATT_Schemes {
 
 		return $cart_level_schemes;
 	}
-
 }

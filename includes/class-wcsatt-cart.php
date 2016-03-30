@@ -3,29 +3,32 @@
  * Cart functionality for converting cart items to subscriptions.
  *
  * @class 	WCS_ATT_Cart
- * @version 1.0.0
+ * @version 1.0.3
  */
 
 class WCS_ATT_Cart {
 
 	public static function init() {
 
-		// Allow subs to recognize a cart item of any product type as a subscription
+		// Allow subs to recognize a cart item of any product type as a subscription.
 		add_filter( 'woocommerce_is_subscription', __CLASS__ . '::is_converted_to_sub', 10, 3 );
 
-		// Add convert-to-sub configuration data to cart items that can be converted
+		// Add convert-to-sub configuration data to cart items that can be converted.
 		add_filter( 'woocommerce_add_cart_item', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 2 );
 
-		// Load convert-to-sub cart item session data
+		// Load convert-to-sub cart item session data.
 		add_filter( 'woocommerce_get_cart_item_from_session', __CLASS__ . '::load_convert_to_sub_session_data', 5, 2 );
 
-		// Finalize covert-to-sub product-level/cart-level session data
-		add_filter( 'woocommerce_cart_loaded_from_session', __CLASS__ . '::apply_convert_to_sub_session_data', 5 );
+		// Process convert-to-sub product-level/cart-level session data.
+		add_action( 'woocommerce_cart_loaded_from_session', __CLASS__ . '::apply_convert_to_sub_session_data', 5 );
 
-		// Save the convert to sub radio button setting when clicking the 'update cart' button
+		// Process convert-to-sub product-level/cart-level configuration data.
+		add_action( 'woocommerce_add_to_cart', __CLASS__ . '::apply_convert_to_sub_data', 1000, 6 );
+
+		// Save the convert to sub radio button setting when clicking the 'update cart' button.
 		add_filter( 'woocommerce_update_cart_action_cart_updated', __CLASS__ . '::update_convert_to_sub_options', 10 );
 
-		// Save the convert to sub cart-level setting via ajax
+		// Save the convert to sub cart-level setting via ajax.
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ) {
 			add_action( 'wc_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 		} else {
@@ -147,10 +150,15 @@ class WCS_ATT_Cart {
 
 			$cart_item[ 'data' ]->is_converted_to_sub = 'yes';
 
-			$cart_item[ 'data' ]->price                        = $active_subscription_scheme[ 'subscription_price' ];
-			$cart_item[ 'data' ]->sale_price                   = $active_subscription_scheme[ 'subscription_price' ];
-			$cart_item[ 'data' ]->regular_price                = $active_subscription_scheme[ 'subscription_price' ];
-			$cart_item[ 'data' ]->subscription_price           = $active_subscription_scheme[ 'subscription_price' ];
+			$subscription_prices = WCS_ATT_Schemes::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
+
+			if ( ! empty( $subscription_prices ) ) {
+				$cart_item[ 'data' ]->price                    = $subscription_prices[ 'price' ];
+				$cart_item[ 'data' ]->regular_price            = $subscription_prices[ 'regular_price' ];
+				$cart_item[ 'data' ]->sale_price               = $subscription_prices[ 'sale_price' ];
+				$cart_item[ 'data' ]->subscription_price       = $subscription_prices[ 'price' ];
+			}
+
 			$cart_item[ 'data' ]->subscription_period          = $active_subscription_scheme[ 'subscription_period' ];
 			$cart_item[ 'data' ]->subscription_period_interval = $active_subscription_scheme[ 'subscription_period_interval' ];
 			$cart_item[ 'data' ]->subscription_length          = $active_subscription_scheme[ 'subscription_length' ];
@@ -161,6 +169,18 @@ class WCS_ATT_Cart {
 		}
 
 		return $cart_item;
+	}
+
+	/**
+	 * Convert cart items to subscriptions on adding to cart and re-calculate totals.
+	 *
+	 * @return void
+	 */
+	public static function apply_convert_to_sub_data( $item_key, $product_id, $quantity, $variation_id, $variation, $item_data ) {
+
+		self::apply_convert_to_sub_session_data( WC()->cart );
+
+		WC()->cart->calculate_totals();
 	}
 
 	/**

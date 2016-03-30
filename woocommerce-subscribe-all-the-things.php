@@ -11,7 +11,7 @@
 * Domain Path: /languages/
 *
 * Requires at least: 3.8
-* Tested up to: 4.4.1
+* Tested up to: 4.3
 *
 * Copyright: © 2009-2015 Prospress, Inc.
 * License: GNU General Public License v3.0

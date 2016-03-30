@@ -25,7 +25,38 @@ jQuery( function($) {
 		} );
 	};
 
-	// Unused (for now)
+	$.fn.wcsatt_refresh_scheme_lengths = function() {
+
+		var $lengthElement    = $( this ).find( '.wc_input_subscription_length' ),
+			$periodSelector   = $( this ).find( '.wc_input_subscription_period' ),
+			$intervalSelector = $( this ).find( '.wc_input_subscription_period_interval' ),
+			selectedLength    = $lengthElement.val(),
+			billingInterval   = parseInt( $intervalSelector.val() ),
+			hasSelectedLength = false;
+
+		$lengthElement.empty();
+
+		$.each( wcsatt_admin_params.subscription_lengths[ $periodSelector.val() ], function( length, description ) {
+			if ( parseInt( length ) == 0 || 0 == ( parseInt( length ) % billingInterval ) ) {
+				$lengthElement.append( $( '<option></option>' ).attr( 'value',length ).text( description ) );
+			}
+		} );
+
+		$lengthElement.children( 'option' ).each(function(){
+			if ( this.value == selectedLength ) {
+				hasSelectedLength = true;
+				return false;
+			}
+		} );
+
+		if ( hasSelectedLength ) {
+			$lengthElement.val( selectedLength );
+		} else {
+			$lengthElement.val( 0 );
+		}
+	};
+
+	// Cart level settings.
 	if ( wcsatt_admin_params.post_id === '' ) {
 
 		$wcsatt_data_tab.on( 'click', 'h3', function() {
@@ -55,7 +86,19 @@ jQuery( function($) {
 
 	}
 
-	// Hide "default to" option when "force subscription" is checked
+	// Price override method.
+	$wcsatt_schemes.on( 'change', 'select.subscription_pricing_method_input', function() {
+
+		var override_method = $( this ).val();
+
+		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method' ).hide();
+		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method_' + override_method ).show();
+
+	} );
+
+	$wcsatt_schemes.find( 'select.subscription_pricing_method_input' ).change();
+
+	// Hide "default to" option when "force subscription" is checked.
 	$wcsatt_data_tab.find( 'input#_wcsatt_force_subscription' ).on( 'change', function() {
 
 		if ( $( this ).is( ':checked' ) ) {
@@ -66,7 +109,12 @@ jQuery( function($) {
 
 	} ).change();
 
-	// Remove
+	// Update subscription ranges when subscription period or interval is changed.
+	$wcsatt_schemes.on( 'change', '.wc_input_subscription_period', function() {
+		$( this ).closest( '.subscription_scheme' ).wcsatt_refresh_scheme_lengths();
+	} );
+
+	// Remove.
 	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
 
 		var $parent = $( this ).closest( '.subscription_scheme' );
@@ -76,19 +124,19 @@ jQuery( function($) {
 		subscription_schemes_row_indexes();
 	} );
 
-	// Expand
+	// Expand.
 	$wcsatt_data_tab.on( 'click', '.expand_all', function() {
 		$wcsatt_schemes.find( '.wc-metabox > .wc-metabox-content' ).show();
 		return false;
 	} );
 
-	// Close
+	// Close.
 	$wcsatt_data_tab.on( 'click', '.close_all', function() {
 		$wcsatt_schemes.find( '.wc-metabox > .wc-metabox-content' ).hide();
 		return false;
 	} );
 
-	// Add
+	// Add.
 	var subscription_schemes_metabox_count = $wcsatt_data_tab.find( '.wc-metabox' ).length;
 
 	$wcsatt_data_tab.on( 'click', 'button.add_subscription_scheme', function () {
@@ -112,6 +160,8 @@ jQuery( function($) {
 
 			added.wcsatt_scripts();
 
+			added.find( 'select.subscription_pricing_method_input' ).change();
+
 			subscription_schemes_row_indexes();
 
 			$wcsatt_data_tab.unblock();
@@ -122,7 +172,7 @@ jQuery( function($) {
 		return false;
 	} );
 
-	// Init metaboxes
+	// Init metaboxes.
 	init_subscription_schemes_metaboxes();
 
 	function subscription_schemes_row_indexes() {
@@ -133,10 +183,9 @@ jQuery( function($) {
 		} );
 	}
 
-
 	function init_subscription_schemes_metaboxes() {
 
-		// Initial order
+		// Initial order.
 		var subscription_schemes = $wcsatt_schemes.find( '.subscription_scheme' ).get();
 
 		subscription_schemes.sort( function( a, b ) {
@@ -149,7 +198,7 @@ jQuery( function($) {
 			$wcsatt_schemes.append( itm );
 		} );
 
-		// Component ordering
+		// Component ordering.
 		$wcsatt_schemes.sortable( {
 			items:                '.subscription_scheme',
 			cursor:               'move',

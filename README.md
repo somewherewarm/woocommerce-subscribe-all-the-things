@@ -45,7 +45,7 @@ This plugin is released under [GNU General Public License v3.0](http://www.gnu.o
 
 #### Credits
 
-This extension is developed and maintained as a collaboration between the teams at [Prospress](http://prospress.com/) and [Somewhere Warm](http://somewherewarm.net/).
+This extension is developed and maintained as a collaboration between the teams at [Prospress](http://prospress.com/) and [SomewhereWarm](http://somewherewarm.net/).
 
 ---
 
