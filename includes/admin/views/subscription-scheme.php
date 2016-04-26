@@ -1,7 +1,7 @@
 <?php
 /**
  * Admin subscription scheme view.
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 // Exit if accessed directly.
@@ -11,8 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?><div class="subscription_scheme wc-metabox open" rel="<?php echo isset( $scheme_data[ 'position' ] ) ? $scheme_data[ 'position' ] : ''; ?>">
 	<h3>
-		<span class="scheme-title"><?php echo '#' . ( $index + 1 ); ?></span>
-		<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
+		<a href="#" class="button remove_scheme delete" rel="<?php echo isset( $scheme_data[ 'position' ] ) ? $scheme_data[ 'position' ] : ''; ?>"><?php _e( 'Remove', WCS_ATT::TEXT_DOMAIN ); ?></a>
+		<div class="tips handlediv" data-tip="<?php esc_attr_e( 'Click to toggle', WCS_ATT::TEXT_DOMAIN ); ?>"></div>
+		<div class="tips sort" data-tip="<?php esc_attr_e( 'Drag and drop to set the subscription option order', WCS_ATT::TEXT_DOMAIN ); ?>"></div>
+
+		<span class="scheme-title">#<?php echo ( $index + 1 ); ?></span>
 	</h3>
 	<div class="subscription_scheme_data wc-metabox-content"><?php
 

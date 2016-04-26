@@ -215,19 +215,20 @@ class WCS_ATT_Schemes {
 	/**
 	 * Returns all available subscription schemes for displaying single-product options (product-level).
 	 *
+	 * @param $post_id
 	 * @return array
 	 */
-	public static function get_product_subscription_schemes( $product ) {
+	public static function get_product_subscription_schemes( $post_id, $product_type ) {
 
 		$schemes = array();
 
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
-		if ( in_array( $product->product_type, $supported_types ) ) {
+		if ( in_array( $product_type, $supported_types ) ) {
 
 			// Get product-level subscription schemes stored in product meta
 
-			$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
+			$product_schemes = get_post_meta( $post_id, '_wcsatt_schemes', true );
 
 			if ( $product_schemes ) {
 				foreach ( $product_schemes as $scheme ) {
@@ -237,7 +238,7 @@ class WCS_ATT_Schemes {
 			}
 		}
 
-		return apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $product );
+		return apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $post_id );
 	}
 
 	/**

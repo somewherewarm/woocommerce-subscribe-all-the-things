@@ -1,9 +1,9 @@
 <?php
 /*
-* Plugin Name: WooCommerce Subscribe All the Things
+* Plugin Name: WooCommerce Subscribe to All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
-* Description: Experimental extension for linking WooCommerce Subscriptions with product types created by other extensions, like Composites and Bundles.
-* Version: 1.0.3
+* Description: An extension for linking WooCommerce Subscriptions with product types created by other extensions, like Composites and Bundles.
+* Version: 1.0.4
 * Author: Prospress
 * Author URI: http://prospress.com/
 *
@@ -11,7 +11,7 @@
 * Domain Path: /languages/
 *
 * Requires at least: 3.8
-* Tested up to: 4.3
+* Tested up to: 4.5.1
 *
 * Copyright: © 2009-2015 Prospress, Inc.
 * License: GNU General Public License v3.0
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 class WCS_ATT {
 
 	/* plugin version */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 
 	/* required WC version */
 	const REQ_WC_VERSION = '2.3.0';
@@ -144,7 +144,7 @@ class WCS_ATT {
 	 */
 	public function wc_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe to All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -154,7 +154,7 @@ class WCS_ATT {
 	 */
 	public function wcs_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version 2.0+.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe to All the Things requires WooCommerce Subscriptions version 2.0+.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -203,7 +203,7 @@ class WCS_ATT {
 	 */
 	public function get_supported_product_types() {
 
-		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
+		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 
 	/**

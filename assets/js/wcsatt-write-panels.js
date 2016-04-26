@@ -27,7 +27,7 @@ jQuery( function($) {
 
 	$.fn.wcsatt_refresh_scheme_lengths = function() {
 
-		var $lengthElement    = $( this ).find( '.wc_input_subscription_length' ),
+		var $lengthElement  = $( this ).find( '.wc_input_subscription_length' ),
 			$periodSelector   = $( this ).find( '.wc_input_subscription_period' ),
 			$intervalSelector = $( this ).find( '.wc_input_subscription_period_interval' ),
 			selectedLength    = $lengthElement.val(),
@@ -115,13 +115,25 @@ jQuery( function($) {
 	} );
 
 	// Remove.
-	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
+	$wcsatt_data_tab.on( 'click', '.remove_scheme', function(e) {
+		e.preventDefault();
 
 		var $parent = $( this ).closest( '.subscription_scheme' );
 
-		$parent.find('*').off();
-		$parent.remove();
-		subscription_schemes_row_indexes();
+		// Only remove option if confirmed.
+		if ( window.confirm( wcsatt_admin_params.i18n_remove_subscription_scheme ) ) {
+
+			$parent.find('*').off();
+			$parent.remove();
+
+			subscription_schemes_row_indexes();
+
+		} else {
+
+			// Keeps the scheme in it's current open/closed state.
+			return false;
+
+		}
 	} );
 
 	// Expand.

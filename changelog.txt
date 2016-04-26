@@ -1,4 +1,8 @@
-*** WooCommerce Subscribe All the Things ***
+*** WooCommerce Subscribe to All the Things ***
+
+2016.**.** - version 1.0.4
+* Supports - Variable Products. Each variable can have it's own set of subscription scheme. Can also enable all variations as a subscribable product by using the bulk edit action.
+* Improved - User Interface. All fields are now aligned properly. Upon pressing the "Remove" button on a subscription option, the user is now notified with a dialog to confirm.
 
 2016.03.28 - version 1.0.3
  * Feature - Ability to override product prices from subscription options.

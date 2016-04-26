@@ -3,7 +3,7 @@
  * Templating and styling functions.
  *
  * @class 	WCS_ATT_Display
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 class WCS_ATT_Display {
@@ -26,6 +26,41 @@ class WCS_ATT_Display {
 
 		// Add subscription price string info to products with attached subscription schemes
 		add_filter( 'woocommerce_get_price_html',  __CLASS__ . '::filter_price_html', 1000, 2 );
+
+		// Adds the subscription scheme details to the variation form json
+		add_filter( 'woocommerce_available_variation', __CLASS__ . '::add_variation_data', 10, 1 );
+	}
+
+	/**
+	 * Adds the subscription data to the data product variations form json.
+	 *
+	 * @since  1.0.4
+	 * @param  $variations
+	 * @return array
+	 */
+	public static function add_variation_data( $variations ) {
+		$variations[ 'is_subscibable' ] = self::is_subscribable( $variations[ 'variation_id'] );
+		$variations[ 'subscription_schemes' ] = WCS_ATT_Schemes::get_product_subscription_schemes( $variations[ 'variation_id'], 'variation' );
+
+		return $variations;
+	}
+
+	/**
+	 * Checks if the variation is subscribable.
+	 *
+	 * @since  1.0.4
+	 * @access public
+	 * @param  int $post_id
+	 * @return bool
+	 */
+	public static function is_subscribable( $post_id ) {
+		$is_subscribable = get_post_meta( $post_id, '_subscribable', true );
+
+		if ( isset( $is_subscribable ) && $is_subscribable == 'yes' ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -53,7 +88,7 @@ class WCS_ATT_Display {
 	}
 
 	/**
-	 * Displays signle-prouct options for purchasing a product once or creating a subscription from it.
+	 * Displays options for purchasing a single product once or creating a subscription from it.
 	 *
 	 * @return void
 	 */
@@ -61,7 +96,20 @@ class WCS_ATT_Display {
 
 		global $product;
 
-		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		// Check what product type this product is
+		if ( $terms = wp_get_object_terms( $product->id, 'product_type' ) ) {
+			$product_type = sanitize_title( current( $terms )->name );
+		} else {
+			$product_type = 'simple';
+		}
+
+		if ( $product_type == 'simple' ) {
+			$post_id = $product->id;
+		} else {
+			$post_id = $product->children['visible']['0']; // Gets the first enabled variation
+		}
+
+		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $post_id, $product_type );
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 		// Allow one-time purchase option?
@@ -196,7 +244,7 @@ class WCS_ATT_Display {
 		}
 
 		$price_overrides_exist         = WCS_ATT_Schemes::subscription_price_overrides_exist( $subscription_schemes );
-		$reset_product                 = wc_get_product( $cart_item[ 'product_id' ] );
+		$reset_product                 = wc_get_product( $cart_item[ 'product_id' ] ); // Product ID
 		$options                       = array();
 		$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_subscription_scheme_id( $cart_item );
 
@@ -370,11 +418,24 @@ class WCS_ATT_Display {
 	 */
 	public static function filter_price_html( $price, $product ) {
 
+		// Check what product type this product is
+		if ( $terms = wp_get_object_terms( $product->id, 'product_type' ) ) {
+			$product_type = sanitize_title( current( $terms )->name );
+		} else {
+			$product_type = 'simple';
+		}
+
 		if ( self::$bypass_price_html_filter ) {
 			return $price;
 		}
 
-		$subscription_schemes      = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		if ( $product_type == 'simple' ) {
+			$post_id = $product->id;
+		} else {
+			$post_id = $product->children['visible']['0']; // Gets the first enabled variation
+		}
+
+		$subscription_schemes      = WCS_ATT_Schemes::get_product_subscription_schemes( $post_id, $product_type );
 		$has_product_level_schemes = empty( $subscription_schemes ) ? false : true;
 
 		if ( $has_product_level_schemes ) {
