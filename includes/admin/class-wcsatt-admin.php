@@ -117,9 +117,9 @@ class WCS_ATT_Admin {
 						}
 
 					?></div>
-					<!--p class="toolbar">
+					<p class="toolbar">
 						<button type="button" class="button add_subscription_scheme"><?php _e( 'Add Option', WCS_ATT::TEXT_DOMAIN ); ?></button>
-					</p-->
+					</p>
 				</div>
 			</td>
 		</tr><?php
@@ -172,14 +172,6 @@ class WCS_ATT_Admin {
 		if ( empty( $_POST['_wcsnonce_save_variations'] ) || ! wp_verify_nonce( $_POST['_wcsnonce_save_variations'], 'wcs_subscription_variations' ) ) {
 			return;
 		}
-
-		//$variable_product = wc_get_product( absint( $post_id ) );
-
-		//$available_variations = $variable_product->get_available_variations();
-
-		/*foreach ( $available_variations as $variation ) {
-			$variation_id = $variation['variation_id'];
-		}*/
 
 		if ( ! isset( $_REQUEST['variable_post_id'] ) ) {
 			return;
@@ -441,10 +433,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function variable_subscription_scheme( $loop, $index, $scheme_data, $variation_id ) {
-		/*echo '<code>Loop: ' . $loop . '</code>';
-		echo '<code>Index: ' . $index . '</code>';
-		echo '<code>' . var_dump( $scheme_data ) . '</code>';
-		echo '<code>Variation ID: ' . $variation_id . '</code>';*/
 		include( 'views/variable-subscription-scheme.php' );
 	}
 

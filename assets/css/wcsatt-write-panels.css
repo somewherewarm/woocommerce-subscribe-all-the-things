@@ -4,6 +4,10 @@
 	padding-top: 5px;
 }
 
+.wc-metaboxes-wrapper .wc-metabox h3 .handlediv {
+	float: right;
+}
+
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
 	content: '\e00e';
 }
