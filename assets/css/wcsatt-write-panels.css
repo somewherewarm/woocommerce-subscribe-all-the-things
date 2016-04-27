@@ -10,6 +10,7 @@
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
 	content: '\e00e';
+	font-family: WooCommerce;
 }
 
 #woocommerce-product-data .wc-metaboxes-wrapper .woocommerce_variations p._subscription_period_field,
