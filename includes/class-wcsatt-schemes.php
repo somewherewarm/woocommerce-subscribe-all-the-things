@@ -182,7 +182,13 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart-item' ) ) ) {
 
-				$product_id      = $cart_item[ 'product_id' ];
+				// This checks if the item in the cart is a variable product or any other product type.
+				if ( ! empty( $cart_item[ 'variation_id' ] ) ) {
+					$product_id = $cart_item[ 'variation_id' ];
+				} else {
+					$product_id = $cart_item[ 'product_id' ];
+				}
+
 				$product_schemes = get_post_meta( $product_id, '_wcsatt_schemes', true );
 
 				if ( $product_schemes ) {

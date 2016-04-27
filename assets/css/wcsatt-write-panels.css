@@ -190,7 +190,7 @@ p._override_subscription_sale_price_field label {
 #wcsatt_data .subscription_scheme_product_data p.form-field,
 .woocommerce_variable_attributes .subscription_scheme_product_data p.form-field {
 	margin: 1em 0 0 0;
-	padding: 5px 0px 5px 5px !important;
+	padding: 5px 0 5px 5px !important;
 }
 
 #wcsatt_data .subscription_scheme_data:after,
@@ -211,7 +211,7 @@ p._override_subscription_sale_price_field label {
 }*/
 
 .subscription-options p.form-row {
-	padding: 5px 0px;
+	padding: 5px 0;
 }
 
 .subscription-options p.form-row label,
