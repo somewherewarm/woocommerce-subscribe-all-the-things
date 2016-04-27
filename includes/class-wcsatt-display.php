@@ -429,7 +429,7 @@ class WCS_ATT_Display {
 			return $price;
 		}
 
-		if ( $product_type == 'simple' ) {
+		if ( $product_type != 'variable' ) {
 			$post_id = $product->id;
 		} else {
 			$post_id = $product->children['visible']['0']; // Gets the first enabled variation
