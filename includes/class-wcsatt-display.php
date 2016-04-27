@@ -70,21 +70,30 @@ class WCS_ATT_Display {
 	 */
 	public static function frontend_scripts() {
 
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
 		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-frontend.css', false, WCS_ATT::VERSION, 'all' );
 		wp_enqueue_style( 'wcsatt-css' );
 
-		if ( is_cart() ) {
-			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
+		// Product Page
+		if ( is_product() ) {
+			wp_register_script( 'wcsatt-add-to-cart-variation', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-add-to-cart-variation.js', array( 'jquery', 'wc-util' ), WCS_ATT::VERSION, true );
+			wp_enqueue_script( 'wcsatt-add-to-cart-variation' );
 		}
 
-		wp_enqueue_script( 'wcsatt-cart' );
+		// Cart Page
+		if ( is_cart() ) {
+			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart' . $suffix . '.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
+			wp_enqueue_script( 'wcsatt-cart' );
 
-		$params = array(
-			'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
-			'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
-		);
+			$params = array(
+				'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
+				'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+			);
 
-		wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
+			wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
+		}
+
 	}
 
 	/**
@@ -103,11 +112,10 @@ class WCS_ATT_Display {
 			$product_type = 'simple';
 		}
 
-		if ( $product_type != 'variable' ) {
-			$post_id = $product->id;
-		} else {
-			$post_id = $product->children['visible']['0']; // Gets the first enabled variation
-		}
+		// If the product is a variable product then dont display the subscription options
+		if ( $product_type == 'variable' ) return false;
+
+		$post_id = $product->id; // Product ID
 
 		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $post_id, $product_type );
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
