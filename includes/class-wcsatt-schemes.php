@@ -184,7 +184,8 @@ class WCS_ATT_Schemes {
 
 				// This checks if the item in the cart is a variable product or any other product type.
 				if ( ! empty( $cart_item[ 'variation_id' ] ) ) {
-					$product_id = $cart_item[ 'variation_id' ];
+					//$product_id = $cart_item[ 'variation_id' ]; // Parent ID of the Variation in the cart
+					$product_id = $cart_item[ 'data' ]->id; // ID of the variation in the cart
 				} else {
 					$product_id = $cart_item[ 'product_id' ];
 				}
@@ -233,6 +234,13 @@ class WCS_ATT_Schemes {
 		if ( in_array( $product_type, $supported_types ) ) {
 
 			// Get product-level subscription schemes stored in product meta
+
+			// This checks if the item in the cart is a variable product or any other product type.
+			if ( $product_type == 'variable' ) {
+				$post_id = $cart_item[ 'data' ]->id; // ID of the variation in the cart
+			} else {
+				$post_id = $cart_item[ 'product_id' ];
+			}
 
 			$product_schemes = get_post_meta( $post_id, '_wcsatt_schemes', true );
 
