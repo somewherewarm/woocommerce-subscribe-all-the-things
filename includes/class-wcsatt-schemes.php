@@ -182,12 +182,8 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart-item' ) ) ) {
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 				$product_id      = $cart_item[ 'product_id' ];
-=======
-=======
->>>>>>> 866fcf47ca968a6ce4fe301f177f730167f54073
+
 				// This checks if the item in the cart is a variable product or any other product type.
 				if ( ! empty( $cart_item[ 'variation_id' ] ) ) {
 					//$product_id = $cart_item[ 'variation_id' ]; // Parent ID of the Variation in the cart
@@ -196,10 +192,6 @@ class WCS_ATT_Schemes {
 					$product_id = $cart_item[ 'product_id' ];
 				}
 
-<<<<<<< HEAD
->>>>>>> 866fcf4... Passing the correct product id to get the product subscription schemes depending on the product type
-=======
->>>>>>> 866fcf47ca968a6ce4fe301f177f730167f54073
 				$product_schemes = get_post_meta( $product_id, '_wcsatt_schemes', true );
 
 				if ( $product_schemes ) {
