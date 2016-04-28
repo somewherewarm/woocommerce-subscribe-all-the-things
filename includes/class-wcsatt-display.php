@@ -30,8 +30,33 @@ class WCS_ATT_Display {
 		// Add subscription price string info to products with attached subscription schemes
 		add_filter( 'woocommerce_get_price_html',  __CLASS__ . '::filter_price_html', 1000, 2 );
 
+		// Adds the subscription data as hidden fields.
+		add_action( 'woocommerce_before_variations_form', __CLASS__ . '::hidden_variable_fields', 10 );
+
 		// Adds the subscription scheme details to the variation form json
 		add_filter( 'woocommerce_available_variation', __CLASS__ . '::add_variation_data', 10, 1 );
+	}
+
+	/**
+	 * Adds hidden fields for variation products to identify the type of subscription setup.
+	 *
+	 * @since 1.0.4
+	 * @access public
+	 * @global object $product
+	 * @return void
+	 */
+	public static function hidden_variable_fields() {
+		global $product;
+
+		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+		$default_status     = get_post_meta( $product->id, '_wcsatt_default_status', true );
+		$prompt             = get_post_meta( $product->id, '_wcsatt_subscription_prompt', true );
+
+		$hidden = '<input type="hidden" name="force_subscription" value="' . $force_subscription . '" />'
+							.'<input type="hidden" name="default_status" value="' . $default_status . '" />'
+							.'<input type="hidden" name="prompt" value="' . $prompt . '" />';
+
+		echo $hidden;
 	}
 
 	/**
@@ -42,7 +67,7 @@ class WCS_ATT_Display {
 	 * @return array
 	 */
 	public static function add_variation_data( $variations ) {
-		$variations[ 'is_subscibable' ] = self::is_subscribable( $variations[ 'variation_id'] );
+		$variations[ 'is_subscribable' ] = self::is_subscribable( $variations[ 'variation_id'] );
 		$variations[ 'subscription_schemes' ] = WCS_ATT_Schemes::get_product_subscription_schemes( $variations[ 'variation_id'], 'variation' );
 
 		return $variations;
@@ -82,6 +107,12 @@ class WCS_ATT_Display {
 		if ( is_product() ) {
 			wp_register_script( 'wcsatt-add-to-cart-variation', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-add-to-cart-variation' . $suffix . '.js', array( 'jquery', 'wp-util' ), WCS_ATT::VERSION, true );
 			wp_enqueue_script( 'wcsatt-add-to-cart-variation' );
+
+			$params = array(
+				'none' => _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
+			);
+
+			wp_localize_script( 'wcsatt-add-to-cart-variation', 'wcsatt_add_to_cart_variation_params', $params );
 		}
 
 		// Cart Page
