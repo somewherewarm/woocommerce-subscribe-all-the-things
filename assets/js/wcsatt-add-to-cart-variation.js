@@ -14,7 +14,29 @@
 	form.on( 'show_variation', function( event, variation ) {
 		event.preventDefault();
 
-		console.log(variation.subscription_schemes); // Returns the subscription schemes data.
+		$.each ( variation.subscription_schemes, function( key, value ) {
+			var scheme_id          = value.id;
+			var position           = value.position;
+			var discount           = value.subscription_discount;
+			var period             = value.subscription_period;
+			var period_interval    = value.subscription_period_interval;
+			var sub_price          = value.subscription_price;
+			var sub_pricing_method = value.subscription_pricing_method;
+			var sub_regular_price  = value.subscription_regular_price;
+			var sub_sale_price     = value.subscription_sale_price;
+
+			console.log('ID: ' + scheme_id);
+			console.log('Position: ' + position);
+			console.log('Discount: ' + discount);
+			console.log('Period Type: ' + period);
+			console.log('Period Intevral: ' + period_interval);
+			console.log('Subscription Price: ' + sub_price);
+			console.log('Subscription Pricing Method: ' + sub_pricing_method);
+			console.log('Subscription Regular Price: ' + sub_regular_price);
+			console.log('Subscription Sale Price: ' + sub_sale_price);
+
+		} );
+
 	} )
 
 })( jQuery, window, document );
