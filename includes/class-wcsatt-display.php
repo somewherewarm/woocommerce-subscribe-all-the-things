@@ -68,7 +68,10 @@ class WCS_ATT_Display {
 	 */
 	public static function add_variation_data( $variations ) {
 		$variations[ 'is_subscribable' ] = self::is_subscribable( $variations[ 'variation_id'] );
-		$variations[ 'subscription_schemes' ] = WCS_ATT_Schemes::get_product_subscription_schemes( $variations[ 'variation_id'], 'variation' );
+
+		if ( $variations[ 'is_subscribable' ] ) {
+			$variations[ 'subscription_schemes' ] = WCS_ATT_Schemes::get_product_subscription_schemes( $variations[ 'variation_id'], 'variation' );
+		}
 
 		return $variations;
 	}
