@@ -224,7 +224,7 @@ class WCS_ATT_Display {
 	 * @since  1.0.4
 	 * @return void
 	 */
-	public function prepare_convert_to_sub_product_options() {
+	public static function prepare_convert_to_sub_product_options() {
 		echo '<div class="wcsatt-variation-sub-options"></div>';
 	}
 
