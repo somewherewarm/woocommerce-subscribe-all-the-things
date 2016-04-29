@@ -112,7 +112,22 @@ class WCS_ATT_Display {
 			wp_enqueue_script( 'wcsatt-add-to-cart-variation' );
 
 			$params = array(
-				'none' => _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
+				'currency_symbol' => get_woocommerce_currency_symbol(),
+				'currency_pos'    => get_option( 'woocommerce_currency_pos' ),
+				'none'            => _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
+				'every'           => __( 'every', WCS_ATT::TEXT_DOMAIN ),
+				'day'             => __( 'day', WCS_ATT::TEXT_DOMAIN ),
+				'days'            => __( 'days', WCS_ATT::TEXT_DOMAIN ),
+				'week'            => __( 'week', WCS_ATT::TEXT_DOMAIN ),
+				'weeks'           => __( 'weeks', WCS_ATT::TEXT_DOMAIN ),
+				'month'           => __( 'month', WCS_ATT::TEXT_DOMAIN ),
+				'months'          => __( 'months', WCS_ATT::TEXT_DOMAIN ),
+				'year'            => __( 'year', WCS_ATT::TEXT_DOMAIN ),
+				'years'           => __( 'years', WCS_ATT::TEXT_DOMAIN ),
+				'st_interval'     => __( 'th', WCS_ATT::TEXT_DOMAIN ), // e.g. 1st, 21st, 31st
+				'nd_intervals'    => __( 'nd', WCS_ATT::TEXT_DOMAIN ), // e.g. 2nd, 22nd, 32nd
+				'rd_intervals'    => __( 'rd', WCS_ATT::TEXT_DOMAIN ), // e.g. 3rd, 23rd, 33rd
+				'th_intervals'    => __( 'th', WCS_ATT::TEXT_DOMAIN ), // e.g. 4th to 20th, 34th
 			);
 
 			wp_localize_script( 'wcsatt-add-to-cart-variation', 'wcsatt_add_to_cart_variation_params', $params );
