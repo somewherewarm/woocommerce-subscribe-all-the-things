@@ -236,7 +236,7 @@
 
 		var subscription_string = '<span class="subscription-details">';
 
-		if ( subscription_period > 0 ) {
+		if ( subscription_period  ) {
 			if ( subscription_length != billing_interval ) {
 				// Note: If customer is billed more than per interval: "Every 2 months"
 				if ( billing_interval > 1 ) {
