@@ -4,6 +4,7 @@
 			currency_symbol       = wcsatt_add_to_cart_variation_params.currency_symbol,
 			currency_pos          = wcsatt_add_to_cart_variation_params.currency_pos,
 			none                  = wcsatt_add_to_cart_variation_params.none,
+			all_time              = wcsatt_add_to_cart_variation_params.all_time,
 			every                 = wcsatt_add_to_cart_variation_params.every,
 			day                   = wcsatt_add_to_cart_variation_params.day,
 			days                  = wcsatt_add_to_cart_variation_params.days,
@@ -13,7 +14,7 @@
 			months                = wcsatt_add_to_cart_variation_params.months,
 			year                  = wcsatt_add_to_cart_variation_params.year,
 			years                 = wcsatt_add_to_cart_variation_params.years,
-			st_interval           = wcsatt_add_to_cart_variation_params.st_interval,
+			//st_interval           = wcsatt_add_to_cart_variation_params.st_interval,
 			nd_intervals          = wcsatt_add_to_cart_variation_params.nd_intervals,
 			rd_intervals          = wcsatt_add_to_cart_variation_params.rd_intervals,
 			th_intervals          = wcsatt_add_to_cart_variation_params.th_intervals,
@@ -55,13 +56,15 @@
 						checked = true;
 						if ( checked ) {
 							var radio_selected = 'checked="checked" ';
+						} else {
+							var radio_selected = '';
 						}
 					}
 
 					sub_html = sub_html + '<li>'
 						+ '<label>'
 						+ '<input type="radio" name="convert_to_sub_' + product_id + '" value="0" ' + radio_selected + ' /> '
-						+	wcsatt_add_to_cart_variation_params.none
+						+ wcsatt_add_to_cart_variation_params.none
 						+ '</label>'
 					+ '</li>';
 
@@ -103,6 +106,8 @@
 						checked = true;
 						if ( checked ) {
 							var radio_selected = 'checked="checked" ';
+						} else {
+							var radio_selected = '';
 						}
 					}
 
@@ -159,11 +164,10 @@
 
 			case 'inherit':
 			default:
-				var discount_price         = (base_price / 100) * discount; // The base price divided by 100 then times by the discount percentage.
-				console.log('Discount Price: ' + discount_price);
-				var new_subscription_price = subscription_price - discount_price; // NOTE: This is not working. :(
-				subscription_price = new_subscription_price;
-				console.log('New Subscription Price: ' + new_subscription_price);
+				// The base price times 100% minus the discount percentage then divided by 100 and rounded up to a new fixed value.
+				var discount_price = round( base_price * (100 - discount) / 100, wcsatt_add_to_cart_variation_params.price_decimals );
+				subscription_price = discount_price;
+				console.log('New Subscription Price: ' + discount_price);
 
 				break;
 		}
@@ -185,6 +189,26 @@
 	};
 
 	/**
+	 * This rounds up the number for a fixed return value.
+	 *
+	 * @source http://stackoverflow.com/questions/1726630/formatting-a-number-with-exactly-two-decimals-in-javascript
+	 */
+	function round(value) {
+		value = +value;
+
+		if(isNaN(value))
+			return NaN;
+
+		// Shift
+		value = value.toString().split('e');
+		value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + 2) : 2)));
+
+		// Shift back
+		value = value.toString().split('e');
+		return (+(value[0] + 'e' + (value[1] ? (+value[1] - 2) : -2))).toFixed(2);
+	}
+
+	/**
 	 * Returns a string representing the details of the subscription option terms.
 	 *
 	 * For example "Per Month for 3 Months".
@@ -193,6 +217,16 @@
 		var billing_interval    = values.period_interval,
 				billing_period      = values.period,
 				subscription_length = values.sub_length;
+
+		var the_periods = {
+			2 : '2' + nd_intervals,
+			3 : '3' + rd_intervals,
+			4 : '4' + th_intervals,
+			5 : '5' + th_intervals,
+			6 : '6' + th_intervals
+		};
+
+		console.log(the_periods);
 
 		switch (billing_period) {
 			case 'day':
@@ -247,11 +281,11 @@
 					subscription_string += ' / ' + subscription_period;
 					console.log('Example: "Per month"');
 				}
+			} else {
+				// Note: Billing period: e.g. "every week"
+				subscription_string += every + ' ' + subscription_period;
+				console.log('Example: "Every Week"');
 			}
-		} else if ( subscription_period = 0 ) {
-			// Note: Billing period: e.g. "every week"
-			subscription_string += every + ' ' + subscription_period;
-			console.log('Example: "Every Week"');
 		}
 
 		subscription_string += '</span>';
