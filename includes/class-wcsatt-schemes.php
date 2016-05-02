@@ -182,12 +182,10 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart-item' ) ) ) {
 
-				$product_id      = $cart_item[ 'product_id' ];
-
 				// This checks if the item in the cart is a variable product or any other product type.
-				if ( ! empty( $cart_item[ 'variation_id' ] ) ) {
-					//$product_id = $cart_item[ 'variation_id' ]; // Parent ID of the Variation in the cart
-					$product_id = $cart_item[ 'data' ]->id; // ID of the variation in the cart
+				if ( $cart_item[ 'variation_id' ] > 0 ) {
+					$product_id = $cart_item[ 'data' ]->variation_id; // ID of the selected variation in the cart
+
 				} else {
 					$product_id = $cart_item[ 'product_id' ];
 				}

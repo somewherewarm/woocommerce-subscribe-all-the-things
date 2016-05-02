@@ -14,7 +14,7 @@ class WCS_ATT_Cart {
 		add_filter( 'woocommerce_is_subscription', __CLASS__ . '::is_converted_to_sub', 10, 3 );
 
 		// Add convert-to-sub configuration data to cart items that can be converted.
-		add_filter( 'woocommerce_add_cart_item', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 3 );
+		add_filter( 'woocommerce_add_cart_item', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 2 );
 
 		// Load convert-to-sub cart item session data.
 		add_filter( 'woocommerce_get_cart_item_from_session', __CLASS__ . '::load_convert_to_sub_session_data', 5, 2 );
@@ -101,26 +101,23 @@ class WCS_ATT_Cart {
 	 *
 	 * @param array $cart_item
 	 * @param int   $product_id
-	 * @param int   $variation_id
 	 */
-	public static function add_cart_item_convert_to_sub_data( $cart_item, $product_id, $variation_id ) {
+	public static function add_cart_item_convert_to_sub_data( $cart_item, $product_id ) {
 
 		if ( self::is_convertible_to_sub( $cart_item ) ) {
 
 			$posted_subscription_scheme_id = false;
 
-			if ( empty( $variation_id ) || $variation_id == $product_id ) {
-				$product_id = $cart_item[ 'product_id' ];
+			// If the item in the cart has a variation ID higher than zero then it's a variable product.
+			if ( $cart_item[ 'variation_id' ] > 0 ) {
+				$product_id = $cart_item[ 'data' ]->variation_id;
 
-				if ( ! empty( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
-					$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
-				}
 			} else {
-				$variation_id = $cart_item[ 'variation_id' ];
+				$product_id = $cart_item[ 'product_id' ];
+			}
 
-				if ( ! empty( $_POST[ 'convert_to_sub_' . $variation_id ] ) ) {
-					$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $variation_id ] );
-				}
+			if ( ! empty( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
+				$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
 			}
 
 			$cart_item[ 'wccsub_data' ] = array(
@@ -247,7 +244,13 @@ class WCS_ATT_Cart {
 	 */
 	public static function is_convertible_to_sub( $cart_item ) {
 
-		$product_id     = $cart_item[ 'product_id' ];
+		if ( $cart_item[ 'variation_id' ] > 0 ) {
+			$product_id = $cart_item[ 'data' ]->variation_id;
+
+		} else {
+			$product_id = $cart_item[ 'product_id' ];
+		}
+
 		$is_convertible = true;
 
 		if ( WC_Subscriptions_Product::is_subscription( $product_id ) ) {
