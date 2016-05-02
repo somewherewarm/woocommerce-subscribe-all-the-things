@@ -26,9 +26,10 @@
 	v.on( 'show_variation', function( event, variation ) {
 		event.preventDefault();
 
-		var product_id = variation.variation_id,
-				base_price = variation.display_price,
-				checked = false;
+		var product_id     = variation.variation_id,
+				base_price     = variation.display_price,
+				checked        = false,
+				radio_selected = '';
 
 		// Only take action if the variation is subscribable.
 		if ( variation.is_subscribable ) {
@@ -55,9 +56,9 @@
 					if ( force_subscription != 'yes' ) {
 						checked = true;
 						if ( checked ) {
-							var radio_selected = 'checked="checked" ';
+							radio_selected = 'checked="checked" ';
 						} else {
-							var radio_selected = '';
+							radio_selected = '';
 						}
 					}
 
@@ -80,7 +81,8 @@
 							sub_price          = value.subscription_price,
 							sub_pricing_method = value.subscription_pricing_method,
 							sub_regular_price  = value.subscription_regular_price,
-							sub_sale_price     = value.subscription_sale_price;
+							sub_sale_price     = value.subscription_sale_price,
+							radio_selected     = '';
 
 					var data = {
 						'base_price'         : base_price,
@@ -102,12 +104,19 @@
 					// Get the price string for this option
 					var get_price_string = get_sub_option_price_string(data);
 
-					if ( force_subscription == 'yes' && key == 1 ) {
+					if ( force_subscription == 'yes' && key == 0 ) {
 						checked = true;
 						if ( checked ) {
-							var radio_selected = 'checked="checked" ';
+							radio_selected = 'checked="checked" ';
 						} else {
-							var radio_selected = '';
+							radio_selected = '';
+						}
+					} else {
+						if ( key == 0 ) {
+							checked = true;
+							if ( checked ) {
+								radio_selected = 'checked="checked" ';
+							}
 						}
 					}
 
