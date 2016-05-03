@@ -24,9 +24,6 @@ class WCS_ATT_Display {
 		// Display subscription options in the single-product template
 		add_action( 'woocommerce_before_add_to_cart_button',  __CLASS__ . '::convert_to_sub_product_options', 100 );
 
-		// Output a placeholder for the single variation to insert the subscription options.
-		add_action( 'woocommerce_single_variation', __CLASS__ . '::prepare_convert_to_sub_product_options', 10 );
-
 		// Add subscription price string info to products with attached subscription schemes
 		add_filter( 'woocommerce_get_price_html',  __CLASS__ . '::filter_price_html', 1000, 2 );
 
@@ -267,16 +264,6 @@ class WCS_ATT_Display {
 				'prompt'         => $prompt,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
 		}
-	}
-
-	/**
-	 * Output a placeholder for the single variation to insert the subscription options.
-	 *
-	 * @since  1.0.4
-	 * @return void
-	 */
-	public static function prepare_convert_to_sub_product_options() {
-		echo '<div class="wcsatt-variation-sub-options"></div>';
 	}
 
 	/**
