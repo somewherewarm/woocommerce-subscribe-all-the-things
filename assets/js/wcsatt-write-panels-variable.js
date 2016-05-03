@@ -13,8 +13,6 @@ jQuery( function($) {
 			}
 		};
 
-	//var $subscription_schemes_metabox_count = 0; // Start as Zero
-
 	var $wcsatt_schemes = $variations_product_options.closest( '.variation_subscription_schemes' );
 
 	/* ------------------------------------*/
@@ -151,25 +149,21 @@ jQuery( function($) {
 
 		$variations_product_options.block( wcsatt_block_params );
 
-		var $subscription_schemes_metabox_count = $t.parent().parent().find( '.variation_subscription_schemes' ).length;
+		// Counts how many subscription options this variation has.
+		var $sub_options = $t.parent().parent().find( '.variation_subscription_schemes' ).find( '.variation_subscription_scheme' ).size();
 
-		$subscription_schemes_metabox_count++;
-
+		// Returns the variation ID and order.
 		var loop = $.parseJSON($t.attr('data-button'));
-		//var $loop = $( '.woocommerce_variation' ).size();
-
-		var variation_id = loop.variation_id;
 
 		var data = {
 			action:   'wcsatt_add_variation_subscription_scheme',
-			post_id:  variation_id,
+			post_id:  loop.variation_id,
 			loop:     loop.order,
-			index:    $subscription_schemes_metabox_count,
+			index:    $sub_options,
 			security: wcsatt_admin_params.add_subscription_scheme_nonce
 		};
 
 		$.post( wcsatt_admin_params.wc_ajax_url, data, function( response ) {
-			//console.log( response.markup );
 
 			$t.parent().parent().find( '.variation_subscription_schemes' ).append( response.markup );
 
@@ -210,6 +204,8 @@ jQuery( function($) {
 			// Open sale schedule fields when have some sale price date
 			$( '.woocommerce_variation', wrapper ).each( function( index, el ) {
 				var $el = $( el );
+
+				index = ( index + 1 );
 
 				var $subscription_schemes_metabox_count = $el.find( '.wc-metabox' ).length;
 				console.log( 'Number of Subscription Options found for Variation ' + index + ': ' + $subscription_schemes_metabox_count );

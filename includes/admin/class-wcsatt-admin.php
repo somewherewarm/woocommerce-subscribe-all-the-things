@@ -2,7 +2,7 @@
 /**
  * Cart functionality for converting cart items to subscriptions.
  *
- * @class 	WCS_ATT_Admin
+ * @class   WCS_ATT_Admin
  * @version 1.0.4
  */
 
@@ -938,13 +938,7 @@ class WCS_ATT_Admin {
 	 * @param  array $data
 	 */
 	private static function bulk_edit_variations_toggle_subscriptions( $bulk_action, $data, $product_id, $variations ) {
-		echo 'Bulk Action: '. $bulk_action . '<br>';
-		echo 'Data: '. $data . '<br>';
-		echo 'Product ID: ' . $product_id . '<br>';
-		echo 'Variations: <code>'; print_r($variations); echo '</code><br>';
-
 		foreach ( $variations as $variation_id ) {
-			echo 'Variation ID: ' . $variation_id . '<br>';
 
 			$_subscribable   = get_post_meta( $variation_id, '_subscribable', true );
 			$is_subscribable = 'no' === $_subscribable ? 'yes' : 'no';
