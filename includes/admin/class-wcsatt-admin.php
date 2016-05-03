@@ -679,7 +679,7 @@ class WCS_ATT_Admin {
 	public static function ajax_add_subscription_scheme() {
 		check_ajax_referer( 'wcsatt_add_subscription_scheme', 'security' );
 
-		$loop    = isset( $_POST[ 'loop'] ) ? intval( $_POST[ 'loop'] ) : '0';
+		$loop    = isset( $_POST[ 'loop'] ) ? intval( $_POST[ 'loop'] ) : '';
 		$index   = intval( $_POST[ 'index' ] );
 		$post_id = ! empty( $_POST[ 'post_id' ] ) ? intval( $_POST[ 'post_id' ] ) : '';
 
