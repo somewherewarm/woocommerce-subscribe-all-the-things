@@ -2,8 +2,8 @@
 /**
  * Loading and filtering of subscription scheme settings.
  *
- * @class 	WCS_ATT_Schemes
- * @version 1.0.0
+ * @class   WCS_ATT_Schemes
+ * @version 1.0.4
  */
 
 class WCS_ATT_Schemes {
