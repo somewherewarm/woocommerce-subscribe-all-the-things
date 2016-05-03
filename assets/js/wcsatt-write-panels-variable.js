@@ -1,6 +1,5 @@
 /* global wcsatt_admin_params */
 jQuery( function($) {
-
 	"use strict";
 
 	var wrapper                     = $( '#woocommerce-product-data' );
@@ -30,7 +29,6 @@ jQuery( function($) {
 	};
 
 	$.fn.wcsatt_refresh_scheme_lengths = function() {
-
 		var $lengthElement  = $( this ).find( '.wc_input_subscription_length' ),
 			$periodSelector   = $( this ).find( '.wc_input_subscription_period' ),
 			$intervalSelector = $( this ).find( '.wc_input_subscription_period_interval' ),
@@ -62,9 +60,7 @@ jQuery( function($) {
 
 	// Cart level settings.
 	if ( wcsatt_admin_params.post_id === '' ) {
-
 		$variations_product_options.on( 'click', 'h3', function() {
-
 			var p = $( this ).closest( '.wc-metabox' );
 			var c = p.find( '.wc-metabox-content' );
 
@@ -75,11 +71,9 @@ jQuery( function($) {
 			}
 
 			p.toggleClass( 'closed' );
-
 		} );
 
 		$variations_product_options.find( '.wc-metabox' ).each( function() {
-
 			var p = $( this );
 			var c = p.find( '.wc-metabox-content' );
 
@@ -87,7 +81,6 @@ jQuery( function($) {
 				c.hide();
 			}
 		} );
-
 	}
 
 	/**
@@ -103,12 +96,10 @@ jQuery( function($) {
 
 	// Price override method.
 	$variations_product_options.on( 'change', 'select.subscription_pricing_method_input', function() {
-
 		var override_method = $( this ).val();
 
 		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method' ).hide();
 		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method_' + override_method ).show();
-
 	} );
 
 	$variations_product_options.find( 'select.subscription_pricing_method_input' ).change();
@@ -128,17 +119,13 @@ jQuery( function($) {
 
 		// Only remove option if confirmed.
 		if ( window.confirm( wcsatt_admin_params.i18n_remove_subscription_scheme ) ) {
-
 			$parent.find('*').off();
 			$parent.remove();
 
 			variable_subscription_schemes_row_indexes();
-
 		} else {
-
 			// Keeps the scheme in it's current open/closed state.
 			return false;
-
 		}
 
 	} );
@@ -156,7 +143,7 @@ jQuery( function($) {
 		var loop = $.parseJSON($t.attr('data-button'));
 
 		var data = {
-			action:   'wcsatt_add_variation_subscription_scheme',
+			action:   'wcsatt_add_subscription_scheme',
 			post_id:  loop.variation_id,
 			loop:     loop.order,
 			index:    $sub_options,
@@ -164,7 +151,6 @@ jQuery( function($) {
 		};
 
 		$.post( wcsatt_admin_params.wc_ajax_url, data, function( response ) {
-
 			$t.parent().parent().find( '.variation_subscription_schemes' ).append( response.markup );
 
 			var added = $variations_product_options.find( '.variation_subscription_scheme' ).last();
@@ -242,9 +228,7 @@ jQuery( function($) {
 						variable_subscription_schemes_row_indexes();
 					}
 				} );
-
 			});
-
 		}
 	});
 
@@ -258,7 +242,6 @@ jQuery( function($) {
 	}
 
 	function init_variation_subscription_schemes_metaboxes() {
-
 		// Initial order.
 		var subscription_schemes = $wcsatt_schemes.find( '.variation_subscription_scheme' ).each( function( index, el ) {
 			var $el = $( el );

@@ -14,7 +14,6 @@
 			months                = wcsatt_add_to_cart_variation_params.months,
 			year                  = wcsatt_add_to_cart_variation_params.year,
 			years                 = wcsatt_add_to_cart_variation_params.years,
-			//st_interval           = wcsatt_add_to_cart_variation_params.st_interval,
 			nd_intervals          = wcsatt_add_to_cart_variation_params.nd_intervals,
 			rd_intervals          = wcsatt_add_to_cart_variation_params.rd_intervals,
 			th_intervals          = wcsatt_add_to_cart_variation_params.th_intervals,
@@ -48,8 +47,6 @@
 
 			// Checks that this selected variation has subscription schemes.
 			if ( variation.subscription_schemes.length > 0 ) {
-
-				console.log(variation.subscription_schemes);
 
 				var sub_html = '<h3>' + prompt + '</h3>'
 				+ '<ul class="wcsatt-convert-product">';
@@ -108,8 +105,6 @@
 						'sub_regular_price'  : sub_regular_price,
 						'sub_sale_price'     : sub_sale_price
 					};
-
-					console.log(data);
 
 					// Get the price for this option
 					var get_price = get_sub_option_price(data);
@@ -176,11 +171,9 @@
 				// If the sale price is available and does match the subscription price.
 				if ( sub_sale_price && sub_sale_price == subscription_price ) {
 					subscription_price = sub_sale_price;
-					console.log('Price is on for sale');
 				} else if ( sub_regular_price && sub_regular_price == subscription_price ) {
 					// If the regular price is available and does match the subscription price.
 					subscription_price = sub_regular_price;
-					console.log('Price is regular');
 				}
 
 				break;
@@ -190,22 +183,17 @@
 				// The regular price times divided by 100 times the discount and rounded up to a new fixed value.
 				var discount_price = round( regular_price / 100 * discount, wcsatt_add_to_cart_variation_params.price_decimals );
 				subscription_price = round( regular_price - discount_price, wcsatt_add_to_cart_variation_params.price_decimals );
-				console.log('New Subscription Price: ' + subscription_price);
 
 				break;
 		}
 
 		price = subscription_price; // Update the price.
 
-		console.log('Subscription Price: ' + price);
-
 		// Where does the currency symbol go? Before or After the price
 		if ( currency_pos = 'left' ) {
 			price = currency_symbol + price;
-			console.log('Price before Currency Symbol');
 		} else if ( currency_pos = 'right' ) {
 			price = price + currency_symbol;
-			console.log('Price after Currency Symbol');
 		}
 
 		return '<ins><span class="amount">' + price + '</span></ins> ';
@@ -289,8 +277,6 @@
 				break;
 		}
 
-		console.log( 'Billing Period: For ' + billing_interval + ' ' + subscription_period );
-
 		var subscription_string = '<span class="subscription-details">';
 
 		if ( subscription_period  ) {
@@ -298,16 +284,13 @@
 				// Note: If customer is billed more than per interval: "Every 2 months"
 				if ( billing_interval > 1 ) {
 					subscription_string += every + ' ' + billing_interval + ' ' + subscription_period;
-					console.log('Example: "Every 2 months"');
 				} else {
 					// Note: If customer is billed each period: "Per month"
 					subscription_string += ' / ' + subscription_period;
-					console.log('Example: "Per month"');
 				}
 			} else {
 				// Note: Billing period: e.g. "every week"
 				subscription_string += every + ' ' + subscription_period;
-				console.log('Example: "Every Week"');
 			}
 		}
 

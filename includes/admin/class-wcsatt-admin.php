@@ -16,9 +16,6 @@ class WCS_ATT_Admin {
 		// Ajax add subscription scheme
 		add_action( 'wp_ajax_wcsatt_add_subscription_scheme', __CLASS__ . '::ajax_add_subscription_scheme' );
 
-		// Ajax add subscription scheme for a variation
-		add_action( 'wp_ajax_wcsatt_add_variation_subscription_scheme', __CLASS__ . '::ajax_add_variation_subscription_scheme' );
-
 		// Subscription scheme markup added on the 'wcsatt_subscription_scheme' action
 		add_action( 'wcsatt_subscription_scheme',  __CLASS__ . '::subscription_scheme', 10, 3 );
 
@@ -66,7 +63,6 @@ class WCS_ATT_Admin {
 		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta' );
 
 		// Processes and saves the necessary post meta for a variable product
-		//add_action( 'woocommerce_save_product_variation', __CLASS__ . '::process_variable_meta' );
 		add_action( 'woocommerce_ajax_save_product_variations', __CLASS__ . '::process_variable_meta', 10, 1 );
 
 		/**
@@ -90,7 +86,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function subscription_schemes_content( $values ) {
-
 		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array(
 			// Default to "every month" scheme
 			array(
@@ -101,7 +96,6 @@ class WCS_ATT_Admin {
 				'position'                     => 0,
 			)
 		) );
-
 		?><tr valign="top">
 			<th scope="row" class="titledesc"><?php echo esc_html( $values['title'] ) ?></th>
 			<td class="forminp forminp-subscription_schemes_metaboxes">
@@ -132,7 +126,6 @@ class WCS_ATT_Admin {
 	 * @return array
 	 */
 	public static function cart_level_admin_settings( $settings ) {
-
 		// Insert before miscellaneous settings
 		$misc_section_start = wp_list_filter( $settings, array( 'id' => 'woocommerce_subscriptions_miscellaneous', 'type' => 'title' ) );
 
@@ -143,14 +136,12 @@ class WCS_ATT_Admin {
 				'desc' => '',
 				'id'   => 'wcsatt_subscribe_to_cart_options',
 			),
-
 			array(
 				'name' => __( 'Subscribe to Cart Options', WCS_ATT::TEXT_DOMAIN ),
 				'desc' => __( 'Offer customers the following options for subscribing to the contents of their cart.', WCS_ATT::TEXT_DOMAIN ),
 				'id'   => 'wcsatt_subscribe_to_cart_schemes',
 				'type' => 'subscription_schemes',
 			),
-
 			array(
 				'type' => 'sectionend',
 				'id'   => 'wcsatt_subscribe_to_cart_options',
@@ -278,9 +269,7 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function process_product_meta( $post_id ) {
-
-		// Get type.
-		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) );
+		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) ); // Get product type.
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product_type, $supported_types ) ) {
@@ -353,19 +342,16 @@ class WCS_ATT_Admin {
 			}
 
 			// Save default status
-
 			if ( isset( $_POST[ '_wcsatt_default_status' ] ) ) {
 				update_post_meta( $post_id, '_wcsatt_default_status', stripslashes( $_POST[ '_wcsatt_default_status' ] ) );
 			}
 
 			// Save one-time status
-
 			$force_subscription = isset( $_POST[ '_wcsatt_force_subscription' ] ) ? 'yes' : 'no';
 
 			update_post_meta( $post_id, '_wcsatt_force_subscription', $force_subscription );
 
 			// Save prompt
-
 			if ( ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ) {
 				$prompt = wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) );
 				update_post_meta( $post_id, '_wcsatt_subscription_prompt', $prompt );
@@ -374,7 +360,6 @@ class WCS_ATT_Admin {
 			}
 
 		} else {
-
 			delete_post_meta( $post_id, '_wcsatt_schemes' );
 			delete_post_meta( $post_id, '_wcsatt_force_subscription' );
 			delete_post_meta( $post_id, '_wcsatt_default_status' );
@@ -389,7 +374,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function save_cart_level_settings() {
-
 		if ( isset( $_POST[ 'wcsatt_schemes' ] ) ) {
 			$posted_schemes = $_POST[ 'wcsatt_schemes' ];
 		} else {
@@ -400,7 +384,6 @@ class WCS_ATT_Admin {
 		$unique_schemes = array();
 
 		foreach ( $posted_schemes as $posted_scheme ) {
-
 			// Construct scheme id.
 			$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
 
@@ -445,7 +428,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function subscription_scheme_content( $index, $scheme_data, $post_id ) {
-
 		global $thepostid;
 
 		if ( empty( $thepostid ) ) {
@@ -472,7 +454,6 @@ class WCS_ATT_Admin {
 			'name'    => 'wcsatt_schemes[' . $index . '][subscription_period_interval]'
 			)
 		);
-
 		// Billing Period
 		woocommerce_wp_select( array(
 			'id'          => '_subscription_period',
@@ -484,7 +465,6 @@ class WCS_ATT_Admin {
 			'name'        => 'wcsatt_schemes[' . $index . '][subscription_period]'
 			)
 		);
-
 		// Subscription Length
 		woocommerce_wp_select( array(
 			'id'      => '_subscription_length',
@@ -507,7 +487,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function variable_subscription_scheme_content( $loop, $index, $scheme_data, $variable_id ) {
-
 		if ( ! empty( $scheme_data ) ) {
 			$subscription_period          = $scheme_data[ 'subscription_period' ];
 			$subscription_period_interval = $scheme_data[ 'subscription_period_interval' ];
@@ -528,7 +507,6 @@ class WCS_ATT_Admin {
 			'name'    => 'wcsatt_schemes[' . $loop . '][' . $index . '][subscription_period_interval]'
 			)
 		);
-
 		// Billing Period
 		woocommerce_wp_select( array(
 			'id'          => '_subscription_period',
@@ -540,7 +518,6 @@ class WCS_ATT_Admin {
 			'name'        => 'wcsatt_schemes[' . $loop . '][' . $index . '][subscription_period]'
 			)
 		);
-
 		// Subscription Length
 		woocommerce_wp_select( array(
 			'id'      => '_subscription_length',
@@ -562,7 +539,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function subscription_scheme_product_content( $index, $scheme_data, $post_id ) {
-
 		if ( ! empty( $scheme_data ) ) {
 			$subscription_pricing_method = ! empty( $scheme_data[ 'subscription_pricing_method' ] ) ? $scheme_data[ 'subscription_pricing_method' ] : 'inherit';
 			$subscription_regular_price  = isset( $scheme_data[ 'subscription_regular_price' ] ) ? $scheme_data[ 'subscription_regular_price' ] : '';
@@ -588,7 +564,6 @@ class WCS_ATT_Admin {
 			'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method]'
 			)
 		);
-
 		?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
 			// Price.
 			woocommerce_wp_text_input( array(
@@ -635,7 +610,6 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function variable_subscription_scheme_product_content( $loop, $index, $scheme_data, $variable_id ) {
-
 		if ( ! empty( $scheme_data ) ) {
 			$subscription_pricing_method = ! empty( $scheme_data[ 'subscription_pricing_method' ] ) ? $scheme_data[ 'subscription_pricing_method' ] : 'inherit';
 			$subscription_regular_price  = isset( $scheme_data[ 'subscription_regular_price' ] ) ? $scheme_data[ 'subscription_regular_price' ] : '';
@@ -661,7 +635,6 @@ class WCS_ATT_Admin {
 			'name'    => 'wcsatt_schemes[' . $loop . '][' . $index . '][subscription_pricing_method]'
 			)
 		);
-
 		?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
 			// Price.
 			woocommerce_wp_text_input( array(
@@ -704,23 +677,22 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function ajax_add_subscription_scheme() {
-
 		check_ajax_referer( 'wcsatt_add_subscription_scheme', 'security' );
 
+		$loop    = isset( $_POST[ 'loop'] ) ? intval( $_POST[ 'loop'] ) : '0';
 		$index   = intval( $_POST[ 'index' ] );
-		$post_id = intval( $_POST[ 'post_id' ] );
+		$post_id = ! empty( $_POST[ 'post_id' ] ) ? intval( $_POST[ 'post_id' ] ) : '';
 
 		ob_start();
 
 		if ( $index >= 0 ) {
-
 			$result = 'success';
 
-			if ( empty( $post_id ) ) {
-				$post_id = '';
+			if ( $loop >= '0' ) {
+				do_action( 'wcsatt_variable_subscription_scheme', $loop, $index, array(), $post_id );
+			} else {
+				do_action( 'wcsatt_subscription_scheme', $index, array(), $post_id );
 			}
-
-			do_action( 'wcsatt_subscription_scheme', $index, array(), $post_id );
 
 		} else {
 			$result = 'failure';
@@ -736,49 +708,6 @@ class WCS_ATT_Admin {
 		) );
 
 		die();
-
-	}
-
-	/**
-	 * Add subscription schemes via ajax for a variation.
-	 *
-	 * @return void
-	 */
-	public static function ajax_add_variation_subscription_scheme() {
-
-		check_ajax_referer( 'wcsatt_add_subscription_scheme', 'security' );
-
-		$loop    = intval( $_POST[ 'loop'] );
-		$index   = intval( $_POST[ 'index' ] );
-		$post_id = intval( $_POST[ 'post_id' ] );
-
-		ob_start();
-
-		if ( $index >= 0 ) {
-
-			$result = 'success';
-
-			if ( empty( $post_id ) ) {
-				$post_id = '';
-			}
-
-			do_action( 'wcsatt_variable_subscription_scheme', $loop, $index, array(), $post_id );
-
-		} else {
-			$result = 'failure';
-		}
-
-		$output = ob_get_clean();
-
-		header( 'Content-Type: application/json; charset=utf-8' );
-
-		echo json_encode( array(
-			'result' => $result,
-			'markup' => $output
-		) );
-
-		die();
-
 	}
 
 	/**

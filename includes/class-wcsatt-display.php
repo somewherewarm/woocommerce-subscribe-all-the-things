@@ -11,7 +11,6 @@ class WCS_ATT_Display {
 	public static $bypass_price_html_filter = false;
 
 	public static function init() {
-
 		// Enqueue scripts and styles
 		add_action( 'wp_enqueue_scripts', __CLASS__ . '::frontend_scripts' );
 
@@ -97,7 +96,6 @@ class WCS_ATT_Display {
 	 * @return void
 	 */
 	public static function frontend_scripts() {
-
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-frontend' . $suffix . '.css', false, WCS_ATT::VERSION, 'all' );
@@ -123,7 +121,6 @@ class WCS_ATT_Display {
 				'months'          => __( 'months', WCS_ATT::TEXT_DOMAIN ),
 				'year'            => __( 'year', WCS_ATT::TEXT_DOMAIN ),
 				'years'           => __( 'years', WCS_ATT::TEXT_DOMAIN ),
-				//'st_interval'     => __( 'th', WCS_ATT::TEXT_DOMAIN ), // e.g. 1st
 				'nd_intervals'    => __( 'nd', WCS_ATT::TEXT_DOMAIN ), // e.g. 2nd
 				'rd_intervals'    => __( 'rd', WCS_ATT::TEXT_DOMAIN ), // e.g. 3rd
 				'th_intervals'    => __( 'th', WCS_ATT::TEXT_DOMAIN ), // e.g. 4th, 5th, 6th
@@ -144,7 +141,6 @@ class WCS_ATT_Display {
 
 			wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
 		}
-
 	}
 
 	/**
@@ -153,7 +149,6 @@ class WCS_ATT_Display {
 	 * @return void
 	 */
 	public static function convert_to_sub_product_options() {
-
 		global $product;
 
 		// Check what product type this product is
@@ -275,7 +270,6 @@ class WCS_ATT_Display {
 	 * @return string
 	 */
 	public static function convert_to_sub_cart_item_options( $price, $cart_item, $cart_item_key ) {
-
 		$subscription_schemes        = WCS_ATT_Schemes::get_cart_item_subscription_schemes( $cart_item );
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
@@ -424,10 +418,8 @@ class WCS_ATT_Display {
 	 * @return void
 	 */
 	public static function show_subscribe_to_cart_prompt() {
-
 		// Show cart/order level options only if all cart items share a common cart/order level subscription scheme.
 		if ( $subscription_schemes = WCS_ATT_Schemes::get_cart_subscription_schemes() ) {
-
 			?>
 			<h2><?php _e( 'Cart Subscription', WCS_ATT::TEXT_DOMAIN ); ?></h2>
 			<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></p>
@@ -483,7 +475,6 @@ class WCS_ATT_Display {
 	 * @return string
 	 */
 	public static function filter_price_html( $price, $product ) {
-
 		// Check what product type this product is
 		if ( $terms = wp_get_object_terms( $product->id, 'product_type' ) ) {
 			$product_type = sanitize_title( current( $terms )->name );
