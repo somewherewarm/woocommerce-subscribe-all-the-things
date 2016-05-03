@@ -20,19 +20,31 @@
 			th_intervals          = wcsatt_add_to_cart_variation_params.th_intervals,
 			force_subscription    = $( 'input[name=force_subscription]' ).val(),
 			default_status        = $( 'input[name=default_status]' ).val(),
-			prompt                = $( 'input[name=prompt]' ).val();
+			prompt                = $( 'input[name=prompt]' ).val(),
+			product               = $( 'body.single-product' ).find( '.product' ),
+			load_schemes          = false;
+
+	v.on('load', function( event ) {
+		event.preventDefault();
+
+		// If the product type is a bundle product then don't load the subscription schemes.
+		if ( ! product.hasClass('product-type-bundle') ) {
+			load_schemes = true;
+		}
+	} );
 
 	// When the variation is revealed
 	v.on( 'show_variation', function( event, variation ) {
 		event.preventDefault();
 
 		var product_id     = variation.variation_id,
-				base_price     = variation.display_price,
+				current_price  = variation.display_price,
+				regular_price  = variation.display_regular_price,
 				checked        = false,
 				radio_selected = '';
 
-		// Only take action if the variation is subscribable.
-		if ( variation.is_subscribable ) {
+		// Only take action if the variation is subscribable and we are allowed to load the schemes.
+		if ( variation.is_subscribable && load_schemes ) {
 
 			// Checks that this selected variation has subscription schemes.
 			if ( variation.subscription_schemes.length > 0 ) {
@@ -85,7 +97,8 @@
 							radio_selected     = '';
 
 					var data = {
-						'base_price'         : base_price,
+						'current_price'      : current_price,
+						'regular_price'      : regular_price,
 						'discount'           : discount,
 						'period'             : period,
 						'period_interval'    : period_interval,
@@ -124,7 +137,7 @@
 					sub_html = sub_html + '<li>'
 						+ '<label>'
 						+ '<input type="radio" name="convert_to_sub_' + product_id + '" value="' + scheme_id + '" ' + radio_selected + ' /> '
-						+ '<del><span class="amount">' + base_price + '</span></del> ' // Original Display Price
+						+ '<del><span class="amount">' + current_price + '</span></del> ' // Original Display Price
 						+ get_price
 						+ get_price_string
 						+ '</label>'
@@ -147,25 +160,26 @@
 	 * Returns the price for the subscription option.
 	 */
 	function get_sub_option_price( values ) {
-		var base_price          = values.base_price, // The current base price of the product.
+		var current_price       = values.current_price, // The current price of the product.
+				regular_price       = values.regular_price, // The regular price of the product.
 				subscription_price  = values.sub_price, // This is empty if the pricing method is set to inherit the base price.
 				pricing_method      = values.sub_pricing_method, // Inherit or Override
 				discount            = values.discount, // Percentage of the discount based on the base price.
-				regular_price       = values.sub_regular_price, // Subscription Regular Price.
-				sale_price          = values.sub_sale_price; // Subscription Sale Price.
+				sub_regular_price   = values.sub_regular_price, // Subscription Regular Price.
+				sub_sale_price      = values.sub_sale_price; // Subscription Sale Price.
 
 		var price = '';
 
 		// Identify the pricing method to determin the subscription option price.
 		switch( pricing_method ) {
 			case 'override':
-				// If the sale price is available and does not match the subscription price.
-				if ( sale_price && sale_price != subscription_price ) {
-					subscription_price = sale_price;
+				// If the sale price is available and does match the subscription price.
+				if ( sub_sale_price && sub_sale_price == subscription_price ) {
+					subscription_price = sub_sale_price;
 					console.log('Price is on for sale');
-				} else if ( regular_price && regular_price != subscription_price ) {
-					// If the regular price is available and does not match the subscription price.
-					subscription_price = regular_price;
+				} else if ( sub_regular_price && sub_regular_price == subscription_price ) {
+					// If the regular price is available and does match the subscription price.
+					subscription_price = sub_regular_price;
 					console.log('Price is regular');
 				}
 
@@ -173,10 +187,10 @@
 
 			case 'inherit':
 			default:
-				// The base price times 100% minus the discount percentage then divided by 100 and rounded up to a new fixed value.
-				var discount_price = round( base_price * (100 - discount) / 100, wcsatt_add_to_cart_variation_params.price_decimals );
-				subscription_price = discount_price;
-				console.log('New Subscription Price: ' + discount_price);
+				// The regular price times divided by 100 times the discount and rounded up to a new fixed value.
+				var discount_price = round( regular_price / 100 * discount, wcsatt_add_to_cart_variation_params.price_decimals );
+				subscription_price = round( regular_price - discount_price, wcsatt_add_to_cart_variation_params.price_decimals );
+				console.log('New Subscription Price: ' + subscription_price);
 
 				break;
 		}
