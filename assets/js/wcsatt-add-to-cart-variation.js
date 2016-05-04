@@ -91,7 +91,8 @@
 							sub_pricing_method = value.subscription_pricing_method,
 							sub_regular_price  = value.subscription_regular_price,
 							sub_sale_price     = value.subscription_sale_price,
-							radio_selected     = '';
+							radio_selected     = '',
+							previous_preice    = '';
 
 					var data = {
 						'current_price'      : current_price,
@@ -128,11 +129,18 @@
 						}
 					}
 
+					// Where does the currency symbol go? Before or After the price
+					if ( currency_pos == 'left' ) {
+						previous_price = currency_symbol + current_price;
+					} else if ( currency_pos == 'right' ) {
+						previous_price = current_price + currency_symbol;
+					}
+
 					// Create new option
 					sub_html = sub_html + '<li>'
 						+ '<label>'
 						+ '<input type="radio" name="convert_to_sub_' + product_id + '" value="' + scheme_id + '" ' + radio_selected + ' /> '
-						+ '<del><span class="amount">' + current_price + '</span></del> ' // Original Display Price
+						+ '<del><span class="amount">' + previous_price + '</span></del> ' // Original Display Price
 						+ get_price
 						+ get_price_string
 						+ '</label>'
@@ -190,9 +198,9 @@
 		price = subscription_price; // Update the price.
 
 		// Where does the currency symbol go? Before or After the price
-		if ( currency_pos = 'left' ) {
+		if ( currency_pos == 'left' ) {
 			price = currency_symbol + price;
-		} else if ( currency_pos = 'right' ) {
+		} else if ( currency_pos == 'right' ) {
 			price = price + currency_symbol;
 		}
 
@@ -236,8 +244,6 @@
 			5 : '5' + th_intervals,
 			6 : '6' + th_intervals
 		};
-
-		console.log(the_periods);
 
 		switch (billing_period) {
 			case 'day':
