@@ -92,7 +92,7 @@
 							sub_regular_price  = value.subscription_regular_price,
 							sub_sale_price     = value.subscription_sale_price,
 							radio_selected     = '',
-							previous_preice    = '';
+							previous_price     = '';
 
 					var data = {
 						'current_price'      : current_price,
