@@ -888,27 +888,9 @@ class WCS_ATT_Admin {
 	public static function variable_is_subscribable( $loop, $variation_data, $variation ) {
 		?>
 		<label>
-			<input type="checkbox" class="checkbox variable_is_subscribable" name="variable_is_subscribable[<?php echo $loop; ?>]" <?php checked( self::is_subscribable( $variation->ID ), 1 ); ?> /> <?php _e( 'Subscribable', WCS_ATT::TEXT_DOMAIN ); ?> <?php echo wc_help_tip( __( 'Enable this option if this variable is a subscribable variation', WCS_ATT::TEXT_DOMAIN ) ); ?>
+			<input type="checkbox" class="checkbox variable_is_subscribable" name="variable_is_subscribable[<?php echo $loop; ?>]" <?php checked( WCS_ATT_Schemes::is_subscribable( $variation->ID ), 1 ); ?> /> <?php _e( 'Subscribable', WCS_ATT::TEXT_DOMAIN ); ?> <?php echo wc_help_tip( __( 'Enable this option if this variable is a subscribable variation', WCS_ATT::TEXT_DOMAIN ) ); ?>
 		</label>
 		<?php
-	}
-
-	/**
-	 * Checks if a product is subscribable.
-	 *
-	 * @since  1.0.4
-	 * @access public
-	 * @param  int $post_id
-	 * @return bool
-	 */
-	public static function is_subscribable( $post_id ) {
-		$is_subscribable = get_post_meta( $post_id, '_subscribable', true );
-
-		if ( isset( $is_subscribable ) && $is_subscribable == 'yes' ) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**

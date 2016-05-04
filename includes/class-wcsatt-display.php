@@ -63,31 +63,13 @@ class WCS_ATT_Display {
 	 * @return array
 	 */
 	public static function add_variation_data( $variations ) {
-		$variations[ 'is_subscribable' ] = self::is_subscribable( $variations[ 'variation_id'] );
+		$variations[ 'is_subscribable' ] = WCS_ATT_Schemes::is_subscribable( $variations[ 'variation_id'] );
 
 		if ( $variations[ 'is_subscribable' ] ) {
 			$variations[ 'subscription_schemes' ] = WCS_ATT_Schemes::get_product_subscription_schemes( $variations[ 'variation_id'], 'variation' );
 		}
 
 		return $variations;
-	}
-
-	/**
-	 * Checks if the variation is subscribable.
-	 *
-	 * @since  1.0.4
-	 * @access public
-	 * @param  int $post_id
-	 * @return bool
-	 */
-	public static function is_subscribable( $post_id ) {
-		$is_subscribable = get_post_meta( $post_id, '_subscribable', true );
-
-		if ( isset( $is_subscribable ) && $is_subscribable == 'yes' ) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
