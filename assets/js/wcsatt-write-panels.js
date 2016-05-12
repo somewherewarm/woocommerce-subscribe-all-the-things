@@ -17,7 +17,7 @@ jQuery( function($) {
 
 	$.fn.wcsatt_scripts = function() {
 
-		$( this ).find( '.help_tip, .tips' ).tipTip( {
+		$( this ).find( '.help_tip, .tips, .woocommerce-help-tip' ).tipTip( {
 			'attribute': 'data-tip',
 			'fadeIn':    50,
 			'fadeOut':   50,
