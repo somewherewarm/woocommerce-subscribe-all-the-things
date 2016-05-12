@@ -1,9 +1,9 @@
 <?php
 /*
-* Plugin Name: WooCommerce Subscribe All the Things
+* Plugin Name: WooCommerce Subscribe to All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
-* Description: Experimental extension for linking WooCommerce Subscriptions with product types created by other extensions, like Composites and Bundles.
-* Version: 1.0.3
+* Description: An extension for linking WooCommerce Subscriptions with product types created by other extensions, like Composites and Bundles.
+* Version: 1.0.4
 * Author: Prospress
 * Author URI: http://prospress.com/
 *
@@ -11,7 +11,7 @@
 * Domain Path: /languages/
 *
 * Requires at least: 3.8
-* Tested up to: 4.3
+* Tested up to: 4.5.2
 *
 * Copyright: © 2009-2015 Prospress, Inc.
 * License: GNU General Public License v3.0
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 class WCS_ATT {
 
 	/* plugin version */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 
 	/* required WC version */
 	const REQ_WC_VERSION = '2.3.0';
@@ -82,7 +82,6 @@ class WCS_ATT {
 	 * Do some work.
 	 */
 	public function __construct() {
-
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		add_action( 'init', array( $this, 'init_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'activate' ) );
@@ -99,7 +98,6 @@ class WCS_ATT {
 	}
 
 	public function plugins_loaded() {
-
 		global $woocommerce;
 
 		// Subs 2 check
@@ -133,7 +131,6 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function admin_includes() {
-
 		require_once( 'includes/admin/class-wcsatt-admin.php' );
 	}
 
@@ -143,8 +140,7 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function wc_admin_notice() {
-
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe to All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -153,8 +149,7 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function wcs_admin_notice() {
-
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version 2.0+.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe to All the Things requires WooCommerce Subscriptions version 2.0+.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -163,7 +158,6 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function init_textdomain() {
-
 		load_plugin_textdomain( 'woocommerce-subscribe-all-the-things', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
@@ -173,7 +167,6 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function activate() {
-
 		global $wpdb;
 
 		$version = get_option( 'wcsatt_version', false );
@@ -191,7 +184,6 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function deactivate() {
-
 		delete_option( 'wcsatt_version' );
 	}
 
@@ -202,8 +194,7 @@ class WCS_ATT {
 	 * @return array
 	 */
 	public function get_supported_product_types() {
-
-		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
+		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 
 	/**
@@ -214,7 +205,6 @@ class WCS_ATT {
 	 * @return	array
 	 */
 	public function plugin_meta_links( $links, $file, $data, $status ) {
-
 		if ( $file == plugin_basename( __FILE__ ) ) {
 			$author1 = '<a href="' . $data[ 'AuthorURI' ] . '">' . $data[ 'Author' ] . '</a>';
 			$author2 = '<a href="http://somewherewarm.net/">SomewhereWarm</a>';
@@ -234,8 +224,7 @@ endif; // end class_exists check
  * @return WooCommerce Cart Subscriptions
  */
 function WCS_ATT() {
-
-  return WCS_ATT::instance();
+	return WCS_ATT::instance();
 }
 
 // Launch the whole plugin

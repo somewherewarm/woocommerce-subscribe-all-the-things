@@ -3,7 +3,7 @@
  * Templating and styling functions.
  *
  * @class 	WCS_ATT_Display
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 class WCS_ATT_Display {
@@ -11,7 +11,6 @@ class WCS_ATT_Display {
 	public static $bypass_price_html_filter = false;
 
 	public static function init() {
-
 		// Enqueue scripts and styles
 		add_action( 'wp_enqueue_scripts', __CLASS__ . '::frontend_scripts' );
 
@@ -26,6 +25,51 @@ class WCS_ATT_Display {
 
 		// Add subscription price string info to products with attached subscription schemes
 		add_filter( 'woocommerce_get_price_html',  __CLASS__ . '::filter_price_html', 1000, 2 );
+
+		// Adds the subscription data as hidden fields.
+		add_action( 'woocommerce_before_variations_form', __CLASS__ . '::hidden_variable_fields', 10 );
+
+		// Adds the subscription scheme details to the variation form json
+		add_filter( 'woocommerce_available_variation', __CLASS__ . '::add_variation_data', 10, 1 );
+	}
+
+	/**
+	 * Adds hidden fields for variation products to identify the type of subscription setup.
+	 *
+	 * @since 1.0.4
+	 * @access public
+	 * @global object $product
+	 * @return void
+	 */
+	public static function hidden_variable_fields() {
+		global $product;
+
+		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+		$default_status     = get_post_meta( $product->id, '_wcsatt_default_status', true );
+		$prompt             = get_post_meta( $product->id, '_wcsatt_subscription_prompt', true );
+
+		$hidden = '<input type="hidden" name="force_subscription" value="' . $force_subscription . '" />'
+							.'<input type="hidden" name="default_status" value="' . $default_status . '" />'
+							.'<input type="hidden" name="prompt" value="' . $prompt . '" />';
+
+		echo $hidden;
+	}
+
+	/**
+	 * Adds the subscription data to the data product variations form json.
+	 *
+	 * @since  1.0.4
+	 * @param  $variations
+	 * @return array
+	 */
+	public static function add_variation_data( $variations ) {
+		$variations[ 'is_subscribable' ] = WCS_ATT_Schemes::is_subscribable( $variations[ 'variation_id'] );
+
+		if ( $variations[ 'is_subscribable' ] ) {
+			$variations[ 'subscription_schemes' ] = WCS_ATT_Schemes::get_product_subscription_schemes( $variations[ 'variation_id'], 'variation' );
+		}
+
+		return $variations;
 	}
 
 	/**
@@ -34,34 +78,74 @@ class WCS_ATT_Display {
 	 * @return void
 	 */
 	public static function frontend_scripts() {
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-frontend.css', false, WCS_ATT::VERSION, 'all' );
+		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-frontend' . $suffix . '.css', false, WCS_ATT::VERSION, 'all' );
 		wp_enqueue_style( 'wcsatt-css' );
 
-		if ( is_cart() ) {
-			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
+		// Product Page
+		if ( is_product() ) {
+			wp_register_script( 'wcsatt-add-to-cart-variation', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-add-to-cart-variation' . $suffix . '.js', array( 'jquery', 'wp-util' ), WCS_ATT::VERSION, true );
+			wp_enqueue_script( 'wcsatt-add-to-cart-variation' );
+
+			$params = array(
+				'currency_symbol' => get_woocommerce_currency_symbol(),
+				'currency_pos'    => get_option( 'woocommerce_currency_pos' ),
+				'price_decimals'  => wc_get_price_decimals(),
+				'none'            => _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
+				'all_time'        => __( 'all time', WCS_ATT::TEXT_DOMAIN ),
+				'every'           => __( 'every', WCS_ATT::TEXT_DOMAIN ),
+				'day'             => __( 'day', WCS_ATT::TEXT_DOMAIN ),
+				'days'            => __( 'days', WCS_ATT::TEXT_DOMAIN ),
+				'week'            => __( 'week', WCS_ATT::TEXT_DOMAIN ),
+				'weeks'           => __( 'weeks', WCS_ATT::TEXT_DOMAIN ),
+				'month'           => __( 'month', WCS_ATT::TEXT_DOMAIN ),
+				'months'          => __( 'months', WCS_ATT::TEXT_DOMAIN ),
+				'year'            => __( 'year', WCS_ATT::TEXT_DOMAIN ),
+				'years'           => __( 'years', WCS_ATT::TEXT_DOMAIN ),
+				'nd_intervals'    => __( 'nd', WCS_ATT::TEXT_DOMAIN ), // e.g. 2nd
+				'rd_intervals'    => __( 'rd', WCS_ATT::TEXT_DOMAIN ), // e.g. 3rd
+				'th_intervals'    => __( 'th', WCS_ATT::TEXT_DOMAIN ), // e.g. 4th, 5th, 6th
+			);
+
+			wp_localize_script( 'wcsatt-add-to-cart-variation', 'wcsatt_add_to_cart_variation_params', $params );
 		}
 
-		wp_enqueue_script( 'wcsatt-cart' );
+		// Cart Page
+		if ( is_cart() ) {
+			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart' . $suffix . '.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
+			wp_enqueue_script( 'wcsatt-cart' );
 
-		$params = array(
-			'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
-			'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
-		);
+			$params = array(
+				'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
+				'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+			);
 
-		wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
+			wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
+		}
 	}
 
 	/**
-	 * Displays signle-prouct options for purchasing a product once or creating a subscription from it.
+	 * Displays options for purchasing a single product once or creating a subscription from it.
 	 *
 	 * @return void
 	 */
 	public static function convert_to_sub_product_options() {
-
 		global $product;
 
-		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		// Check what product type this product is
+		if ( $terms = wp_get_object_terms( $product->id, 'product_type' ) ) {
+			$product_type = sanitize_title( current( $terms )->name );
+		} else {
+			$product_type = 'simple';
+		}
+
+		// If the product is a variable product then dont display the subscription options
+		if ( $product_type == 'variable' ) return false;
+
+		$post_id = $product->id; // Product ID
+
+		$subscription_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $post_id, $product_type );
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 		// Allow one-time purchase option?
@@ -168,7 +252,6 @@ class WCS_ATT_Display {
 	 * @return string
 	 */
 	public static function convert_to_sub_cart_item_options( $price, $cart_item, $cart_item_key ) {
-
 		$subscription_schemes        = WCS_ATT_Schemes::get_cart_item_subscription_schemes( $cart_item );
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
 
@@ -196,7 +279,14 @@ class WCS_ATT_Display {
 		}
 
 		$price_overrides_exist         = WCS_ATT_Schemes::subscription_price_overrides_exist( $subscription_schemes );
-		$reset_product                 = wc_get_product( $cart_item[ 'product_id' ] );
+
+		if ( $cart_item[ 'variation_id'] > 0 ) {
+			$reset_product = wc_get_product( $cart_item[ 'data' ]->variation_id ); // Variation ID
+
+		} else {
+			$reset_product = wc_get_product( $cart_item[ 'product_id' ] ); // Product ID
+		}
+
 		$options                       = array();
 		$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_subscription_scheme_id( $cart_item );
 
@@ -310,10 +400,8 @@ class WCS_ATT_Display {
 	 * @return void
 	 */
 	public static function show_subscribe_to_cart_prompt() {
-
 		// Show cart/order level options only if all cart items share a common cart/order level subscription scheme.
 		if ( $subscription_schemes = WCS_ATT_Schemes::get_cart_subscription_schemes() ) {
-
 			?>
 			<h2><?php _e( 'Cart Subscription', WCS_ATT::TEXT_DOMAIN ); ?></h2>
 			<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></p>
@@ -369,12 +457,24 @@ class WCS_ATT_Display {
 	 * @return string
 	 */
 	public static function filter_price_html( $price, $product ) {
+		// Check what product type this product is
+		if ( $terms = wp_get_object_terms( $product->id, 'product_type' ) ) {
+			$product_type = sanitize_title( current( $terms )->name );
+		} else {
+			$product_type = 'simple';
+		}
 
 		if ( self::$bypass_price_html_filter ) {
 			return $price;
 		}
 
-		$subscription_schemes      = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		if ( $product_type != 'variable' ) {
+			$post_id = $product->id;
+		} else {
+			$post_id = $product->children['visible']['0']; // Gets the first enabled variation
+		}
+
+		$subscription_schemes      = WCS_ATT_Schemes::get_product_subscription_schemes( $post_id, $product_type );
 		$has_product_level_schemes = empty( $subscription_schemes ) ? false : true;
 
 		if ( $has_product_level_schemes ) {

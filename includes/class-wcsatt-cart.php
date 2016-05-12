@@ -2,8 +2,8 @@
 /**
  * Cart functionality for converting cart items to subscriptions.
  *
- * @class 	WCS_ATT_Cart
- * @version 1.0.3
+ * @class   WCS_ATT_Cart
+ * @version 1.0.4
  */
 
 class WCS_ATT_Cart {
@@ -107,7 +107,14 @@ class WCS_ATT_Cart {
 		if ( self::is_convertible_to_sub( $cart_item ) ) {
 
 			$posted_subscription_scheme_id = false;
-			$product_id                    = $cart_item[ 'product_id' ];
+
+			// If the item in the cart has a variation ID higher than zero then it's a variable product.
+			if ( $cart_item[ 'variation_id' ] > 0 ) {
+				$product_id = $cart_item[ 'data' ]->variation_id;
+
+			} else {
+				$product_id = $cart_item[ 'product_id' ];
+			}
 
 			if ( ! empty( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
 				$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
@@ -237,7 +244,13 @@ class WCS_ATT_Cart {
 	 */
 	public static function is_convertible_to_sub( $cart_item ) {
 
-		$product_id     = $cart_item[ 'product_id' ];
+		if ( $cart_item[ 'variation_id' ] > 0 ) {
+			$product_id = $cart_item[ 'data' ]->variation_id;
+
+		} else {
+			$product_id = $cart_item[ 'product_id' ];
+		}
+
 		$is_convertible = true;
 
 		if ( WC_Subscriptions_Product::is_subscription( $product_id ) ) {
