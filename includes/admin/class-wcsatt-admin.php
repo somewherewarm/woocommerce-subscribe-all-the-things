@@ -542,9 +542,12 @@ class WCS_ATT_Admin {
 
 			?></div>
 
-			<p class="form-field"><label><?php _e( 'Subscription Options', WCS_ATT::TEXT_DOMAIN ); ?></label><?php
-				echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Add one or more subscription options for this product.', WCS_ATT::TEXT_DOMAIN ) );
-			?></p>
+			<p class="form-field">
+				<label>
+					<?php
+						echo __( 'Subscription Options', WCS_ATT::TEXT_DOMAIN );
+						echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Add one or more subscription options for this product.', WCS_ATT::TEXT_DOMAIN ) );
+			?></label></p>
 			<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
 				if ( $subscription_schemes ) {

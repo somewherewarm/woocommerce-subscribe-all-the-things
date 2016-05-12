@@ -6,6 +6,7 @@
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
 	content: '\e00e';
+	font-family: WooCommerce;
 }
 
 #wcsatt_data .subscription_scheme .description {
@@ -23,6 +24,10 @@
 	width: 17px;
 	height: 17px;
 	margin-left: 0;
+}
+
+#wcsatt_data .woocommerce-help-tip {
+	vertical-align: text-top;
 }
 
 #wcsatt_data .subscription_schemes {
