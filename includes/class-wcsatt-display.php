@@ -413,6 +413,7 @@ class WCS_ATT_Display {
 			} else {
 
 				$price_overrides_exist       = WCS_ATT_Schemes::subscription_price_overrides_exist( $subscription_schemes );
+				$lowest_scheme               = false;
 				$lowest_scheme_price         = $product->price;
 				$lowest_scheme_sale_price    = $product->sale_price;
 				$lowest_scheme_regular_price = $product->regular_price;
@@ -422,9 +423,12 @@ class WCS_ATT_Display {
 
 				if ( $price_overrides_exist ) {
 					foreach ( $subscription_schemes as $subscription_scheme ) {
+
 						$overridden_prices = WCS_ATT_Schemes::get_subscription_scheme_prices( $product, $subscription_scheme );
+
 						if ( ! empty( $overridden_prices ) ) {
 							if ( $overridden_prices[ 'price' ] < $lowest_scheme_price ) {
+								$lowest_scheme               = $subscription_scheme;
 								$lowest_scheme_price         = $overridden_prices[ 'price' ];
 								$lowest_scheme_sale_price    = $overridden_prices[ 'sale_price' ];
 								$lowest_scheme_regular_price = $overridden_prices[ 'regular_price' ];
@@ -437,9 +441,9 @@ class WCS_ATT_Display {
 						$_cloned                               = clone $product;
 
 						$_cloned->is_converted_to_sub          = 'yes';
-						$_cloned->subscription_period          = $subscription_scheme[ 'subscription_period' ];
-						$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
-						$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+						$_cloned->subscription_period          = $lowest_scheme[ 'subscription_period' ];
+						$_cloned->subscription_period_interval = $lowest_scheme[ 'subscription_period_interval' ];
+						$_cloned->subscription_length          = $lowest_scheme[ 'subscription_length' ];
 
 						$_cloned->price                        = $lowest_scheme_price;
 						$_cloned->sale_price                   = $lowest_scheme_price;
