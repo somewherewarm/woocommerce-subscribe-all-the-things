@@ -1,6 +1,6 @@
-#WooCommerce Subscribe All the Things
+#WooCommerce Subscribe to All the Things
 
-WooCommerce Subscribe All the Things is an experimental mini-extension for [WooCommerce Subscriptions](http://www.woothemes.com/products/woocommerce-subscriptions/).
+WooCommerce Subscribe to All the Things is an experimental mini-extension for [WooCommerce Subscriptions](http://www.woothemes.com/products/woocommerce-subscriptions/).
 
 The goal of the extension is to provide subscription support for non-subscription product types, allowing you to offer any product in your store as a subscription product.
 
