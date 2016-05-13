@@ -3,52 +3,52 @@
  * Cart functionality for converting cart items to subscriptions.
  *
  * @class 	WCS_ATT_Admin
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 class WCS_ATT_Admin {
 
 	public static function init() {
 
-		// Admin scripts and styles
+		// Admin scripts and styles.
 		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_scripts' );
 
-		// Ajax add subscription scheme
+		// Ajax add subscription scheme.
 		add_action( 'wp_ajax_wcsatt_add_subscription_scheme', __CLASS__ . '::ajax_add_subscription_scheme' );
 
-		// Subscription scheme markup added on the 'wcsatt_subscription_scheme' action
+		// Subscription scheme markup added on the 'wcsatt_subscription_scheme' action.
 		add_action( 'wcsatt_subscription_scheme',  __CLASS__ . '::subscription_scheme', 10, 3 );
 
-		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action
+		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
 		add_action( 'wcsatt_subscription_scheme_content',  __CLASS__ . '::subscription_scheme_content', 10, 3 );
 
-		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action
+		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
 		add_action( 'wcsatt_subscription_scheme_product_content',  __CLASS__ . '::subscription_scheme_product_content', 10, 3 );
 
-		/**
-		 * WC Product Metaboxes
+		/*
+		 * WC Product Metaboxes.
 		 */
 
-		// Creates the admin panel tab
+		// Creates the admin panel tab.
 		add_action( 'woocommerce_product_write_panel_tabs', __CLASS__ . '::product_write_panel_tab' );
 
-		// Creates the panel for configuring subscription options
+		// Creates the panel for configuring subscription options.
 		add_action( 'woocommerce_product_write_panels', __CLASS__ . '::product_write_panel' );
 
-		// Processes and saves the necessary post meta
+		// Processes and saves the necessary post meta.
 		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta' );
 
-		/**
-		 * "Subscribe to Cart" settings
+		/*
+		 * "Subscribe to Cart" settings.
 		 */
 
-		// Append "Subscribe to Cart/Order" section in the Subscriptions settings tab
+		// Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
 		add_filter( 'woocommerce_subscription_settings', __CLASS__ . '::cart_level_admin_settings' );
 
-		// Save posted cart subscription scheme settings
+		// Save posted cart subscription scheme settings.
 		add_action( 'woocommerce_update_options_subscriptions', __CLASS__ . '::save_cart_level_settings' );
 
-		// Display subscription scheme admin metaboxes in the "Subscribe to Cart/Order" section
+		// Display subscription scheme admin metaboxes in the "Subscribe to Cart/Order" section.
 		add_action( 'woocommerce_admin_field_subscription_schemes', __CLASS__ . '::subscription_schemes_content' );
 	}
 
@@ -61,7 +61,8 @@ class WCS_ATT_Admin {
 	public static function subscription_schemes_content( $values ) {
 
 		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array(
-			// Default to "every month" scheme
+
+			// Default to "every month" scheme.
 			array(
 				'subscription_period_interval' => 1,
 				'subscription_period'          => 'month',
@@ -102,7 +103,7 @@ class WCS_ATT_Admin {
 	 */
 	public static function cart_level_admin_settings( $settings ) {
 
-		// Insert before miscellaneous settings
+		// Insert before miscellaneous settings.
 		$misc_section_start = wp_list_filter( $settings, array( 'id' => 'woocommerce_subscriptions_miscellaneous', 'type' => 'title' ) );
 
 		$spliced_array = array_splice( $settings, key( $misc_section_start ), 0, array(
@@ -548,7 +549,7 @@ class WCS_ATT_Admin {
 
 		global $post;
 
-		// Get admin screen id
+		// Get admin screen id.
 		$screen      = get_current_screen();
 		$screen_id   = $screen ? $screen->id : '';
 
@@ -569,7 +570,7 @@ class WCS_ATT_Admin {
 			wp_enqueue_style( 'wcsatt_writepanel_css' );
 		}
 
-		// WooCommerce admin pages
+		// WooCommerce admin pages.
 		if ( in_array( $screen_id, array( 'product', 'woocommerce_page_wc-settings' ) ) ) {
 
 			wp_enqueue_script( 'wcsatt_writepanel' );
@@ -612,16 +613,16 @@ class WCS_ATT_Admin {
 		?><div id="wcsatt_data" class="panel woocommerce_options_panel wc-metaboxes-wrapper">
 			<div class="options_group"><?php
 
-				// Subscription Status
+				// Subscription Status.
 				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true, 'description' => __( 'Check this option to prevent one-time purchases of this product. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ) ) );
 
-				// Default Status
+				// Default Status.
 				woocommerce_wp_select( array( 'id' => '_wcsatt_default_status', 'wrapper_class'=> 'wcsatt_default_status', 'label' => __( 'Default to', WCS_ATT::TEXT_DOMAIN ), 'description' => '', 'options' => array(
 					'one-time'     => __( 'One-time purchase', WCS_ATT::TEXT_DOMAIN ),
 					'subscription' => __( 'Subscription', WCS_ATT::TEXT_DOMAIN ),
 				) ) );
 
-				// Subscription Prompt
+				// Subscription Prompt.
 				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Custom html/text to display before the available Subscription Options. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true ) );
 
 			?></div>

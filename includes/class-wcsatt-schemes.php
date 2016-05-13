@@ -73,6 +73,57 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
+	 * Returns lowest price data for a product given the subscription schemes attached to it.
+	 *
+	 * @param  WC_Product  $product
+	 * @param  array       $subscription_schemes
+	 * @return string
+	 */
+	public static function get_lowest_price_subscription_scheme_data( $product, $subscription_schemes ) {
+
+		$data = false;
+
+		if ( ! empty( $subscription_schemes ) ) {
+
+			$price_overrides_exist = self::subscription_price_overrides_exist( $subscription_schemes );
+
+			if ( $price_overrides_exist ) {
+
+				$lowest_scheme               = false;
+				$lowest_scheme_price         = $product->price;
+				$lowest_scheme_sale_price    = $product->sale_price;
+				$lowest_scheme_regular_price = $product->regular_price;
+
+				foreach ( $subscription_schemes as $subscription_scheme ) {
+
+					$overridden_prices = self::get_subscription_scheme_prices( $product, $subscription_scheme );
+
+					if ( ! empty( $overridden_prices ) ) {
+						if ( $overridden_prices[ 'price' ] < $lowest_scheme_price ) {
+							$lowest_scheme               = $subscription_scheme;
+							$lowest_scheme_price         = $overridden_prices[ 'price' ];
+							$lowest_scheme_regular_price = $overridden_prices[ 'regular_price' ];
+							$lowest_scheme_sale_price    = $overridden_prices[ 'sale_price' ];
+						}
+					}
+				}
+
+				if ( $lowest_scheme_price < $product->price ) {
+
+					$data = array(
+						'price'         => $lowest_scheme_price,
+						'regular_price' => $lowest_scheme_regular_price,
+						'sale_price'    => $lowest_scheme_sale_price,
+						'scheme'        => $lowest_scheme
+					);
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Returns cart item pricing data based on a subscription scheme's settings.
 	 *
 	 * @return string
@@ -104,7 +155,7 @@ class WCS_ATT_Schemes {
 	/**
 	 * True if any of the subscription schemes overrides the basic price.
 	 *
-	 * @param  array  $subscription_schemes
+	 * @param  array   $subscription_schemes
 	 * @return boolean
 	 */
 	public static function subscription_price_overrides_exist( $subscription_schemes ) {
@@ -225,7 +276,7 @@ class WCS_ATT_Schemes {
 
 		if ( in_array( $product->product_type, $supported_types ) ) {
 
-			// Get product-level subscription schemes stored in product meta
+			// Get product-level subscription schemes stored in product meta.
 
 			$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
 
@@ -237,7 +288,43 @@ class WCS_ATT_Schemes {
 			}
 		}
 
-		return apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $product );
+		return $schemes;
+	}
+
+	/**
+	 * Returns all available subscription schemes attached to a variation.
+	 *
+	 * @param  WC_Product_Variation  $variation
+	 * @return array
+	 */
+	public static function get_variation_subscription_schemes( $variation ) {
+
+		$schemes = array();
+
+		// Get product-level subscription schemes stored in variation meta.
+
+		$variation_schemes = get_post_meta( $variation->variation_id, '_wcsatt_schemes', true );
+
+		if ( $variation_schemes ) {
+			foreach ( $variation_schemes as $scheme ) {
+				$scheme[ 'scope' ] = 'cart-item';
+				$schemes[]         = $scheme;
+			}
+		} else {
+
+			// Get product-level subscription schemes stored in product meta.
+
+			$product_schemes = get_post_meta( $variation->id, '_wcsatt_schemes', true );
+
+			if ( $product_schemes ) {
+				foreach ( $product_schemes as $scheme ) {
+					$scheme[ 'scope' ] = 'cart-item';
+					$schemes[]         = $scheme;
+				}
+			}
+		}
+
+		return $schemes;
 	}
 
 	/**
