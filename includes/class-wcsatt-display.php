@@ -420,7 +420,8 @@ class WCS_ATT_Display {
 
 		if ( ! empty( $product_level_schemes ) ) {
 
-			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+			$force_subscription  = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+			$subscription_scheme = current( $product_level_schemes );
 
 			if ( 'variable' === $product->product_type ) {
 
@@ -438,12 +439,20 @@ class WCS_ATT_Display {
 				$min_price_variation    = wc_get_product( $min_price_variation_id );
 			}
 
-			$show_from_string = count( $product_level_schemes ) > 1 || ( 'variable' === $product->product_type && $min_variation_price !== $max_variation_price );
+			$show_from_string = false;
+
+			if ( count( $product_level_schemes ) > 1 ) {
+				$show_from_string = true;
+			} elseif ( 'variable' === $product->product_type && $min_variation_price !== $max_variation_price ) {
+				$show_from_string = true;
+				if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+					$show_from_string = false;
+				}
+			}
 
 			if ( $force_subscription === 'yes' ) {
 
-				$subscription_scheme = current( $product_level_schemes );
-				$suffix              = '';
+				$suffix = '';
 
 				if ( 'variable' === $product->product_type ) {
 					$_product = $min_price_variation;
