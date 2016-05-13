@@ -203,7 +203,7 @@ class WCS_ATT {
 	 */
 	public function get_supported_product_types() {
 
-		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
+		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 
 	/**
