@@ -1,19 +1,12 @@
 .wc-metaboxes-wrapper .wc-metabox.subscription_scheme h3 span {
 	display: block;
 	float:left;
-	padding-top: 5px;
+	padding-top: 4px;
 }
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
 	content: '\e00e';
 	font-family: WooCommerce;
-}
-
-#wcsatt_data .subscription_scheme .description {
-	font-style: normal;
-	display: inline;
-	clear: none;
-	margin: 0 8px 0 12px;
 }
 
 #wcsatt_data {
@@ -26,6 +19,24 @@
 	margin-left: 0;
 }
 
+#wcsatt_data .wc-metabox .scheme-title:before {
+	font-family: WooCommerce;
+	content: '\e032';
+	font-weight: normal;
+	color: #888;
+}
+
+#wcsatt_data .subscription_scheme .description {
+	font-style: normal;
+	display: inline;
+	clear: none;
+	margin: 0 8px 0 12px;
+}
+
+#wcsatt_data .toolbar {
+	border-top: none;
+}
+
 #wcsatt_data .woocommerce-help-tip {
 	vertical-align: text-top;
 }
@@ -35,11 +46,16 @@
 }
 
 #wcsatt_data .subscription_schemes {
-	border-bottom: none;
+	border-bottom: 1px solid transparent;
 }
 
 #wcsatt_data .subscription_scheme_data .form-field {
 	float: left;
+	margin: 0;
+}
+
+#wcsatt_data .subscription_scheme_data > p.form-field {
+	padding: 0px 2px !important;
 }
 
 #wcsatt_data .subscription_scheme {
@@ -51,16 +67,13 @@
 	position: relative;
 	top: -40px;
 	margin-bottom: -30px;
+	display: block !important;
 }
 
 #wcsatt_data .subscription_scheme_product_data {
 	margin-top: 10px;
 	display: block;
 	float: left;
-}
-
-#wcsatt_data .subscription_scheme_data .form-field {
-	margin: 0;
 }
 
 #wcsatt_data .subscription_scheme_product_data label {
@@ -91,10 +104,16 @@
 	padding-top: 10px;
 }
 
+.forminp #wcsatt_data .toolbar {
+	padding-left: 0px !important;
+}
+
 .forminp #wcsatt_data .wc-metabox {
 	background: none;
-	border-bottom: 1px solid #ddd;
-	border-top: 1px solid #fff;
+}
+
+.forminp #wcsatt_data .wc-metabox h3 {
+	background: #fefefe;
 }
 
 .forminp #wcsatt_data .wc-metabox:first-of-type {

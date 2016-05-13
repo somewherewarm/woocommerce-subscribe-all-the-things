@@ -178,8 +178,6 @@ jQuery( function($) {
 	function subscription_schemes_row_indexes() {
 		$wcsatt_schemes.find( '.subscription_scheme' ).each( function( index, el ) {
 			$( '.position', el ).val( parseInt( $(el).index( '.subscription_schemes .subscription_scheme' ) ) );
-			var ind = '#' + ( index + 1 ).toString();
-			$( '.scheme-title', el ).html( ind );
 		} );
 	}
 
