@@ -529,7 +529,7 @@ class WCS_ATT_Admin {
 			<div class="options_group"><?php
 
 				// Subscription Status
-				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Check this option to prevent one-time purchases', WCS_ATT::TEXT_DOMAIN ) ) );
+				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true, 'description' => __( 'Check this option to prevent one-time purchases of this product. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ) ) );
 
 				// Default Status
 				woocommerce_wp_select( array( 'id' => '_wcsatt_default_status', 'wrapper_class'=> 'wcsatt_default_status', 'label' => __( 'Default to', WCS_ATT::TEXT_DOMAIN ), 'description' => '', 'options' => array(
@@ -538,7 +538,7 @@ class WCS_ATT_Admin {
 				) ) );
 
 				// Subscription Prompt
-				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Custom html/text to display before subscription options.', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true ) );
+				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Custom html/text to display before the available Subscription Options. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true ) );
 
 			?></div>
 

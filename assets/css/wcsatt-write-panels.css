@@ -30,6 +30,10 @@
 	vertical-align: text-top;
 }
 
+#wcsatt_data .woocommerce-help-tip:after {
+	line-height: 18px;
+}
+
 #wcsatt_data .subscription_schemes {
 	border-bottom: none;
 }
