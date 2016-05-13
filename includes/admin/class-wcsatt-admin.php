@@ -409,6 +409,8 @@ class WCS_ATT_Admin {
 				'wrapper_class' => 'subscription_price_discount',
 				'class'         => 'short',
 				'label'         => __( 'Discount %', WCS_ATT::TEXT_DOMAIN ),
+				'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', WCS_ATT::TEXT_DOMAIN ),
+				'desc_tip'      => true,
 				'data_type'     => 'decimal'
 			) );
 		?></div><?php
