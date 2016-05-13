@@ -360,46 +360,6 @@ class WCS_ATT_Display {
 	}
 
 	/**
-	 * Adds subscription price string info to simple products with attached subscription schemes.
-	 *
-	 * @param  string     $price
-	 * @param  WC_Product $product
-	 * @return string
-	 */
-	public static function variable_product_price_html( $price, $product ) {
-
-		if ( $product->get_price() !== '' ) {
-
-			$product_level_schemes = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
-
-			if ( ! empty( $product_level_schemes ) ) {
-
-				$prices = $product->get_variation_prices( true );
-
-				if ( empty( $prices ) ) {
-					return $price;
-				}
-
-				$min_price              = current( $prices[ 'price' ] );
-				$max_price              = end( $prices[ 'price' ] );
-
-				$variation_ids          = array_keys( $prices[ 'price' ] );
-				$min_price_variation_id = current( $variation_ids );
-				$max_price_variation_id = end( $variation_ids );
-
-				$min_price_variation    = wc_get_product( $min_price_variation_id );
-				$max_price_variation    = wc_get_product( $max_price_variation_id );
-
-			}
-
-
-
-		}
-
-		return $price;
-	}
-
-	/**
 	 * Adds subscription price string info to products with attached subscription schemes.
 	 *
 	 * @param  string     $price
@@ -445,6 +405,7 @@ class WCS_ATT_Display {
 				$show_from_string = true;
 			} elseif ( 'variable' === $product->product_type && $min_variation_price !== $max_variation_price ) {
 				$show_from_string = true;
+				// If all variations prices are overridden, they will be equal, so don't show a "From" prefix.
 				if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
 					$show_from_string = false;
 				}
