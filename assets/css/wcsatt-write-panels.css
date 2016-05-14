@@ -94,6 +94,7 @@
 
 #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override p.form-field label, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit p.form-field label {
 	margin: 0 !important;
+	width: 100%;
 }
 
 /*
