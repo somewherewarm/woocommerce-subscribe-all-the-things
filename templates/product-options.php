@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to 'yourtheme/woocommerce/product-options.php'.
  *
- * @version 1.0.0
+ * @version 1.0.4
  */
 
 // Exit if accessed directly
@@ -20,7 +20,7 @@ if ( $prompt ) {
 	?></h3><?php
 }
 
-?><ul class="wcsatt-convert-product"><?php
+?><ul class="wcsatt-options-product"><?php
 
 	foreach ( $options as $option ) {
 		?><li>

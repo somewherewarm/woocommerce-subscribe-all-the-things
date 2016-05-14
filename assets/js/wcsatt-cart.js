@@ -7,7 +7,7 @@ jQuery( function( $ ) {
 	}
 
 	// Shipping calculator
-	$( document ).on( 'change', '.wcsatt-convert-cart input[type=radio][name^=convert_to_sub]', function() {
+	$( document ).on( 'change', '.wcsatt-options-cart input[type=radio][name^=convert_to_sub]', function() {
 
 		var selected_option = $(this).val();
 		var $cart_totals    = $( 'div.cart_totals' );

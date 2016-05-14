@@ -15,21 +15,21 @@ class WCS_ATT_Integrations {
 
 		$bundle_type_exists = false;
 
-		// Bundles
+		// Bundles.
 		if ( class_exists( 'WC_Bundles' ) ) {
 			self::$container_key_names[] = 'bundled_by';
 			self::$child_keys_names[]    = 'bundled_items';
 			$bundle_type_exists          = true;
 		}
 
-		// Composites
+		// Composites.
 		if ( class_exists( 'WC_Composite_Products' ) ) {
 			self::$container_key_names[] = 'composite_parent';
 			self::$child_keys_names[]    = 'composite_children';
 			$bundle_type_exists          = true;
 		}
 
-		// Mix n Match
+		// Mix n Match.
 		if ( class_exists( 'WC_Mix_and_Match' ) ) {
 			self::$container_key_names[] = 'mnm_container';
 			self::$child_keys_names[]    = 'mnm_contents';

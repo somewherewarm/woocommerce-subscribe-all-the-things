@@ -1,20 +1,20 @@
-ul.wcsatt-convert li, ul.wcsatt-convert-cart li, ul.wcsatt-convert-product li {
+ul.wcsatt-options li, ul.wcsatt-options-cart li, ul.wcsatt-options-product li {
 	list-style: none;
 }
 
-ul.wcsatt-convert {
+ul.wcsatt-options {
 	margin: 10px 0 0;
 	min-width: 120px;
 }
 
-ul.wcsatt-convert.overrides_exist {
+ul.wcsatt-options.overrides_exist {
 	margin: 0 0 0;
 }
 
-ul.wcsatt-convert-cart {
+ul.wcsatt-options-cart {
 	margin: 0 0 2em 0;
 }
 
-ul.wcsatt-convert-product {
+ul.wcsatt-options-product {
 	margin: 0 0 2em 5px;
 }

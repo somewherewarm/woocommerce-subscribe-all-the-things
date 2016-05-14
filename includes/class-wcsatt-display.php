@@ -12,20 +12,23 @@ class WCS_ATT_Display {
 
 	public static function init() {
 
-		// Enqueue scripts and styles
+		// Enqueue scripts and styles.
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'frontend_scripts' ) );
 
-		// Display a "Subscribe to Cart" section in the cart
+		// Display a "Subscribe to Cart" section in the cart.
 		add_action( 'woocommerce_before_cart_totals', array( __CLASS__, 'show_subscribe_to_cart_prompt' ) );
 
-		// Use radio buttons to mark a cart item as a one-time sale or as a subscription
+		// Use radio buttons to mark a cart item as a one-time sale or as a subscription.
 		add_filter( 'woocommerce_cart_item_price', array( __CLASS__, 'convert_to_sub_cart_item_options' ), 1000, 3 );
 
-		// Display subscription options in the single-product template
+		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'convert_to_sub_product_options' ), 100 );
 
-		// Add subscription price string info to simple products with attached subscription schemes
+		// Add subscription price string info to simple products with attached subscription schemes.
 		add_filter( 'woocommerce_get_price_html', array( __CLASS__, 'filter_price_html' ), 1000, 2 );
+
+		// Render simple product subscription options in the single-product template.
+		add_action( 'wcsatt_single_product_options_simple', array( __CLASS__, 'convert_to_sub_simple_product_options' ) );
 	}
 
 	/**
@@ -53,15 +56,26 @@ class WCS_ATT_Display {
 	}
 
 	/**
-	 * Displays signle-prouct options for purchasing a product once or creating a subscription from it.
+	 * Render simple product subscription options in the single-product template.
 	 *
+	 * @param  WC_Product_Simple  $product
+	 * @return string
+	 */
+	public static function convert_to_sub_simple_product_options( $product ) {
+		echo self::get_convert_to_sub_product_options_content( $product );
+	}
+
+	/**
+	 * Options for purchasing a product once or creating a subscription from it.
+	 *
+	 * @param  WC_Product  $product
 	 * @return void
 	 */
-	public static function convert_to_sub_product_options() {
+	public static function get_convert_to_sub_product_options_content( $product ) {
 
-		global $product;
+		$content = '';
 
-		$product_level_schemes        = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
+		$product_level_schemes       = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
 		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $product_level_schemes ), $product );
 
 		// Allow one-time purchase option?
@@ -149,13 +163,35 @@ class WCS_ATT_Display {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
+			ob_start();
+
 			wc_get_template( 'product-options.php', array(
 				'product'        => $product,
 				'options'        => $options,
 				'allow_one_time' => $allow_one_time_option,
 				'prompt'         => $prompt,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
+
+			$content = ob_get_clean();
 		}
+
+		return $content;
+	}
+
+	/**
+	 * Displays single-product options for purchasing a product once or creating a subscription from it.
+	 *
+	 * @return void
+	 */
+	public static function convert_to_sub_product_options() {
+
+		global $product;
+
+		?><div class="wcsatt-options-wrapper"><?php
+
+			do_action( 'wcsatt_single_product_options_' . $product->product_type, $product );
+
+		?></div><?php
 	}
 
 	/**
@@ -315,7 +351,7 @@ class WCS_ATT_Display {
 			?>
 			<h2><?php _e( 'Cart Subscription', WCS_ATT::TEXT_DOMAIN ); ?></h2>
 			<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></p>
-			<ul class="wcsatt-convert-cart"><?php
+			<ul class="wcsatt-options-cart"><?php
 
 				$options                       = array();
 				$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_cart_subscription_scheme_id();
