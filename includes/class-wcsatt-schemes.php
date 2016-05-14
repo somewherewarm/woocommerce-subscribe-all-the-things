@@ -272,6 +272,14 @@ class WCS_ATT_Schemes {
 
 		$schemes = array();
 
+		if ( ! is_object( $product ) ) {
+			return $schemes;
+		}
+
+		if ( $product->variation_id > 0 ) {
+			return self::get_variation_subscription_schemes( $product );
+		}
+
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product->product_type, $supported_types ) ) {
@@ -297,7 +305,7 @@ class WCS_ATT_Schemes {
 	 * @param  WC_Product_Variation  $variation
 	 * @return array
 	 */
-	public static function get_variation_subscription_schemes( $variation ) {
+	private static function get_variation_subscription_schemes( $variation ) {
 
 		$schemes = array();
 
