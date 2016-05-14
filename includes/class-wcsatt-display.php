@@ -507,6 +507,7 @@ class WCS_ATT_Display {
 			} else {
 
 				$price_overrides_exist = WCS_ATT_Schemes::subscription_price_overrides_exist( $product_level_schemes );
+				$from_price            = '';
 
 				if ( $price_overrides_exist ) {
 
@@ -516,7 +517,6 @@ class WCS_ATT_Display {
 						$_product = clone $product;
 					}
 
-					$from_price               = '';
 					$lowest_scheme_price_data = WCS_ATT_Schemes::get_lowest_price_subscription_scheme_data( $_product, $product_level_schemes );
 
 					if ( $lowest_scheme_price_data ) {
