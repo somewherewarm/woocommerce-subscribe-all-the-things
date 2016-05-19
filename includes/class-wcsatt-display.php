@@ -159,7 +159,7 @@ class WCS_ATT_Display {
 
 				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array(
 					'subscription_price' => $price_overrides_exist,
-					'price'              => $_cloned->get_price_html(),
+					'price'              => '<span class="subscription-price">' . $_cloned->get_price_html() . '</span>',
 				) );
 
 				self::$bypass_price_html_filter = false;

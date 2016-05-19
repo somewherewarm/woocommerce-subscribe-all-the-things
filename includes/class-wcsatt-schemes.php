@@ -296,7 +296,7 @@ class WCS_ATT_Schemes {
 			}
 		}
 
-		return $schemes;
+		return apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $product );
 	}
 
 	/**
@@ -332,7 +332,7 @@ class WCS_ATT_Schemes {
 			}
 		}
 
-		return $schemes;
+		return apply_filters( 'wcsatt_variation_subscription_schemes', $schemes, $product );
 	}
 
 	/**
