@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</h3>
 	<div class="subscription_scheme_data wc-metabox-content"><?php
 
-		// Basic Subscription Scheme Options
+		// Basic Subscription Scheme Options.
 		do_action( 'wcsatt_subscription_scheme_content', $index, $scheme_data, $post_id );
 
 		// Additional Subscription Options for Products.

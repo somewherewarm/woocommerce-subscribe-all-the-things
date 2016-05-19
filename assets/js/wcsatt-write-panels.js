@@ -154,18 +154,25 @@ jQuery( function($) {
 
 		$.post( wcsatt_admin_params.wc_ajax_url, data, function ( response ) {
 
+			// Append markup.
 			$wcsatt_schemes.append( response.markup );
 
 			var added = $wcsatt_schemes.find( '.subscription_scheme' ).last();
 
+			// Run scripts against added markup.
 			added.wcsatt_scripts();
 
+			// Trigger 'change' event to show/hide price override method options.
 			added.find( 'select.subscription_pricing_method_input' ).change();
 
+			// Add indexes.
 			subscription_schemes_row_indexes();
 
 			$wcsatt_data_tab.unblock();
 			$wcsatt_data_tab.trigger( 'woocommerce_subscription_scheme_added', response );
+
+			// Trigger product type change event to show/hide type-specific fields.
+			$( document.body ).trigger( 'woocommerce-product-type-change' );
 
 		}, 'json' );
 
