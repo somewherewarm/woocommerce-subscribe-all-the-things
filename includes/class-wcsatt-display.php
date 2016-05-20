@@ -289,8 +289,9 @@ class WCS_ATT_Display {
 
 					// Apply the subscription scheme id to the dummy cart item.
 					$dummy_cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = $subscription_scheme_id;
+
 					// Convert the dummy cart item using the applied id.
-					$dummy_cart_item           = WCS_ATT_Cart::convert_to_sub( $dummy_cart_item );
+					$dummy_cart_item = WCS_ATT_Cart::convert_to_sub( $dummy_cart_item );
 
 					// Get the price of the dummy cart item.
 					$description = WC()->cart->get_product_price( $dummy_cart_item[ 'data' ] );
@@ -299,7 +300,8 @@ class WCS_ATT_Display {
 				if ( $active_subscription_scheme_id === $subscription_scheme_id ) {
 
 					$description = WC_Subscriptions_Product::get_price_string( $cart_item[ 'data' ], array(
-						'subscription_price' => false
+						'subscription_price' => false,
+						'price'              => ''
 					) );
 
 				} else {
@@ -315,7 +317,8 @@ class WCS_ATT_Display {
 
 					// Use the dummy cart item to obtain the description.
 					$description = WC_Subscriptions_Product::get_price_string( $dummy_cart_item[ 'data' ], array(
-						'subscription_price' => false
+						'subscription_price' => false,
+						'price'              => ''
 					) );
 				}
 			}
