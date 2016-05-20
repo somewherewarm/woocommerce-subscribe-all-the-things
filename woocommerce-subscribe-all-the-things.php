@@ -3,7 +3,7 @@
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
 * Description: Experimental extension for linking WooCommerce Subscriptions with simple products, variable products and product types created by WooCommerce extensions, such as Composite Products and Product Bundles.
-* Version: 1.0.4
+* Version: 1.1.0
 * Author: Prospress Inc.
 * Author URI: http://prospress.com/
 *
@@ -18,7 +18,7 @@
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -27,13 +27,13 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 
 class WCS_ATT {
 
-	/* plugin version */
-	const VERSION = '1.0.4';
+	/* Plugin version. */
+	const VERSION = '1.1.0';
 
-	/* required WC version */
+	/* Required WC version. */
 	const REQ_WC_VERSION = '2.3.0';
 
-	/* text domain */
+	/* Text domain. */
 	const TEXT_DOMAIN = 'woocommerce-subscribe-all-the-things';
 
 	/**
@@ -117,6 +117,7 @@ class WCS_ATT {
 		require_once( 'includes/class-wcsatt-core-compatibility.php' );
 		require_once( 'includes/class-wcsatt-integrations.php' );
 		require_once( 'includes/class-wcsatt-schemes.php' );
+		require_once( 'includes/class-wcsatt-scheme-prices.php' );
 		require_once( 'includes/class-wcsatt-cart.php' );
 		require_once( 'includes/class-wcsatt-display.php' );
 
@@ -238,5 +239,5 @@ function WCS_ATT() {
   return WCS_ATT::instance();
 }
 
-// Launch the whole plugin
-$GLOBALS[ 'woocommerce_subscriptions_cart' ] = WCS_ATT();
+// Launch the whole plugin.
+$GLOBALS[ 'woocommerce_subscribe_all_the_things' ] = WCS_ATT();

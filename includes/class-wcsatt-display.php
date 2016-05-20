@@ -2,8 +2,8 @@
 /**
  * Templating and styling functions.
  *
- * @class 	WCS_ATT_Display
- * @version 1.0.3
+ * @class  WCS_ATT_Display
+ * @since  1.0.0
  */
 
 class WCS_ATT_Display {
@@ -111,7 +111,7 @@ class WCS_ATT_Display {
 			$default_subscription_scheme = current( $product_level_schemes );
 
 			foreach ( $product_level_schemes as $subscription_scheme ) {
-				$overridden_prices = WCS_ATT_Schemes::get_subscription_scheme_prices( $product, $subscription_scheme );
+				$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $product, $subscription_scheme );
 				if ( ! empty( $overridden_prices ) ) {
 					$price_overrides_exist                         = true;
 					$scheme_prices[ $subscription_scheme[ 'id' ] ] = $overridden_prices;
@@ -159,7 +159,7 @@ class WCS_ATT_Display {
 
 				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array(
 					'subscription_price' => $price_overrides_exist,
-					'price'              => '<span class="subscription-price">' . $_cloned->get_price_html() . '</span>',
+					'price'              => '<span class="price subscription-price">' . $_cloned->get_price_html() . '</span>',
 				) );
 
 				self::$bypass_price_html_filter = false;
@@ -251,7 +251,7 @@ class WCS_ATT_Display {
 			}
 		}
 
-		$price_overrides_exist         = WCS_ATT_Schemes::subscription_price_overrides_exist( $subscription_schemes );
+		$price_overrides_exist         = WCS_ATT_Scheme_Prices::subscription_price_overrides_exist( $subscription_schemes );
 		$product_id                    = $cart_item[ 'variation_id' ] > 0 ? $cart_item[ 'variation_id' ] : $cart_item[ 'product_id' ];
 		$reset_product                 = wc_get_product( $product_id );
 		$options                       = array();
@@ -488,7 +488,7 @@ class WCS_ATT_Display {
 				$_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-				$overridden_prices = WCS_ATT_Schemes::get_subscription_scheme_prices( $_product, $subscription_scheme );
+				$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $_product, $subscription_scheme );
 
 				if ( ! empty( $overridden_prices ) ) {
 					$_product->regular_price            = $overridden_prices[ 'regular_price' ];
@@ -509,7 +509,7 @@ class WCS_ATT_Display {
 
 			} else {
 
-				$price_overrides_exist = WCS_ATT_Schemes::subscription_price_overrides_exist( $product_level_schemes );
+				$price_overrides_exist = WCS_ATT_Scheme_Prices::subscription_price_overrides_exist( $product_level_schemes );
 				$from_price            = '';
 
 				if ( $price_overrides_exist ) {
@@ -520,7 +520,7 @@ class WCS_ATT_Display {
 						$_product = clone $product;
 					}
 
-					$lowest_scheme_price_data = WCS_ATT_Schemes::get_lowest_price_subscription_scheme_data( $_product, $product_level_schemes );
+					$lowest_scheme_price_data = WCS_ATT_Scheme_Prices::get_lowest_price_subscription_scheme_data( $_product, $product_level_schemes );
 
 					if ( $lowest_scheme_price_data ) {
 
@@ -541,9 +541,9 @@ class WCS_ATT_Display {
 						self::$bypass_price_html_filter         = false;
 
 						if ( $show_from_string ) {
-							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'min-price: multiple plans available', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'min-price: range', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
 						} else {
-							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'min-price: 1 plan available', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'min-price: static', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
 						}
 					}
 				}

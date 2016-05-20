@@ -150,7 +150,7 @@ class WCS_ATT_Cart {
 
 			$cart_item[ 'data' ]->is_converted_to_sub = 'yes';
 
-			$subscription_prices = WCS_ATT_Schemes::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
+			$subscription_prices = WCS_ATT_Scheme_Prices::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
 
 			if ( ! empty( $subscription_prices ) ) {
 				$cart_item[ 'data' ]->price                    = $subscription_prices[ 'price' ];

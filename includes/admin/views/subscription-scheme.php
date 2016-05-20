@@ -1,7 +1,8 @@
 <?php
 /**
  * Admin subscription scheme view.
- * @version 1.0.3
+ *
+ * @since 1.0.0
  */
 
 // Exit if accessed directly.

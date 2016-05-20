@@ -2,8 +2,8 @@
 /**
  * Compatibility with other extensions.
  *
- * @class 	WCS_ATT_Integrations
- * @version 1.0.4
+ * @class  WCS_ATT_Integrations
+ * @since  1.0.0
  */
 
 class WCS_ATT_Integrations {

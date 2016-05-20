@@ -2,8 +2,8 @@
 /**
  * Cart functionality for converting cart items to subscriptions.
  *
- * @class 	WCS_ATT_Admin
- * @version 1.0.4
+ * @class  WCS_ATT_Admin
+ * @since  1.0.4
  */
 
 class WCS_ATT_Admin {
