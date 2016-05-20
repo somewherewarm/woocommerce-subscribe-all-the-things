@@ -153,31 +153,45 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
-	 * True if any of the subscription schemes overrides the basic price.
+	 * True if any of the subscription schemes overrides the default price.
 	 *
 	 * @param  array   $subscription_schemes
 	 * @return boolean
 	 */
 	public static function subscription_price_overrides_exist( $subscription_schemes ) {
 
-		$has_price_overrides = false;
+		$price_override_exists = false;
 
 		foreach ( $subscription_schemes as $subscription_scheme ) {
 
-			if ( ! isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
-				continue;
-			}
-
-			if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-				$has_price_overrides = true;
-				break;
-			} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
-				$has_price_overrides = true;
+			if ( self::has_subscription_price_override( $subscription_scheme ) ) {
+				$price_override_exists = true;
 				break;
 			}
 		}
 
-		return $has_price_overrides;
+		return $price_override_exists;
+	}
+
+	/**
+	 * True if a subscription scheme has price overrides.
+	 *
+	 * @param  array   $subscription_scheme
+	 * @return boolean
+	 */
+	public static function has_subscription_price_override( $subscription_scheme ) {
+
+		$price_override_exists = false;
+
+		if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
+			if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
+				$price_override_exists = true;
+			} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
+				$price_override_exists = true;
+			}
+		}
+
+		return $price_override_exists;
 	}
 
 	/**

@@ -49,7 +49,7 @@ class WCS_ATT_Integrations {
 			add_filter( 'wcsatt_subscription_schemes', array( __CLASS__, 'get_bundled_item_schemes' ), 10, 3 );
 
 			/*
-			 * Subscription schemes attached on a bundle-type product are not supported if it is priced per-item.
+			 * Subscription schemes attached on a bundle-type product are not supported if they contain price overrides and the bundle is priced per-item.
 			 * Also, schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 			 */
 			add_filter( 'wcsatt_subscription_schemes', array( __CLASS__, 'get_bundle_schemes' ), 10, 3 );
@@ -123,7 +123,7 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Render bundle-type subscription options in the single-product template. Per-item priced bundles are not supported.
+	 * Render bundle-type subscription options in the single-product template.
 	 *
 	 * @param  WC_Product $product
 	 * @return void
@@ -207,7 +207,7 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Subscription schemes attached on a bundle-type product are not supported if it is priced per-item.
+	 * Subscription schemes attached on a bundle-type product are not supported if they contain price overrides and the bundle is priced per-item.
 	 * Also, schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
 	 * @param  array  $schemes
@@ -219,7 +219,13 @@ class WCS_ATT_Integrations {
 
 		if ( self::is_bundle_type_product( $product ) ) {
 			if ( $product->is_priced_per_product() ) {
-				$schemes = array();
+				$clean_schemes = array();
+				foreach ( $schemes as $scheme ) {
+					if ( false === WCS_ATT_Schemes::has_subscription_price_override( $scheme ) ) {
+						$clean_schemes[] = $scheme;
+					}
+				}
+				$schemes = $clean_schemes;
 			} elseif ( $product->product_type === 'bundle' && $product->contains_sub() ) {
 				$schemes = array();
 			}
@@ -229,7 +235,7 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Subscription schemes attached on a bundle-type product are not supported if it is priced per-item.
+	 * Subscription schemes attached on a bundle-type product are not supported if they contain price overrides and the bundle is priced per-item.
 	 * Also, schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
 	 * @param  array  $schemes
@@ -244,7 +250,13 @@ class WCS_ATT_Integrations {
 			if ( ! empty( $cart_item[ $child_key_name ] ) ) {
 				$container = $cart_item[ 'data' ];
 				if ( $container->is_priced_per_product() ) {
-					$schemes = array();
+					$clean_schemes = array();
+					foreach ( $schemes as $scheme ) {
+						if ( false === WCS_ATT_Schemes::has_subscription_price_override( $scheme ) ) {
+							$clean_schemes[] = $scheme;
+						}
+					}
+					$schemes = $clean_schemes;
 				} elseif ( $container->product_type === 'bundle' && $container->contains_sub() ) {
 					$schemes = array();
 				}
