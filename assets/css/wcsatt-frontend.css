@@ -18,3 +18,7 @@ ul.wcsatt-options-cart {
 ul.wcsatt-options-product {
 	margin: 0 0 2em 5px;
 }
+
+.single-product div.product .single_variation ul.wcsatt-options-product .price {
+	display: inline;
+}
