@@ -46,16 +46,20 @@ class WCS_ATT_Display {
 
 		if ( is_cart() ) {
 			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
+			wp_enqueue_script( 'wcsatt-cart' );
+
+			$params = array(
+				'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
+				'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+			);
+
+			wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
 		}
 
-		wp_enqueue_script( 'wcsatt-cart' );
-
-		$params = array(
-			'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
-			'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
-		);
-
-		wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
+		if ( is_product() ) {
+			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-single-add-to-cart.js', array( 'jquery' ), WCS_ATT::VERSION, true );
+			wp_enqueue_script( 'wcsatt-single-product' );
+		}
 	}
 
 	/**
@@ -105,18 +109,9 @@ class WCS_ATT_Display {
 			$allow_one_time_option       = $force_subscription === 'yes' ? false : true;
 
 			$price_overrides_exist       = false;
-			$scheme_prices               = array();
 
 			$options                     = array();
 			$default_subscription_scheme = current( $product_level_schemes );
-
-			foreach ( $product_level_schemes as $subscription_scheme ) {
-				$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $product, $subscription_scheme );
-				if ( ! empty( $overridden_prices ) ) {
-					$price_overrides_exist                         = true;
-					$scheme_prices[ $subscription_scheme[ 'id' ] ] = $overridden_prices;
-				}
-			}
 
 			if ( $allow_one_time_option && $default_status !== 'subscription' ) {
 				$default_subscription_scheme_id = '0';
@@ -132,8 +127,9 @@ class WCS_ATT_Display {
 
 				$options[] = array(
 					'id'          => '0',
-					'description' => $one_time_option_description,
+					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
 					'selected'    => $default_subscription_scheme_id === '0',
+					'data'        => apply_filters( 'wcsatt_single_product_one_time_option_data', array(), $product )
 				);
 			}
 
@@ -148,26 +144,41 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-				if ( $price_overrides_exist && isset( $scheme_prices[ $subscription_scheme_id ] ) ) {
-					$_cloned->regular_price            = $scheme_prices[ $subscription_scheme_id ][ 'regular_price' ];
-					$_cloned->price                    = $scheme_prices[ $subscription_scheme_id ][ 'price' ];
-					$_cloned->sale_price               = $scheme_prices[ $subscription_scheme_id ][ 'sale_price' ];
-					$_cloned->subscription_price       = $scheme_prices[ $subscription_scheme_id ][ 'price' ];
+				if ( $has_subscription_price_override = WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme ) ) {
+
+					$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $_cloned, $subscription_scheme );
+
+					if ( ! empty( $overridden_prices ) ) {
+
+						$_cloned->regular_price      = $overridden_prices[ 'regular_price' ];
+						$_cloned->price              = $overridden_prices[ 'price' ];
+						$_cloned->sale_price         = $overridden_prices[ 'sale_price' ];
+						$_cloned->subscription_price = $overridden_prices[ 'price' ];
+
+						$price_overrides_exist       = true;
+					}
 				}
 
 				self::$bypass_price_html_filter = true;
 
-				$sub_suffix = WC_Subscriptions_Product::get_price_string( $_cloned, array(
+				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, array(
 					'subscription_price' => $price_overrides_exist,
 					'price'              => '<span class="price subscription-price">' . $_cloned->get_price_html() . '</span>',
 				) );
 
 				self::$bypass_price_html_filter = false;
 
+				$option_data = array(
+					'subscription_scheme'   => $subscription_scheme,
+					'overrides_price'       => $has_subscription_price_override,
+					'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false, $product )
+				);
+
 				$options[] = array(
 					'id'          => $subscription_scheme_id,
-					'description' => ucfirst( $allow_one_time_option ? sprintf( __( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ) : $sub_suffix ),
+					'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( $allow_one_time_option ? sprintf( __( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $price_overrides_exist, $allow_one_time_option, $_cloned, $subscription_scheme, $product ),
 					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
+					'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )
 				);
 			}
 
@@ -184,7 +195,7 @@ class WCS_ATT_Display {
 
 			wc_get_template( 'product-options.php', array(
 				'product'        => $product,
-				'options'        => $options,
+				'options'        => apply_filters( 'wcsatt_single_product_options', $options, $product_level_schemes, $product ),
 				'allow_one_time' => $allow_one_time_option,
 				'prompt'         => $prompt,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
@@ -461,16 +472,18 @@ class WCS_ATT_Display {
 				$min_price_variation    = wc_get_product( $min_price_variation_id );
 			}
 
-			$show_from_string = false;
+			$has_variable_price = false;
 
 			if ( count( $product_level_schemes ) > 1 ) {
-				$show_from_string = true;
+				$has_variable_price = true;
 			} elseif ( 'variable' === $product->product_type && $min_variation_price !== $max_variation_price ) {
-				$show_from_string = true;
-				// If all variations prices are overridden, they will be equal, so don't show a "From" prefix.
+				$has_variable_price = true;
+				// If all variations prices are overridden, they will be equal.
 				if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-					$show_from_string = false;
+					$has_variable_price = false;
 				}
+			} elseif ( 'bundle' === $product->product_type && $product->min_bundle_price !== $product->max_bundle_price ) {
+				$has_variable_price = true;
 			}
 
 			if ( $force_subscription === 'yes' ) {
@@ -480,7 +493,7 @@ class WCS_ATT_Display {
 				if ( 'variable' === $product->product_type ) {
 					$_product = $min_price_variation;
 				} else {
-					$_product = clone $product;
+					$_product = unserialize( serialize( $product ) );
 				}
 
 				$_product->is_converted_to_sub          = 'yes';
@@ -495,6 +508,8 @@ class WCS_ATT_Display {
 					$_product->price                    = $overridden_prices[ 'price' ];
 					$_product->sale_price               = $overridden_prices[ 'sale_price' ];
 					$_product->subscription_price       = $overridden_prices[ 'price' ];
+
+					$_product = apply_filters( 'wcsatt_overridden_subscription_prices_product', $_product, $subscription_scheme );
 				}
 
 				self::$bypass_price_html_filter = true;
@@ -503,55 +518,66 @@ class WCS_ATT_Display {
 
 				$price = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $price ) );
 
-				if ( $show_from_string && false === strpos( $price, $_product->get_price_html_from_text() ) ) {
+				if ( $has_variable_price && false === strpos( $price, $_product->get_price_html_from_text() ) ) {
 					$price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), $_product->get_price_html_from_text(), $price );
 				}
 
 			} else {
 
 				$price_overrides_exist = WCS_ATT_Scheme_Prices::subscription_price_overrides_exist( $product_level_schemes );
-				$from_price            = '';
+				$suffix_price_html     = '';
 
 				if ( $price_overrides_exist ) {
 
 					if ( 'variable' === $product->product_type ) {
 						$_product = $min_price_variation;
 					} else {
-						$_product = clone $product;
+						$_product = unserialize( serialize( $product ) );
 					}
 
 					$lowest_scheme_price_data = WCS_ATT_Scheme_Prices::get_lowest_price_subscription_scheme_data( $_product, $product_level_schemes );
 
 					if ( $lowest_scheme_price_data ) {
 
-						$lowest_scheme                          = $lowest_scheme_price_data[ 'scheme' ];
+						$lowest_scheme = $lowest_scheme_price_data[ 'scheme' ];
 
-						$_product->is_converted_to_sub          = 'yes';
-						$_product->subscription_period          = $lowest_scheme[ 'subscription_period' ];
-						$_product->subscription_period_interval = $lowest_scheme[ 'subscription_period_interval' ];
-						$_product->subscription_length          = $lowest_scheme[ 'subscription_length' ];
+						if ( apply_filters( 'wcsatt_price_html_discount_format', false, $product ) && $lowest_scheme[ 'subscription_pricing_method' ] === 'inherit' ) {
 
-						$_product->price                        = $lowest_scheme_price_data[ 'price' ];
-						$_product->sale_price                   = $lowest_scheme_price_data[ 'sale_price' ];
-						$_product->regular_price                = $lowest_scheme_price_data[ 'regular_price' ];
+							$discount          = $lowest_scheme[ 'subscription_discount' ];
+							$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37; off', WCS_ATT::TEXT_DOMAIN ), $discount ) . '</span><small>';
+							$suffix_price_html = sprintf( __( 'at%1$s%2$s', WCS_ATT::TEXT_DOMAIN ), $has_variable_price ? __( ' up to', WCS_ATT::TEXT_DOMAIN ) : '', $discount_html );
 
-						self::$bypass_price_html_filter         = true;
-						$lowest_scheme_price_html               = $_product->get_price_html();
-						$lowest_scheme_price_html               = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $lowest_scheme_price_html ) );
-						self::$bypass_price_html_filter         = false;
-
-						if ( $show_from_string ) {
-							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'min-price: range', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
 						} else {
-							$from_price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'min-price: static', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+
+							$_product->is_converted_to_sub          = 'yes';
+							$_product->subscription_period          = $lowest_scheme[ 'subscription_period' ];
+							$_product->subscription_period_interval = $lowest_scheme[ 'subscription_period_interval' ];
+							$_product->subscription_length          = $lowest_scheme[ 'subscription_length' ];
+
+							$_product->price                        = $lowest_scheme_price_data[ 'price' ];
+							$_product->sale_price                   = $lowest_scheme_price_data[ 'sale_price' ];
+							$_product->regular_price                = $lowest_scheme_price_data[ 'regular_price' ];
+
+							$_product = apply_filters( 'wcsatt_overridden_subscription_prices_product', $_product, $lowest_scheme );
+
+							self::$bypass_price_html_filter         = true;
+							$lowest_scheme_price_html               = $_product->get_price_html();
+							$lowest_scheme_price_html               = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $lowest_scheme_price_html ) );
+							self::$bypass_price_html_filter         = false;
+
+							if ( $has_variable_price ) {
+								$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscribe from price', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+							} else {
+								$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'subscribe for price', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
+							}
 						}
 					}
 				}
 
 				if ( $price_overrides_exist ) {
-					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or subscribe %s', '&ndash; or subscribe %s', count( $product_level_schemes ), WCS_ATT::TEXT_DOMAIN ), $from_price ) . '</small>';
+					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or subscribe %s', '&ndash; subscription plans available %s', count( $product_level_schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
 				} else {
-					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription available', '&ndash; subscription plans available', count( $product_level_schemes ), WCS_ATT::TEXT_DOMAIN ), $from_price ) . '</small>';
+					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription available', '&ndash; subscription plans available', count( $product_level_schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
 				}
 
 				$price  = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );

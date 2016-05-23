@@ -52,6 +52,25 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
+	 * Returns a subscription scheme by id.
+	 *
+	 * @return array
+	 */
+	public static function get_subscription_scheme_by_id( $id, $schemes ) {
+
+		$found_scheme = false;
+
+		foreach ( $schemes as $scheme ) {
+			if ( $scheme[ 'id' ] === $id ) {
+				$found_scheme = $scheme;
+				break;
+			}
+		}
+
+		return $found_scheme;
+	}
+
+	/**
 	 * Returns all available subscription schemes (product-level and cart-level).
 	 *
 	 * @return array

@@ -100,6 +100,13 @@ class WCS_ATT_Scheme_Prices {
 				$lowest_scheme_sale_price    = $product->sale_price;
 				$lowest_scheme_regular_price = $product->regular_price;
 
+				$data = array(
+					'price'         => $lowest_scheme_price,
+					'regular_price' => $lowest_scheme_regular_price,
+					'sale_price'    => $lowest_scheme_sale_price,
+					'scheme'        => current( $subscription_schemes )
+				);
+
 				foreach ( $subscription_schemes as $subscription_scheme ) {
 
 					$overridden_prices = self::get_subscription_scheme_prices( $product, $subscription_scheme );
@@ -176,7 +183,7 @@ class WCS_ATT_Scheme_Prices {
 			return $price;
 		}
 
-		if ( apply_filters( 'wcsatt_discount_from_regular', true, $product ) ) {
+		if ( apply_filters( 'wcsatt_discount_from_regular', false, $product ) ) {
 			$regular_price = self::get_discounted_scheme_regular_price( $product );
 		} else {
 			$regular_price = $price;
