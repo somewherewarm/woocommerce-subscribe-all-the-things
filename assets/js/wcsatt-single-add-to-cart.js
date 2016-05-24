@@ -51,14 +51,14 @@
 							var bundled_item_id = bundled_item.bundled_item_id;
 
 							if ( scheme.data.discount_from_regular ) {
-								price_data[ 'prices' ][ bundled_item_id ] = price_data[ 'regular_prices' ][ bundled_item_id ] * scheme.data.subscription_scheme.subscription_discount / 100;
+								price_data[ 'prices' ][ bundled_item_id ] = price_data[ 'regular_prices' ][ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
 							} else {
-								price_data[ 'prices' ][ bundled_item_id ] = price_data[ 'prices' ][ bundled_item_id ] * scheme.data.subscription_scheme.subscription_discount / 100;
+								price_data[ 'prices' ][ bundled_item_id ] = price_data[ 'prices' ][ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
 							}
-							price_data[ 'addons_prices' ][ bundled_item_id ] = price_data[ 'addons_prices' ][ bundled_item_id ] * scheme.data.subscription_scheme.subscription_discount / 100;
+							price_data[ 'addons_prices' ][ bundled_item_id ] = price_data[ 'addons_prices' ][ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
 						} );
 
-						price_data[ 'base_price' ] = price_data[ 'base_price' ] * scheme.data.subscription_scheme.subscription_discount / 100;
+						price_data[ 'base_price' ] = price_data[ 'base_price' ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
 
 					} else if ( scheme.data.subscription_scheme.subscription_pricing_method === 'override' ) {
 						price_data[ 'base_regular_price' ] = Number( scheme.data.subscription_scheme.subscription_regular_price );
@@ -69,7 +69,9 @@
 					price_data        = bundle.calculate_totals( price_data );
 					scheme_price_html = bundle.get_price_html( price_data );
 
-					scheme.el.find( '.subscription-price' ).html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
+					$scheme_price     = scheme.el.find( '.subscription-price' );
+
+					$scheme_price.html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
 				} );
 			}
 		} );

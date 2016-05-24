@@ -91,21 +91,21 @@ class WCS_ATT_Scheme_Prices {
 
 		if ( ! empty( $subscription_schemes ) ) {
 
+			$lowest_scheme               = false;
+			$lowest_scheme_price         = $product->price;
+			$lowest_scheme_sale_price    = $product->sale_price;
+			$lowest_scheme_regular_price = $product->regular_price;
+
+			$data = array(
+				'price'         => $lowest_scheme_price,
+				'regular_price' => $lowest_scheme_regular_price,
+				'sale_price'    => $lowest_scheme_sale_price,
+				'scheme'        => current( $subscription_schemes )
+			);
+
 			$price_overrides_exist = self::subscription_price_overrides_exist( $subscription_schemes );
 
 			if ( $price_overrides_exist ) {
-
-				$lowest_scheme               = false;
-				$lowest_scheme_price         = $product->price;
-				$lowest_scheme_sale_price    = $product->sale_price;
-				$lowest_scheme_regular_price = $product->regular_price;
-
-				$data = array(
-					'price'         => $lowest_scheme_price,
-					'regular_price' => $lowest_scheme_regular_price,
-					'sale_price'    => $lowest_scheme_sale_price,
-					'scheme'        => current( $subscription_schemes )
-				);
 
 				foreach ( $subscription_schemes as $subscription_scheme ) {
 
