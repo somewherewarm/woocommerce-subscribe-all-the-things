@@ -45,13 +45,13 @@ class WCS_ATT_Integrations {
 			// Hide child cart item options if NOT priced Per-Item, or if subscription schemes already exist at parent-level.
 			add_filter( 'wcsatt_show_cart_item_options', array( __CLASS__, 'hide_bundled_item_options' ), 10, 3 );
 
+			// Hide parent cart item options if priced per-item.
+			add_filter( 'wcsatt_show_cart_item_options', array( __CLASS__, 'hide_bundle_options' ), 10, 3 );
+
 			// Bundled cart items inherit the subscription schemes of their parent if NOT priced Per-Item, or if subscription schemes already exist at parent-level.
 			add_filter( 'wcsatt_subscription_schemes', array( __CLASS__, 'get_bundled_item_schemes' ), 10, 3 );
 
-			/*
-			 * Subscription schemes attached on a bundle-type product are not supported if they contain price overrides and the bundle is priced per-item.
-			 * Also, schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
-			 */
+			// Schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 			add_filter( 'wcsatt_subscription_schemes', array( __CLASS__, 'get_bundle_schemes' ), 10, 3 );
 			add_filter( 'wcsatt_product_subscription_schemes', array( __CLASS__, 'get_bundle_product_schemes' ), 10, 2 );
 
@@ -61,93 +61,186 @@ class WCS_ATT_Integrations {
 			// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
 			add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'show_ppp_bundle_subtotal_details' ), 1000, 3 );
 
-			// When a bundle has subscription options, modify bundle contents to generate subscription option html price strings that account for the defined price overrides of each option.
-			add_filter( 'wcsatt_overridden_subscription_prices_product', array( __CLASS__, 'overridden_subscription_prices_product' ), 10, 2 );
+			// Add/remove base price filters when a scheme filters prices due to defined overrides.
+			add_action( 'wcsatt_add_price_filters', array( __CLASS__, 'add_bundle_type_price_filters' ) );
+			add_action( 'wcsatt_remove_price_filters', array( __CLASS__, 'remove_bundle_type_price_filters' ) );
 
-			// Modify subscription option html price strings of bundle-type products.
-			add_filter( 'wcsatt_single_product_subscription_option_description', array( __CLASS__, 'bundle_product_subscription_option_description' ), 10, 7 );
+			// Do not filter bundled item prices when the 'override' method is used and the bundle is priced per product.
+			// In this case, replace only the base prices with the override price values.
+			add_filter( 'wcsatt_price_filters_allowed', array( __CLASS__, 'price_filters_allowed' ), 10, 3 );
+
+			// Filter the prices of the entire bundle when it has a single subscription option and one-time purchases are disabled.
+			add_action( 'woocommerce_bundle_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 		}
 	}
 
 	/**
-	 * Modify subscription option html price strings of bundle-type products.
+	 * Removes filters added by the 'add_force_sub_price_filters' function on the 'woocommerce_bundle_add_to_cart' action.
 	 *
-	 * @param  string     $description
-	 * @param  string     $sub_price_html
-	 * @param  boolean    $price_overrides_exist
-	 * @param  boolean    $allow_one_time_option
-	 * @param  WC_Product $_cloned
-	 * @param  array      $subscription_scheme
-	 * @param  WC_Product $product
-	 * @return string
+	 * @return void
 	 */
-	public static function bundle_product_subscription_option_description( $description, $sub_price_html, $price_overrides_exist, $allow_one_time_option, $_cloned, $subscription_scheme, $product ) {
+	public static function remove_force_sub_price_filters() {
 
-		if ( self::is_bundle_type_product( $product ) ) {
-			$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, array(
-				'subscription_price' => $price_overrides_exist,
-				'price'              => '<span class="price subscription-price"></span>',
-			) );
-
-			$description = ucfirst( $allow_one_time_option ? sprintf( __( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_price_html ) : $sub_price_html );
-		}
-
-		return $description;
+		WCS_ATT_Scheme_Prices::remove_price_filters();
 	}
 
 	/**
-	 * When a bundle has subscription options, modify bundle contents to generate subscription option html price strings that account for the defined price overrides of each option.
+	 * Filter the prices of the entire bundle when it has a single subscription option and one-time purchases are disabled.
 	 *
-	 * @param  WC_Product $product
-	 * @param  array      $subscription_scheme
-	 * @return WC_Product
+	 * @return void
 	 */
-	public static function overridden_subscription_prices_product( $product, $subscription_scheme ) {
+	public static function add_force_sub_price_filters() {
+
+		global $product;
 
 		if ( 'bundle' === $product->product_type ) {
 
-			if ( WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme ) ) {
+			$product_level_schemes = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
 
-				// Modify base prices based on price override settings.
-				$_clone = clone $product;
-				$_clone->price         = $_clone->base_price;
-				$_clone->regular_price = $_clone->base_regular_price;
-				$_clone->sale_price    = $_clone->base_sale_price;
+			if ( ! empty( $product_level_schemes ) && sizeof( $product_level_schemes ) === 1 ) {
 
-				$overridden_product_prop_base_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $_clone, $subscription_scheme );
+				$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 
-				if ( ! empty( $overridden_product_prop_base_prices ) ) {
-					$product->base_price         = $overridden_product_prop_base_prices[ 'price' ];
-					$product->base_regular_price = $overridden_product_prop_base_prices[ 'regular_price' ];
-					$product->base_sale_price    = $overridden_product_prop_base_prices[ 'sale_price' ];
-				}
+				if ( $force_subscription === 'yes' ) {
 
-				// Modify bundled item prices based on price discount data.
-				if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && $subscription_scheme[ 'subscription_discount' ] > 0 ) {
+					$subscription_scheme   = current( $product_level_schemes );
+					$price_overrides_exist = WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme );
 
-					$bundled_item_product_props = array( 'min_price_product', 'max_price_product', 'min_regular_price_product', 'max_regular_price_product', 'product' );
-
-					if ( ! empty( $product->bundled_items ) ) {
-						foreach ( $product->bundled_items as $bundled_item_id => $bundled_item ) {
-							foreach ( $bundled_item_product_props as $bundled_item_product_prop ) {
-								if ( ! empty( $bundled_item->$bundled_item_product_prop ) ) {
-
-									$overridden_product_prop_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $bundled_item->$bundled_item_product_prop, $subscription_scheme );
-
-									$product->bundled_items[ $bundled_item_id ]->$bundled_item_product_prop->price         = $overridden_product_prop_prices[ 'price' ];
-									$product->bundled_items[ $bundled_item_id ]->$bundled_item_product_prop->regular_price = $overridden_product_prop_prices[ 'regular_price' ];
-									$product->bundled_items[ $bundled_item_id ]->$bundled_item_product_prop->sale_price    = $overridden_product_prop_prices[ 'sale_price' ];
-								}
-							}
-						}
+					if ( $price_overrides_exist ) {
+						WCS_ATT_Scheme_Prices::add_price_filters( $product, $subscription_scheme );
+						add_action( 'woocommerce_bundle_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
 					}
 				}
 			}
+		}
+	}
 
-			$product->max_bundle_price = $product->min_bundle_price;
+	/**
+	 * Do not filter bundled item prices when the 'override' method is used and the bundle is priced per product.
+	 * In this case, replace only the base prices with the override price values.
+	 *
+	 * @param  boolean    $allowed
+	 * @param  WC_Product $product
+	 * @param  array      $subscription_scheme
+	 * @return boolean
+	 */
+	public static function price_filters_allowed( $allowed, $product, $subscription_scheme ) {
+
+		if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' && self::is_bundle_type_product( $product ) && $product->is_priced_per_product() ) {
+			$allowed = false;
 		}
 
-		return $product;
+		return $allowed;
+	}
+
+	/**
+	 * Add base price filters when a scheme filters prices due to defined overrides.
+	 *
+	 * @return void
+	 */
+	public static function add_bundle_type_price_filters() {
+
+		add_filter( 'woocommerce_bundle_get_base_price', array( __CLASS__, 'filter_get_base_price' ), 0, 2 );
+		add_filter( 'woocommerce_bundle_get_base_regular_price', array( __CLASS__, 'filter_get_base_regular_price' ), 0, 2 );
+		add_filter( 'woocommerce_bundle_get_base_sale_price', array( __CLASS__, 'filter_get_base_sale_price' ), 0, 2 );
+	}
+
+	/**
+	 * Remove base price filters when a scheme filters prices due to defined overrides.
+	 *
+	 * @return void
+	 */
+	public static function remove_bundle_type_price_filters() {
+
+		remove_filter( 'woocommerce_bundle_get_base_price', array( __CLASS__, 'filter_get_base_price' ), 0, 2 );
+		remove_filter( 'woocommerce_bundle_get_base_regular_price', array( __CLASS__, 'filter_get_base_regular_price' ), 0, 2 );
+		remove_filter( 'woocommerce_bundle_get_base_sale_price', array( __CLASS__, 'filter_get_base_sale_price' ), 0, 2 );
+	}
+
+	/**
+	 * Filter get_base_price() calls to take price overrides into account.
+	 *
+	 * @param  double      $price
+	 * @param  WC_Product  $product
+	 * @return double
+	 */
+	public static function filter_get_base_price( $price, $product ) {
+
+		$subscription_scheme = WCS_ATT_Scheme_Prices::$price_overriding_scheme;
+
+		if ( $subscription_scheme ) {
+
+			$prices_array = array(
+				'price'         => $price,
+				'regular_price' => $product->get_base_regular_price(),
+				'sale_price'    => $product->get_base_sale_price()
+			);
+
+			$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
+			$price             = $overridden_prices[ 'price' ];
+		}
+
+		return $price;
+	}
+
+	/**
+	 * Filter get_base_regular_price() calls to take price overrides into account.
+	 *
+	 * @param  double      $regular_price
+	 * @param  WC_Product  $product
+	 * @return double
+	 */
+	public static function filter_get_base_regular_price( $regular_price, $product ) {
+
+		$subscription_scheme = WCS_ATT_Scheme_Prices::$price_overriding_scheme;
+
+		if ( $subscription_scheme ) {
+
+			WCS_ATT_Scheme_Prices::$price_overriding_scheme = false;
+
+			$prices_array = array(
+				'price'         => $product->get_base_price(),
+				'regular_price' => $regular_price,
+				'sale_price'    => $product->get_base_sale_price()
+			);
+
+			WCS_ATT_Scheme_Prices::$price_overriding_scheme = $subscription_scheme;
+
+			$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
+			$regular_price     = $overridden_prices[ 'regular_price' ];
+		}
+
+		return $regular_price;
+	}
+
+	/**
+	 * Filter get_base_sale_price() calls to take price overrides into account.
+	 *
+	 * @param  double      $sale_price
+	 * @param  WC_Product  $product
+	 * @return double
+	 */
+	public static function filter_get_base_sale_price( $sale_price, $product ) {
+
+		$subscription_scheme = WCS_ATT_Scheme_Prices::$price_overriding_scheme;
+
+		if ( $subscription_scheme ) {
+
+			WCS_ATT_Scheme_Prices::$price_overriding_scheme = false;
+
+			$prices_array = array(
+				'price'         => $product->get_base_price(),
+				'regular_price' => $product->get_base_regular_price(),
+				'sale_price'    => $sale_price
+			);
+
+			WCS_ATT_Scheme_Prices::$price_overriding_scheme = $subscription_scheme;
+
+			$overridden_prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
+			$sale_price        = $overridden_prices[ 'sale_price' ];
+		}
+
+		return $sale_price;
 	}
 
 	/**
@@ -278,8 +371,7 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Subscription schemes attached on a bundle-type product are not supported if they contain price overrides and the bundle is priced per-item.
-	 * Also, schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
+	 * Sub schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
 	 * @param  array  $schemes
 	 * @param  array  $cart_item
@@ -298,8 +390,7 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Subscription schemes attached on a bundle-type product are not supported if they contain price overrides and the bundle is priced per-item.
-	 * Also, schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
+	 * Sub schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
 	 * @param  array  $schemes
 	 * @param  array  $cart_item
@@ -308,13 +399,12 @@ class WCS_ATT_Integrations {
 	 */
 	public static function get_bundle_schemes( $schemes, $cart_item, $scope ) {
 
-		foreach ( self::$child_key_names as $child_key_name ) {
+		$child_key = self::has_bundle_type_children( $cart_item );
 
-			if ( ! empty( $cart_item[ $child_key_name ] ) ) {
-				$container = $cart_item[ 'data' ];
-				if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
-					$schemes = array();
-				}
+		if ( false !== $child_key ) {
+			$container = $cart_item[ 'data' ];
+			if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
+				$schemes = array();
 			}
 		}
 
@@ -341,6 +431,28 @@ class WCS_ATT_Integrations {
 				if ( self::overrides_child_schemes( $container_cart_item ) ) {
 					$show = false;
 				}
+			}
+		}
+
+		return $show;
+	}
+
+	/**
+	 * Hide bundle container cart item subscription options if bundle is priced per-item.
+	 *
+	 * @param  boolean $show
+	 * @param  array   $cart_item
+	 * @param  string  $cart_item_key
+	 * @return boolean
+	 */
+	public static function hide_bundle_options( $show, $cart_item, $cart_item_key ) {
+
+		$child_key = self::has_bundle_type_children( $cart_item );
+
+		if ( false !== $child_key ) {
+			$container = $cart_item[ 'data' ];
+			if ( $container->is_priced_per_product() ) {
+				$show = false;
 			}
 		}
 
