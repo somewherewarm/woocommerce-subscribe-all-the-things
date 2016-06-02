@@ -71,6 +71,8 @@ class WCS_ATT_Integrations {
 
 			// Filter the prices of the entire bundle when it has a single subscription option and one-time purchases are disabled.
 			add_action( 'woocommerce_bundle_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
+			add_action( 'woocommerce_composite_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
+			add_action( 'woocommerce_mix-and-match_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 		}
 	}
 
@@ -93,7 +95,7 @@ class WCS_ATT_Integrations {
 
 		global $product;
 
-		if ( 'bundle' === $product->product_type ) {
+		if ( self::is_bundle_type_product( $product ) ) {
 
 			$product_level_schemes = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
 
@@ -108,7 +110,7 @@ class WCS_ATT_Integrations {
 
 					if ( $price_overrides_exist ) {
 						WCS_ATT_Scheme_Prices::add_price_filters( $product, $subscription_scheme );
-						add_action( 'woocommerce_bundle_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
+						add_action( 'woocommerce_' . $product->product_type . '_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
 					}
 				}
 			}
@@ -140,6 +142,10 @@ class WCS_ATT_Integrations {
 	 */
 	public static function add_bundle_type_price_filters() {
 
+		add_filter( 'woocommerce_composite_get_base_price', array( __CLASS__, 'filter_get_base_price' ), 0, 2 );
+		add_filter( 'woocommerce_composite_get_base_regular_price', array( __CLASS__, 'filter_get_base_regular_price' ), 0, 2 );
+		add_filter( 'woocommerce_composite_get_base_sale_price', array( __CLASS__, 'filter_get_base_sale_price' ), 0, 2 );
+
 		add_filter( 'woocommerce_bundle_get_base_price', array( __CLASS__, 'filter_get_base_price' ), 0, 2 );
 		add_filter( 'woocommerce_bundle_get_base_regular_price', array( __CLASS__, 'filter_get_base_regular_price' ), 0, 2 );
 		add_filter( 'woocommerce_bundle_get_base_sale_price', array( __CLASS__, 'filter_get_base_sale_price' ), 0, 2 );
@@ -151,6 +157,10 @@ class WCS_ATT_Integrations {
 	 * @return void
 	 */
 	public static function remove_bundle_type_price_filters() {
+
+		remove_filter( 'woocommerce_composite_get_base_price', array( __CLASS__, 'filter_get_base_price' ), 0, 2 );
+		remove_filter( 'woocommerce_composite_get_base_regular_price', array( __CLASS__, 'filter_get_base_regular_price' ), 0, 2 );
+		remove_filter( 'woocommerce_composite_get_base_sale_price', array( __CLASS__, 'filter_get_base_sale_price' ), 0, 2 );
 
 		remove_filter( 'woocommerce_bundle_get_base_price', array( __CLASS__, 'filter_get_base_price' ), 0, 2 );
 		remove_filter( 'woocommerce_bundle_get_base_regular_price', array( __CLASS__, 'filter_get_base_regular_price' ), 0, 2 );
@@ -383,6 +393,8 @@ class WCS_ATT_Integrations {
 		if ( self::is_bundle_type_product( $product ) ) {
 			if ( $product->product_type === 'bundle' && $product->contains_sub() ) {
 				$schemes = array();
+			} elseif ( $product->product_type === 'mix-and-match' && $product->is_priced_per_product() ) {
+				$schemes = array();
 			}
 		}
 
@@ -404,6 +416,8 @@ class WCS_ATT_Integrations {
 		if ( false !== $child_key ) {
 			$container = $cart_item[ 'data' ];
 			if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
+				$schemes = array();
+			} elseif ( $product->product_type === 'mix-and-match' && $product->is_priced_per_product() ) {
 				$schemes = array();
 			}
 		}

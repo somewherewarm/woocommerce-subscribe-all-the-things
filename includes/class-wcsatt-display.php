@@ -456,11 +456,16 @@ class WCS_ATT_Display {
 			} else {
 				if ( 'variable' === $product->product_type && $_product->get_variation_price( 'min' ) !== $_product->get_variation_price( 'max' ) ) {
 					$has_variable_price = true;
+
 					// If all variations prices are overridden, they will be equal.
 					if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
 						$has_variable_price = false;
 					}
-				} elseif ( 'bundle' === $product->product_type && $product->min_bundle_price !== $product->max_bundle_price ) {
+
+				} elseif ( 'bundle' === $product->product_type && $product->get_bundle_price( 'min' ) !== $product->get_bundle_price( 'max' ) ) {
+					$has_variable_price = true;
+
+				} elseif ( 'composite' === $product->product_type && $product->get_composite_price( 'min' ) !== $product->get_composite_price( 'max' ) ) {
 					$has_variable_price = true;
 				}
 			}
