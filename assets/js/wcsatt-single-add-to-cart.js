@@ -141,8 +141,26 @@
 
 			composite.actions.add_action( 'initialize_composite', function() {
 				self.initialize_ui();
-				composite.actions.add_action( 'composite_totals_changed', self.update_subscription_totals, 101, self );
+
+				if ( composite.satt_schemes.length > 0 ) {
+					if ( composite.satt_schemes.length > 1 || composite.$composite_data.find( '.composite_wrap .wcsatt-options-product .one-time-option' ).length > 0 ) {
+						composite.actions.add_action( 'composite_totals_changed', self.update_subscription_totals, 101, self );
+					} else {
+						composite.filters.add_filter( 'composite_price_html', self.filter_price_html, 10, self );
+					}
+				}
 			}, 51, this );
+		};
+
+		// If only a single option is present, then composite prices are already overridden on the server side.
+		// In this case, simply grab the subscription details from the option and append them to the composite price string.
+		this.filter_price_html = function( price, view, price_data ) {
+
+			var $scheme_details = composite.satt_schemes[0].el.find( '.subscription-details' );
+
+			price = $( price ).append( $scheme_details.clone() ).prop( 'outerHTML' );
+
+			return price;
 		};
 
 		// Update totals displayed in SATT options.
@@ -152,15 +170,8 @@
 
 				$.each( composite.satt_schemes, function( index, scheme ) {
 
-					// If only a single option is present, then composite prices are already overridden on the server side.
-					// In this case, simply grab the subscription details from the option and append them to the composite price string.
-					if ( composite.satt_schemes.length === 1 && composite.$composite_data.find( '.composite_wrap .wcsatt-options-product .one-time-option' ).length === 0 ) {
-
-						var $scheme_details = scheme.el.find( '.subscription-details' );
-						composite.$composite_price.find( '.price' ).append( $scheme_details.clone() );
-
-					// If multiple options are present, then calculate the subscription price for each option that overrides default prices and update its html string.
-					} else if ( scheme.data.overrides_price === true ) {
+					// Calculate the subscription price for each option that overrides default prices and update its html string.
+					if ( scheme.data.overrides_price === true ) {
 
 						var price_data = $.extend( true, {}, composite.data_model.price_data );
 
