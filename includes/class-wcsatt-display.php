@@ -433,14 +433,10 @@ class WCS_ATT_Display {
 				$subscription_scheme      = $lowest_scheme_price_data[ 'scheme' ];
 			}
 
-			// Reinstantiate variable products to re-populate a filtered version of the 'prices_array' property. Otherwise, a clone should do...
-			if ( 'variable' === $product->product_type ) {
-				$_product = wc_get_product( $product->id );
-			} else {
-				$_product = unserialize( serialize( $product ) );
-			}
+			// Reinstantiate variable products to re-populate a filtered version of the 'prices_array' property. Otherwise, a clone should do... but re-instantiate just in case.
+			$_product = wc_get_product( $product->id );
 
-			// ...in most cases.
+			// ...and let this be filterable.
 			$_product = apply_filters( 'wcsatt_overridden_subscription_prices_product', $_product, $subscription_scheme, $product );
 
 			$_product->is_converted_to_sub          = 'yes';

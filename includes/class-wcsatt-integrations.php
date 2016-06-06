@@ -73,6 +73,8 @@ class WCS_ATT_Integrations {
 			add_action( 'woocommerce_bundle_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 			add_action( 'woocommerce_composite_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 			add_action( 'woocommerce_mix-and-match_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
+
+			add_action( 'woocommerce_composite_products_apply_product_filters', array( __CLASS__ , 'add_composited_force_sub_price_filters' ), 10, 3 );
 		}
 	}
 
@@ -87,13 +89,27 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Filter the prices of the entire bundle when it has a single subscription option and one-time purchases are disabled.
+	 * Filters the prices of an entire bundle when it has a single subscription option and one-time purchases are disabled.
 	 *
 	 * @return void
 	 */
 	public static function add_force_sub_price_filters() {
 
 		global $product;
+
+		if ( $added = self::maybe_add_force_sub_price_filters( $product ) ) {
+			add_action( 'woocommerce_' . $product->product_type . '_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
+		}
+	}
+
+	/**
+	 * Filter the prices of an entire bundle when it has a single subscription option and one-time purchases are disabled.
+	 *
+	 * @return boolean
+	 */
+	private static function maybe_add_force_sub_price_filters( $product ) {
+
+		$added = false;
 
 		if ( self::is_bundle_type_product( $product ) ) {
 
@@ -110,10 +126,24 @@ class WCS_ATT_Integrations {
 
 					if ( $price_overrides_exist ) {
 						WCS_ATT_Scheme_Prices::add_price_filters( $product, $subscription_scheme );
-						add_action( 'woocommerce_' . $product->product_type . '_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
+						$added = true;
 					}
 				}
 			}
+		}
+
+		return $added;
+	}
+
+	/**
+	 * Filter the prices of composited products loaded via ajax when the composite has a single subscription option and one-time purchases are disabled.
+	 *
+	 * @return void
+	 */
+	public static function add_composited_force_sub_price_filters( $product, $composite_id, $composite ) {
+
+		if ( did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
+			self::maybe_add_force_sub_price_filters( $composite );
 		}
 	}
 
@@ -417,7 +447,7 @@ class WCS_ATT_Integrations {
 			$container = $cart_item[ 'data' ];
 			if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
 				$schemes = array();
-			} elseif ( $product->product_type === 'mix-and-match' && $product->is_priced_per_product() ) {
+			} elseif ( $container->product_type === 'mix-and-match' && $container->is_priced_per_product() ) {
 				$schemes = array();
 			}
 		}
