@@ -115,26 +115,31 @@ class WCS_ATT_Display {
 			$options                              = array();
 			$default_subscription_scheme          = current( $product_level_schemes );
 
-			if ( $allow_one_time_option && $default_status !== 'subscription' ) {
-				$default_subscription_scheme_id = '0';
+			// Option selected by default.
+			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product->id ] ) ) {
+				$default_subscription_scheme_id = $_REQUEST[ 'convert_to_sub_' . $product->id ];
 			} else {
-				$default_subscription_scheme_id = $default_subscription_scheme[ 'id' ];
+				if ( $allow_one_time_option && $default_status !== 'subscription' ) {
+					$default_subscription_scheme_id = '0';
+				} else {
+					$default_subscription_scheme_id = $default_subscription_scheme[ 'id' ];
+				}
+				$default_subscription_scheme_id = apply_filters( 'wcsatt_get_default_subscription_scheme_id', $default_subscription_scheme_id, $product_level_schemes, $allow_one_time_option, $product );
 			}
 
-			$default_subscription_scheme_id = apply_filters( 'wcsatt_get_default_subscription_scheme_id', $default_subscription_scheme_id, $product_level_schemes, $allow_one_time_option, $product );
-
+			// One-time option.
 			if ( $allow_one_time_option ) {
 				$none_string                 = _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN );
 				$one_time_option_description = $product->variation_id > 0 ? sprintf( __( '%1$s &ndash; %2$s', WCS_ATT::TEXT_DOMAIN ), $none_string, $product->get_price_html() ) : $none_string;
 
-				$options[] = array(
-					'id'          => '0',
+				$options[ '0' ] = array(
 					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
 					'selected'    => $default_subscription_scheme_id === '0',
 					'data'        => apply_filters( 'wcsatt_single_product_one_time_option_data', array(), $product )
 				);
 			}
 
+			// Sub scheme options.
 			foreach ( $product_level_schemes as $subscription_scheme ) {
 
 				$subscription_scheme_id = $subscription_scheme[ 'id' ];
@@ -167,8 +172,7 @@ class WCS_ATT_Display {
 					'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false )
 				);
 
-				$options[] = array(
-					'id'          => $subscription_scheme_id,
+				$options[ $subscription_scheme_id ] = array(
 					'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( $allow_one_time_option ? sprintf( __( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $override_price, $allow_one_time_option, $_cloned, $subscription_scheme, $product ),
 					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
 					'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )
@@ -183,14 +187,16 @@ class WCS_ATT_Display {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
+			$options = apply_filters( 'wcsatt_single_product_options', $options, $product_level_schemes, $product );
+
 			ob_start();
 
-			wc_get_template( 'product-options.php', array(
+			wc_get_template( 'satt-product-options.php', array(
 				'product'        => $product,
-				'options'        => apply_filters( 'wcsatt_single_product_options', $options, $product_level_schemes, $product ),
+				'options'        => $options,
 				'allow_one_time' => $allow_one_time_option,
 				'prompt'         => $prompt,
-			), false, WCS_ATT()->plugin_path() . '/templates/' );
+			), false, WCS_ATT()->plugin_path() . '/templates/single-product/' );
 
 			$content = ob_get_clean();
 		}
@@ -239,6 +245,7 @@ class WCS_ATT_Display {
 		$options                       = array();
 		$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_subscription_scheme_id( $cart_item );
 
+		// One-time option.
 		if ( $allow_one_time_option ) {
 			if ( $price_overrides_exist ) {
 				if ( $active_subscription_scheme_id === '0' ) {
@@ -250,13 +257,13 @@ class WCS_ATT_Display {
 				$description = __( 'only now', WCS_ATT::TEXT_DOMAIN );
 			}
 
-			$options[] = array(
-				'id'          => '0',
+			$options[ '0' ] = array(
 				'description' => $description,
 				'selected'    => $active_subscription_scheme_id === '0',
 			);
 		}
 
+		// Sub scheme options.
 		foreach ( $subscription_schemes as $subscription_scheme ) {
 
 			$subscription_scheme_id = $subscription_scheme[ 'id' ];
@@ -306,12 +313,13 @@ class WCS_ATT_Display {
 				}
 			}
 
-			$options[] = array(
-				'id'          => $subscription_scheme_id,
+			$options[ $subscription_scheme_id ] = array(
 				'description' => $description,
 				'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 			);
 		}
+
+		$options = apply_filters( 'wcsatt_cart_item_options', $options, $subscription_schemes, $cart_item, $cart_item_key );
 
 		// If there's just one option to display, it means that one-time purchases are not allowed and there's only one sub scheme on offer -- so don't show any options.
 		if ( count( $options ) === 1 ) {
@@ -329,11 +337,11 @@ class WCS_ATT_Display {
 
 		$classes = $price_overrides_exist ? array( 'overrides_exist' ) : array();
 
-		wc_get_template( 'cart-item-options.php', array(
+		wc_get_template( 'satt-cart-item-options.php', array(
 			'options'       => $options,
 			'cart_item_key' => $cart_item_key,
 			'classes'       => implode( ' ', $classes ),
-		), false, WCS_ATT()->plugin_path() . '/templates/' );
+		), false, WCS_ATT()->plugin_path() . '/templates/cart/' );
 
 		$convert_to_sub_options = ob_get_clean();
 
@@ -365,8 +373,7 @@ class WCS_ATT_Display {
 				$options                       = array();
 				$active_subscription_scheme_id = WCS_ATT_Schemes::get_active_cart_subscription_scheme_id();
 
-				$options[] = array(
-					'id'          => '0',
+				$options[ '0' ] = array(
 					'description' => _x( 'No thanks.', 'cart subscription selection - negative response', WCS_ATT::TEXT_DOMAIN ),
 					'selected'    => $active_subscription_scheme_id === '0',
 				);
@@ -383,17 +390,16 @@ class WCS_ATT_Display {
 
 					$sub_suffix  = WC_Subscriptions_Product::get_price_string( $dummy_product, array( 'subscription_price' => false ) );
 
-					$options[] = array(
-						'id'          => $subscription_scheme[ 'id' ],
+					$options[ $subscription_scheme[ 'id' ] ] = array(
 						'description' => sprintf( __( 'Yes, %s.', 'cart subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
 						'selected'    => $active_subscription_scheme_id === $subscription_scheme_id,
 					);
 				}
 
-				foreach ( $options as $option ) {
+				foreach ( $options as $option_id => $option ) {
 					?><li>
 						<label>
-							<input type="radio" name="convert_to_sub" value="<?php echo $option[ 'id' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+							<input type="radio" name="convert_to_sub" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 							<?php echo $option[ 'description' ]; ?>
 						</label>
 					</li><?php
