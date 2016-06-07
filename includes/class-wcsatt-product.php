@@ -143,6 +143,9 @@ class WCS_ATT_Product {
 				$price = '';
 			} else {
 				$price = $_product->get_price_html();
+				if ( $singular ) {
+					$price = '<span class="price subscription-price">' . $price . '</span>';
+				}
 			}
 
 			$show_subscription_price = false === $singular || WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme );
@@ -195,7 +198,12 @@ class WCS_ATT_Product {
 		return $price;
 	}
 
-
+	/**
+	 * Modify the price string of the product, taking subscription schemes and product state into account.
+	 *
+	 * @param  string $price
+	 * @return string
+	 */
 	public function get_price_html( $price = '' ) {
 
 		if ( ! empty( $this->subscription_schemes ) ) {

@@ -24,9 +24,6 @@ class WCS_ATT_Display {
 		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'convert_to_sub_product_options' ), 100 );
 
-		// Add subscription price string info to simple products with attached subscription schemes.
-		// add_filter( 'woocommerce_get_price_html', array( __CLASS__, 'filter_price_html' ), 1000, 2 );
-
 		// Replace plain variation price html with subscription options template.
 		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'add_convert_to_sub_product_options_to_variation_data' ), 10, 3 );
 	}
@@ -157,7 +154,6 @@ class WCS_ATT_Display {
 					'selected'    => $default_subscription_scheme_id === $subscription_scheme_id,
 					'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )
 				);
-
 			}
 
 			if ( $prompt = get_post_meta( $product->id, '_wcsatt_subscription_prompt', true ) ) {
@@ -385,123 +381,6 @@ class WCS_ATT_Display {
 			?></ul>
 			<?php
 		}
-	}
-
-	/**
-	 * Adds subscription price string info to products with attached subscription schemes.
-	 *
-	 * @param  string     $price
-	 * @param  WC_Product $product
-	 * @return string
-	 */
-	public static function filter_price_html( $price, $product ) {
-
-		if ( self::$bypass_price_html_filter ) {
-			return $price;
-		}
-
-		if ( $product->get_price() === '' ) {
-			return $price;
-		}
-
-		$product_level_schemes = WCS_ATT_Schemes::get_product_subscription_schemes( $product );
-
-		if ( ! empty( $product_level_schemes ) ) {
-
-			$has_variable_price  = false;
-			$subscription_scheme = current( $product_level_schemes );
-
-			if ( $price_overrides_exist = WCS_ATT_Scheme_Prices::subscription_price_overrides_exist( $product_level_schemes ) ) {
-				$lowest_scheme_price_data = WCS_ATT_Scheme_Prices::get_min_price_subscription_scheme_data( $product, $product_level_schemes );
-				$subscription_scheme      = $lowest_scheme_price_data[ 'scheme' ];
-			}
-
-			// Reinstantiate variable products to re-populate a filtered version of the 'prices_array' property. Otherwise, a clone should do... but re-instantiate just in case.
-			$_product = wc_get_product( $product->id );
-
-			// ...and let this be filterable.
-			$_product = apply_filters( 'wcsatt_overridden_subscription_prices_product', $_product, $subscription_scheme, $product );
-
-			$_product->is_converted_to_sub          = 'yes';
-			$_product->subscription_period          = $subscription_scheme[ 'subscription_period' ];
-			$_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
-			$_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
-
-			// Add price method filters.
-			WCS_ATT_Scheme_Prices::add_price_filters( $_product, $subscription_scheme );
-
-			if ( count( $product_level_schemes ) > 1 ) {
-				$has_variable_price = true;
-			} else {
-				if ( 'variable' === $product->product_type && $_product->get_variation_price( 'min' ) !== $_product->get_variation_price( 'max' ) ) {
-					$has_variable_price = true;
-
-					// If all variations prices are overridden, they will be equal.
-					if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-						$has_variable_price = false;
-					}
-
-				} elseif ( 'bundle' === $product->product_type && $product->get_bundle_price( 'min' ) !== $product->get_bundle_price( 'max' ) ) {
-					$has_variable_price = true;
-
-				} elseif ( 'composite' === $product->product_type && $product->get_composite_price( 'min' ) !== $product->get_composite_price( 'max' ) ) {
-					$has_variable_price = true;
-				}
-			}
-
-			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
-
-			if ( $force_subscription === 'yes' ) {
-
-				self::$bypass_price_html_filter = true;
-				$price = $_product->get_price_html();
-				self::$bypass_price_html_filter = false;
-
-				$price = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $price ) );
-
-				if ( $has_variable_price && false === strpos( $price, $_product->get_price_html_from_text() ) ) {
-					$price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), $_product->get_price_html_from_text(), $price );
-				}
-
-			} else {
-
-				$suffix_price_html = '';
-
-				// Discount format vs Price format. Experimental use only.
-				if ( apply_filters( 'wcsatt_price_html_discount_format', false, $product ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' ) {
-
-					$discount          = $subscription_scheme[ 'subscription_discount' ];
-					$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37; off', WCS_ATT::TEXT_DOMAIN ), $discount ) . '</span><small>';
-					$suffix_price_html = sprintf( __( 'at%1$s%2$s', WCS_ATT::TEXT_DOMAIN ), $has_variable_price ? __( ' up to', WCS_ATT::TEXT_DOMAIN ) : '', $discount_html );
-
-				} else {
-
-					self::$bypass_price_html_filter = true;
-					$lowest_scheme_price_html = $_product->get_price_html();
-					self::$bypass_price_html_filter = false;
-
-					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $lowest_scheme_price_html ) );
-
-					if ( $has_variable_price ) {
-						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscribe from price', WCS_ATT::TEXT_DOMAIN ), str_replace( $_product->get_price_html_from_text(), '', $lowest_scheme_price_html ) );
-					} else {
-						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'subscribe for price', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
-					}
-				}
-
-				if ( $price_overrides_exist ) {
-					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or subscribe %s', '&ndash; subscription plans available %s', count( $product_level_schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
-				} else {
-					$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription available', '&ndash; subscription plans available', count( $product_level_schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
-				}
-
-				$price = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price, $suffix );
-			}
-
-			WCS_ATT_Scheme_Prices::remove_price_filters();
-		}
-
-		return $price;
 	}
 }
 
