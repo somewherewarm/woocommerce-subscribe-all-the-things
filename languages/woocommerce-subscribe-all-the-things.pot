@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 1.1.0\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2016-06-06 20:06:42+00:00\n"
+"POT-Creation-Date: 2016-06-07 12:02:35+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -143,55 +143,55 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:128
+#: includes/class-wcsatt-display.php:133
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:172
+#: includes/class-wcsatt-display.php:176
 msgid "%s"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:250
+#: includes/class-wcsatt-display.php:257
 msgid "only now"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:361
+#: includes/class-wcsatt-display.php:369
 msgid "Cart Subscription"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:362
+#: includes/class-wcsatt-display.php:370
 msgid "Interested in subscribing to these items?"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:388
+#: includes/class-wcsatt-display.php:394
 msgid "Yes, %s."
 msgstr ""
 
-#: includes/class-wcsatt-display.php:491
+#: includes/class-wcsatt-display.php:497
 msgid "%s&#37; off"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:492
+#: includes/class-wcsatt-display.php:498
 msgid "at%1$s%2$s"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:492
+#: includes/class-wcsatt-display.php:498
 msgid " up to"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:510
+#: includes/class-wcsatt-display.php:516
 msgid "&ndash; or subscribe %s"
 msgid_plural "&ndash; subscription plans available %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-wcsatt-display.php:512
+#: includes/class-wcsatt-display.php:518
 msgid "&ndash; subscription available"
 msgid_plural "&ndash; subscription plans available"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/product-options.php:22
+#: templates/single-product/satt-product-options.php:26
 msgid "Choose a subscription plan:"
 msgstr ""
 
@@ -248,33 +248,33 @@ msgctxt "for in \"Every month _for_ 12 months\""
 msgid "for"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:127
+#: includes/class-wcsatt-display.php:132
 msgctxt "product subscription selection - negative response"
 msgid "None"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:370
+#: includes/class-wcsatt-display.php:377
 msgctxt "cart subscription selection - negative response"
 msgid "No thanks."
 msgstr ""
 
-#: includes/class-wcsatt-display.php:480 includes/class-wcsatt-display.php:503
-#: includes/class-wcsatt-display.php:505
+#: includes/class-wcsatt-display.php:486 includes/class-wcsatt-display.php:509
+#: includes/class-wcsatt-display.php:511
 msgctxt "Price range: from"
 msgid "%1$s%2$s"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:503
+#: includes/class-wcsatt-display.php:509
 msgctxt "subscribe from price"
 msgid "<span class=\"from\">from </span>"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:505
+#: includes/class-wcsatt-display.php:511
 msgctxt "subscribe for price"
 msgid "<span class=\"for\">for </span>"
 msgstr ""
 
-#: includes/class-wcsatt-display.php:515
+#: includes/class-wcsatt-display.php:521
 msgctxt "price html sub options suffix"
 msgid "%1$s%2$s"
 msgstr ""
