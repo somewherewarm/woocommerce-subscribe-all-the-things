@@ -272,7 +272,7 @@ class WCS_ATT_Scheme_Prices {
 	 * @param  array       $subscription_schemes
 	 * @return string
 	 */
-	public static function get_lowest_price_subscription_scheme_data( $product, $subscription_schemes ) {
+	public static function get_min_price_subscription_scheme_data( $product, $subscription_schemes ) {
 
 		$data = false;
 
