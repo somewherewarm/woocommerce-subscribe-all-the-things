@@ -151,6 +151,13 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
+				/**
+				 * Allow the scheme options to be filtered.
+				 *
+				 * @since 1.1.1
+				 */
+				$_cloned = apply_filters( 'wcsatt_sub_product_scheme_option', $_cloned, $subscription_scheme );
+
 				$override_price = false === $is_single_scheme_forced_subscription && WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme );
 
 				if ( $override_price ) {
@@ -159,10 +166,10 @@ class WCS_ATT_Display {
 
 				self::$bypass_price_html_filter = true;
 
-				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, array(
+				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, apply_filters( 'wcsatt_get_single_product_price_string', array(
 					'subscription_price' => $override_price || $is_single_scheme_forced_subscription,
 					'price'              => $is_single_scheme_forced_subscription ? '' : '<span class="price subscription-price">' . $_cloned->get_price_html() . '</span>',
-				) );
+				), $subscription_scheme ) );
 
 				self::$bypass_price_html_filter = false;
 
