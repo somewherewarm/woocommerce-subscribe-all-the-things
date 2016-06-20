@@ -150,7 +150,7 @@ class WCS_ATT_Cart {
 
 			$cart_item[ 'data' ]->is_converted_to_sub = 'yes';
 
-			$subscription_prices = WCS_ATT_Schemes::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
+			$subscription_prices = WCS_ATT_Scheme_Prices::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
 
 			if ( ! empty( $subscription_prices ) ) {
 				$cart_item[ 'data' ]->price                    = $subscription_prices[ 'price' ];
@@ -197,10 +197,10 @@ class WCS_ATT_Cart {
 
 			if ( isset( $cart_item[ 'wccsub_data' ] ) ) {
 
-				// Initialize subscription scheme data
+				// Initialize subscription scheme data.
 				$cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] = WCS_ATT_Schemes::set_subscription_scheme_id( $cart_item, $cart_level_schemes );
 
-				// Convert the cart item to a subscription, if needed
+				// Convert the cart item to a subscription, if needed.
 				WC()->cart->cart_contents[ $cart_item_key ] = self::convert_to_sub( $cart_item );
 			}
 		}

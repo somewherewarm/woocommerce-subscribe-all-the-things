@@ -1,7 +1,8 @@
 <?php
 /**
  * Admin subscription scheme view.
- * @version 1.0.3
+ *
+ * @since 1.0.0
  */
 
 // Exit if accessed directly.
@@ -11,12 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?><div class="subscription_scheme wc-metabox open" rel="<?php echo isset( $scheme_data[ 'position' ] ) ? $scheme_data[ 'position' ] : ''; ?>">
 	<h3>
-		<span class="scheme-title"><?php echo '#' . ( $index + 1 ); ?></span>
+		<span class="scheme-title"></span>
 		<button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button>
 	</h3>
 	<div class="subscription_scheme_data wc-metabox-content"><?php
 
-		// Basic Subscription Scheme Options
+		// Basic Subscription Scheme Options.
 		do_action( 'wcsatt_subscription_scheme_content', $index, $scheme_data, $post_id );
 
 		// Additional Subscription Options for Products.

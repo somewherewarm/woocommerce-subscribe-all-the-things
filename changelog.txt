@@ -1,5 +1,15 @@
 *** WooCommerce Subscribe All the Things ***
 
+2016.06.07 - version 1.1.0
+ * Important - Template files modified and re-organized under '/cart' and '/single-product' directories. Please update any overridden SATT template files in your tree.
+ * Fix - Wrong/static prices in the single-product template of Bundles and Composites when Per-Item Pricing is enabled. Totals next to SATT options are now properly updated to a) reflect changes in the configuration of a Bundle/Composite and b) include price discounts/overrides associated with each option.
+* Fix - Bundles/Composites with a single subscription option and the "Force Subscription" option enabled now treated and presented as permanent Subscription products. Price strings of a) the products themselves and b) all contained items now include any price overrides defined in the singular subscription option. Product price strings include subscription details.
+ * Tweak - In-cart subscription switching feature not available for Bundles/Composites when Per-Item Pricing is enabled.
+ * Tweak - Subscription options attached to MnM type products have no effect when Per-Item Pricing is enabled. MnM products unsupported when Per-Item Pricing is active.
+ * Feature - Added support for Variable products. SATT options can now be added to Variable products at product (not variation!) level.
+ * Tweak - Styles and general usability of admin "Subscriptions" panel.
+ * Tweak -  Refactored the 'WCS_ATT_Schemes' and added a separate 'WCS_ATT_Scheme_Prices' class in order to separate all functions associated with price overrides.
+
 2016.03.28 - version 1.0.3
  * Feature - Ability to override product prices from subscription options.
  * Feature - Subscribe to cart feature.

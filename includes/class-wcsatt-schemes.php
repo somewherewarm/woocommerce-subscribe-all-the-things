@@ -2,8 +2,8 @@
 /**
  * Loading and filtering of subscription scheme settings.
  *
- * @class 	WCS_ATT_Schemes
- * @version 1.0.0
+ * @class  WCS_ATT_Schemes
+ * @since  1.0.0
  */
 
 class WCS_ATT_Schemes {
@@ -39,7 +39,6 @@ class WCS_ATT_Schemes {
 
 		$schemes          = self::get_subscription_schemes( $cart_item );
 		$active_scheme_id = self::get_active_subscription_scheme_id( $cart_item );
-
 		$active_scheme    = false;
 
 		foreach ( $schemes as $scheme ) {
@@ -53,118 +52,22 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
-	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
+	 * Returns a subscription scheme by id.
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
+	public static function get_subscription_scheme_by_id( $id, $schemes ) {
 
-		$prices = array();
+		$found_scheme = false;
 
-		if ( empty( $active_subscription_scheme ) ) {
-			$active_subscription_scheme = self::get_active_subscription_scheme( $cart_item );
-		}
-
-		if ( ! empty( $active_subscription_scheme ) ) {
-			$prices = self::get_subscription_scheme_prices( $cart_item[ 'data' ], $active_subscription_scheme );
-		}
-
-		return $prices;
-	}
-
-	/**
-	 * Returns cart item pricing data based on a subscription scheme's settings.
-	 *
-	 * @return string
-	 */
-	public static function get_subscription_scheme_prices( $product, $subscription_scheme ) {
-
-		$prices = array();
-
-		if ( ! empty( $subscription_scheme ) ) {
-			if ( isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
-				if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-					$prices[ 'regular_price' ] = $subscription_scheme[ 'subscription_regular_price' ];
-					$prices[ 'sale_price' ]    = $subscription_scheme[ 'subscription_sale_price' ];
-					$prices[ 'price' ]         = $subscription_scheme[ 'subscription_price' ];
-				} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) && $product->price > 0 ) {
-					$prices[ 'regular_price' ] = self::get_discounted_scheme_regular_price( $product );
-					$prices[ 'price' ]         = self::get_discounted_scheme_price( $product, $subscription_scheme[ 'subscription_discount' ] );
-
-					if ( $prices[ 'price' ] < $prices[ 'regular_price' ] ) {
-						$prices[ 'sale_price' ] = $prices[ 'price' ] ;
-					}
-				}
-			}
-		}
-
-		return $prices;
-	}
-
-	/**
-	 * True if any of the subscription schemes overrides the basic price.
-	 *
-	 * @param  array  $subscription_schemes
-	 * @return boolean
-	 */
-	public static function subscription_price_overrides_exist( $subscription_schemes ) {
-
-		$has_price_overrides = false;
-
-		foreach ( $subscription_schemes as $subscription_scheme ) {
-
-			if ( ! isset( $subscription_scheme[ 'subscription_pricing_method' ] ) ) {
-				continue;
-			}
-
-			if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-				$has_price_overrides = true;
-				break;
-			} else if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' && ! empty( $subscription_scheme[ 'subscription_discount' ] ) ) {
-				$has_price_overrides = true;
+		foreach ( $schemes as $scheme ) {
+			if ( $scheme[ 'id' ] === $id ) {
+				$found_scheme = $scheme;
 				break;
 			}
 		}
 
-		return $has_price_overrides;
-	}
-
-	/**
-	 * Get product regular price (before discount).
-	 *
-	 * @return mixed
-	 */
-	private static function get_discounted_scheme_regular_price( $product ) {
-
-		$regular_price = $product->regular_price;
-
-		$regular_price = empty( $regular_price ) ? $product->price : $regular_price;
-
-		return $regular_price;
-	}
-
-	/**
-	 * Get product price after discount.
-	 *
-	 * @return mixed
-	 */
-	private static function get_discounted_scheme_price( $product, $discount ) {
-
-		$price = $product->price;
-
-		if ( $price === '' ) {
-			return $price;
-		}
-
-		if ( apply_filters( 'wcsatt_discount_from_regular', true, $product ) ) {
-			$regular_price = self::get_discounted_scheme_regular_price( $product );
-		} else {
-			$regular_price = $price;
-		}
-
-		$price = empty( $discount ) ? $price : ( empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, wc_get_price_decimals() ) );
-
-		return $price;
+		return $found_scheme;
 	}
 
 	/**
@@ -178,7 +81,7 @@ class WCS_ATT_Schemes {
 
 		if ( WCS_ATT_Cart::is_convertible_to_sub( $cart_item ) ) {
 
-			// Get product-level subscription schemes stored in product meta
+			// Get product-level subscription schemes stored in product meta.
 
 			if ( in_array( $scope, array( 'all', 'cart-item' ) ) ) {
 
@@ -193,8 +96,8 @@ class WCS_ATT_Schemes {
 				}
 			}
 
-			// Get cart-level subscription schemes stored in WC settings
-			// Added only if there are no product-level schemes present
+			// Get cart-level subscription schemes stored in WC settings.
+			// Added only if there are no product-level schemes present.
 
 			if ( in_array( $scope, array( 'all', 'cart' ) ) ) {
 
@@ -221,11 +124,19 @@ class WCS_ATT_Schemes {
 
 		$schemes = array();
 
+		if ( ! is_object( $product ) ) {
+			return $schemes;
+		}
+
+		if ( $product->variation_id > 0 ) {
+			return self::get_variation_subscription_schemes( $product );
+		}
+
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product->product_type, $supported_types ) ) {
 
-			// Get product-level subscription schemes stored in product meta
+			// Get product-level subscription schemes stored in product meta.
 
 			$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
 
@@ -241,6 +152,42 @@ class WCS_ATT_Schemes {
 	}
 
 	/**
+	 * Returns all available subscription schemes attached to a variation.
+	 *
+	 * @param  WC_Product_Variation  $variation
+	 * @return array
+	 */
+	private static function get_variation_subscription_schemes( $variation ) {
+
+		$schemes = array();
+
+		// Get product-level subscription schemes stored in variation meta.
+
+		$variation_schemes = get_post_meta( $variation->variation_id, '_wcsatt_schemes', true );
+
+		if ( $variation_schemes ) {
+			foreach ( $variation_schemes as $scheme ) {
+				$scheme[ 'scope' ] = 'cart-item';
+				$schemes[]         = $scheme;
+			}
+		} else {
+
+			// Get product-level subscription schemes stored in product meta.
+
+			$product_schemes = get_post_meta( $variation->id, '_wcsatt_schemes', true );
+
+			if ( $product_schemes ) {
+				foreach ( $product_schemes as $scheme ) {
+					$scheme[ 'scope' ] = 'cart-item';
+					$schemes[]         = $scheme;
+				}
+			}
+		}
+
+		return apply_filters( 'wcsatt_variation_subscription_schemes', $schemes, $variation );
+	}
+
+	/**
 	 * Returns the default subscription scheme id of a cart item, or '0' if the default option is a one-off purchase.
 	 *
 	 * @param  array $cart_item
@@ -251,29 +198,28 @@ class WCS_ATT_Schemes {
 
 		if ( $cart_level_schemes ) {
 
-			// default to last setting
+			// Default to last setting.
 			$default_scheme_id = WC()->session->get( 'wcsatt-active-scheme-id', false );
 
 			if ( false === $default_scheme_id ) {
 
-				// default to subscription
+				// Default to subscription.
 
 				if ( apply_filters( 'wcsatt_enable_cart_subscription_by_default', false ) ) {
 
 					$default_scheme    = current( $cart_level_schemes );
 					$default_scheme_id = $default_scheme[ 'id' ];
 
-				// default to one-time
+				// Default to one-time.
 
 				} else {
 					$default_scheme_id = '0';
 				}
-
 			}
 
 		} else {
 
-			// default to last setting
+			// Default to last setting.
 			$default_scheme_id = $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ];
 
 			if ( false === $default_scheme_id ) {
@@ -312,12 +258,12 @@ class WCS_ATT_Schemes {
 
 		$cart_item_schemes = array();
 
-		// Cart-item options are displayed only if we don't have any grouped cart-level options to show
+		// Cart-item options are displayed only if we don't have any grouped cart-level options to show.
 		if ( false === self::get_cart_subscription_schemes() ) {
 
 			$cart_item_schemes = self::get_subscription_schemes( $cart_item, 'cart-item' );
 
-			// Cart-level options are displayed at cart-item level when we can't show them grouped together
+			// Cart-level options are displayed at cart-item level when we can't show them grouped together.
 			if ( empty( $cart_item_schemes ) ) {
 				$cart_item_schemes = self::get_subscription_schemes( $cart_item, 'cart' );
 			}
