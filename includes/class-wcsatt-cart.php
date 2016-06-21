@@ -168,7 +168,7 @@ class WCS_ATT_Cart {
 			$cart_item[ 'data' ]->is_converted_to_sub = 'no';
 		}
 
-		return $cart_item;
+		return apply_filters( 'wcsatt_cart_item', $cart_item );
 	}
 
 	/**

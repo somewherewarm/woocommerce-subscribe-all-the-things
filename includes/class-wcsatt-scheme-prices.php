@@ -221,7 +221,7 @@ class WCS_ATT_Scheme_Prices {
 			}
 		}
 
-		return $prices;
+		return apply_filters( 'wcsatt_subscription_scheme_prices', $prices, $subscription_scheme );
 	}
 
 	/**
