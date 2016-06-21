@@ -24,6 +24,9 @@ class WCS_ATT_Display {
 		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'convert_to_sub_product_options' ), 100 );
 
+		// Changes the "Add to Cart" button text when a product with the force subscription is set.
+		add_filter( 'woocommerce_product_single_add_to_cart_text', array( __CLASS__, 'add_to_cart_text' ), 10, 1 );
+
 		// Add subscription price string info to simple products with attached subscription schemes.
 		add_filter( 'woocommerce_get_price_html', array( __CLASS__, 'filter_price_html' ), 1000, 2 );
 
@@ -533,6 +536,43 @@ class WCS_ATT_Display {
 
 		return $price;
 	}
+
+	/**
+	 * Override the WooCommerce "Add to Cart" button text with "Sign Up Now".
+	 *
+	 * @since 1.1.1
+	 */
+	public static function add_to_cart_text( $button_text ) {
+		global $product;
+
+		$product_type = $product->product_type;
+
+		$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
+
+		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+
+		if ( in_array( $product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
+
+			if ( $force_subscription == 'yes' ) {
+
+				if ( $product->variation_id > 0 ) {
+
+					$button_text = __( 'Sign Up this Variation', WCS_ATT::TEXT_DOMAIN );
+
+				} else {
+
+					$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT
+::TEXT_DOMAIN ) );
+
+				}
+
+			}
+
+		}
+
+		return apply_filters( 'wcsatt_add_to_cart_text', $button_text );
+	}
+
 }
 
 WCS_ATT_Display::init();
