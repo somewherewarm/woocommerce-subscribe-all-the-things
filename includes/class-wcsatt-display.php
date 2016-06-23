@@ -553,7 +553,7 @@ class WCS_ATT_Display {
 
 		if ( in_array( $product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
 
-			if ( $force_subscription == 'yes' ) {
+			if ( 'yes' == $force_subscription ) {
 
 				if ( $product->variation_id > 0 ) {
 
