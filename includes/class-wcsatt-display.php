@@ -513,7 +513,7 @@ class WCS_ATT_Display {
 					$lowest_scheme_price_html = $_product->get_price_html();
 					self::$bypass_price_html_filter = false;
 
-					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $lowest_scheme_price_html ) );
+					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, apply_filters( 'wcsatt_get_single_product_lowest_price_string', array( 'price' => $lowest_scheme_price_html ), $lowest_scheme_price_data ) );
 
 					if ( $has_variable_price ) {
 						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscribe from price', WCS_ATT::TEXT_DOMAIN ), str_replace( $_product->get_price_html_from_text(), '', $lowest_scheme_price_html ) );

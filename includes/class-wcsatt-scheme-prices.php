@@ -324,7 +324,7 @@ class WCS_ATT_Scheme_Prices {
 			}
 		}
 
-		return $data;
+		return apply_filters( 'wcsatt_get_lowest_price_sub_scheme_data', $data, $lowest_scheme );
 	}
 
 	/**
