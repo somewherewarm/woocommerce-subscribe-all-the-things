@@ -75,6 +75,9 @@ class WCS_ATT_Integrations {
 			add_action( 'woocommerce_mix-and-match_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 
 			add_action( 'woocommerce_composite_products_apply_product_filters', array( __CLASS__ , 'add_composited_force_sub_price_filters' ), 10, 3 );
+
+			// Filters the supported product types for the Subscription Shortcodes extension.
+			add_filter( 'wcss_product_types', array( __CLASS__, 'add_supported_product_types' ), 10, 1 );
 		}
 	}
 
@@ -518,6 +521,19 @@ class WCS_ATT_Integrations {
 		}
 
 		return $overrides;
+	}
+
+	/**
+	 * Adds the supported product types this 
+	 * extension supports for Subscription Shortcodes extension.
+	 *
+	 * @param array $product_types
+	 * @return array
+	 */
+	public static function add_supported_product_types( $product_types ) {
+		$get_supported_products = WCS_ATT()->get_supported_product_types();
+
+		return array_merge( $product_types, $get_supported_products );
 	}
 }
 
