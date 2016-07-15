@@ -545,29 +545,15 @@ class WCS_ATT_Display {
 	public static function add_to_cart_text( $button_text ) {
 		global $product;
 
-		$product_type = $product->product_type;
-
 		$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
 
 		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 
-		if ( in_array( $product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
-
+		if ( in_array( $product->product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
 			if ( 'yes' == $force_subscription ) {
-
-				if ( $product->variation_id > 0 ) {
-
-					$button_text = __( 'Sign Up this Variation', WCS_ATT::TEXT_DOMAIN );
-
-				} else {
-
-					$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT
+				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT
 ::TEXT_DOMAIN ) );
-
-				}
-
 			}
-
 		}
 
 		return apply_filters( 'wcsatt_add_to_cart_text', $button_text );
