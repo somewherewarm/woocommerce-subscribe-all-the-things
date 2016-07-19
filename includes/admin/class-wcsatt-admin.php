@@ -73,9 +73,9 @@ class WCS_ATT_Admin {
 		) );
 
 		?><tr valign="top">
-			<th scope="row" class="titledesc"><?php echo esc_html( $values['title'] ) ?></th>
+			<th scope="row" class="titledesc"><?php echo esc_html( $values[ 'title' ] ) ?></th>
 			<td class="forminp forminp-subscription_schemes_metaboxes">
-				<p class="description"><?php echo esc_html( $values['desc'] ) ?></p>
+				<p class="description"><?php echo esc_html( $values[ 'desc' ] ) ?></p>
 				<div id="wcsatt_data" class="wc-metaboxes-wrapper">
 					<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
@@ -241,7 +241,7 @@ class WCS_ATT_Admin {
 
 			// Set regular price as ZERO should the shop owner forget.
 			// This helps make WooCommerce think it's still available for purchase.
-			if ( $force_subscription == 'yes' && empty( $_POST['_regular_price'] ) ) {
+			if ( 'yes' === $force_subscription && empty( $_POST[ '_regular_price' ] ) ) {
 				update_post_meta( $post_id, '_regular_price', wc_format_decimal( 0 ) );
 				update_post_meta( $post_id, '_price', wc_format_decimal( 0 ) );
 			}
@@ -278,7 +278,7 @@ class WCS_ATT_Admin {
 			$posted_schemes = array();
 		}
 
-		$posted_schemes        = stripslashes_deep( $posted_schemes );
+		$posted_schemes = stripslashes_deep( $posted_schemes );
 		$unique_schemes = array();
 
 		foreach ( $posted_schemes as $posted_scheme ) {

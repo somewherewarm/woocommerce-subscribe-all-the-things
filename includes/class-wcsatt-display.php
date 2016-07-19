@@ -154,12 +154,7 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-				/**
-				 * Allow the scheme options to be filtered.
-				 *
-				 * @since 1.1.1
-				 */
-				$_cloned = apply_filters( 'wcsatt_sub_product_scheme_option', $_cloned, $subscription_scheme );
+				$_cloned = apply_filters( 'wcsatt_converted_product_for_scheme_option', $_cloned, $subscription_scheme );
 
 				$override_price = false === $is_single_scheme_forced_subscription && WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme );
 
@@ -169,7 +164,7 @@ class WCS_ATT_Display {
 
 				self::$bypass_price_html_filter = true;
 
-				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, apply_filters( 'wcsatt_get_single_product_price_string', array(
+				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, apply_filters( 'wcsatt_single_product_subscription_scheme_price_html', array(
 					'subscription_price' => $override_price || $is_single_scheme_forced_subscription,
 					'price'              => $is_single_scheme_forced_subscription ? '' : '<span class="price subscription-price">' . $_cloned->get_price_html() . '</span>',
 				), $subscription_scheme ) );
@@ -543,16 +538,15 @@ class WCS_ATT_Display {
 	 * @since 1.1.1
 	 */
 	public static function add_to_cart_text( $button_text ) {
+
 		global $product;
 
-		$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
-
+		$product_schemes    = get_post_meta( $product->id, '_wcsatt_schemes', true );
 		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 
 		if ( in_array( $product->product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
-			if ( 'yes' == $force_subscription ) {
-				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT
-::TEXT_DOMAIN ) );
+			if ( 'yes' === $force_subscription ) {
+				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT::TEXT_DOMAIN ) );
 			}
 		}
 
