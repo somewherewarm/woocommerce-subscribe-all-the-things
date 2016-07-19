@@ -36,7 +36,7 @@ class WCS_ATT_Admin {
 		add_action( 'woocommerce_product_write_panels', __CLASS__ . '::product_write_panel' );
 
 		// Processes and saves the necessary post meta.
-		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta' );
+		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta', 15, 1 );
 
 		/*
 		 * "Subscribe to Cart" settings.
@@ -238,6 +238,13 @@ class WCS_ATT_Admin {
 			$force_subscription = isset( $_POST[ '_wcsatt_force_subscription' ] ) ? 'yes' : 'no';
 
 			update_post_meta( $post_id, '_wcsatt_force_subscription', $force_subscription );
+
+			// Set regular price as ZERO should the shop owner forget.
+			// This helps make WooCommerce think it's still available for purchase.
+			if ( $force_subscription == 'yes' && empty( $_POST['_regular_price'] ) ) {
+				update_post_meta( $post_id, '_regular_price', wc_format_decimal( 0 ) );
+				update_post_meta( $post_id, '_price', wc_format_decimal( 0 ) );
+			}
 
 			// Save prompt.
 

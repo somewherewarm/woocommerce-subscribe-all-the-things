@@ -24,6 +24,9 @@ class WCS_ATT_Display {
 		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'convert_to_sub_product_options' ), 100 );
 
+		// Changes the "Add to Cart" button text when a product with the force subscription is set.
+		add_filter( 'woocommerce_product_single_add_to_cart_text', array( __CLASS__, 'add_to_cart_text' ), 10, 1 );
+
 		// Add subscription price string info to simple products with attached subscription schemes.
 		add_filter( 'woocommerce_get_price_html', array( __CLASS__, 'filter_price_html' ), 1000, 2 );
 
@@ -151,6 +154,13 @@ class WCS_ATT_Display {
 				$_cloned->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 				$_cloned->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
+				/**
+				 * Allow the scheme options to be filtered.
+				 *
+				 * @since 1.1.1
+				 */
+				$_cloned = apply_filters( 'wcsatt_sub_product_scheme_option', $_cloned, $subscription_scheme );
+
 				$override_price = false === $is_single_scheme_forced_subscription && WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme );
 
 				if ( $override_price ) {
@@ -159,10 +169,10 @@ class WCS_ATT_Display {
 
 				self::$bypass_price_html_filter = true;
 
-				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, array(
+				$sub_price_html = WC_Subscriptions_Product::get_price_string( $_cloned, apply_filters( 'wcsatt_get_single_product_price_string', array(
 					'subscription_price' => $override_price || $is_single_scheme_forced_subscription,
 					'price'              => $is_single_scheme_forced_subscription ? '' : '<span class="price subscription-price">' . $_cloned->get_price_html() . '</span>',
-				) );
+				), $subscription_scheme ) );
 
 				self::$bypass_price_html_filter = false;
 
@@ -503,7 +513,7 @@ class WCS_ATT_Display {
 					$lowest_scheme_price_html = $_product->get_price_html();
 					self::$bypass_price_html_filter = false;
 
-					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $lowest_scheme_price_html ) );
+					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, apply_filters( 'wcsatt_get_single_product_lowest_price_string', array( 'price' => $lowest_scheme_price_html ), $lowest_scheme_price_data ) );
 
 					if ( $has_variable_price ) {
 						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscribe from price', WCS_ATT::TEXT_DOMAIN ), str_replace( $_product->get_price_html_from_text(), '', $lowest_scheme_price_html ) );
@@ -526,6 +536,29 @@ class WCS_ATT_Display {
 
 		return $price;
 	}
+
+	/**
+	 * Override the WooCommerce "Add to Cart" button text with "Sign Up Now".
+	 *
+	 * @since 1.1.1
+	 */
+	public static function add_to_cart_text( $button_text ) {
+		global $product;
+
+		$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
+
+		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+
+		if ( in_array( $product->product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
+			if ( 'yes' == $force_subscription ) {
+				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT
+::TEXT_DOMAIN ) );
+			}
+		}
+
+		return apply_filters( 'wcsatt_add_to_cart_text', $button_text );
+	}
+
 }
 
 WCS_ATT_Display::init();
