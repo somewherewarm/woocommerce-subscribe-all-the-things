@@ -393,7 +393,7 @@ class WCS_ATT_Display {
 					$dummy_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
 					$dummy_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
 
-					$sub_suffix  = WC_Subscriptions_Product::get_price_string( $dummy_product, array( 'subscription_price' => false ) );
+					$sub_suffix  = WC_Subscriptions_Product::get_price_string( $dummy_product, array( 'price' => '', 'subscription_price' => false ) );
 
 					$options[ $subscription_scheme[ 'id' ] ] = array(
 						'description' => sprintf( __( 'Yes, %s.', 'cart subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_suffix ),
