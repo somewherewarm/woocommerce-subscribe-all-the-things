@@ -90,6 +90,8 @@
 							$scheme_price     = scheme.el.find( '.subscription-price' );
 
 						$scheme_price.html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
+
+						$scheme_price.trigger( 'wcsatt-updated-bundle-price', [ scheme_price_html, scheme, bundle ] );
 					}
 				} );
 			}
@@ -205,6 +207,8 @@
 							$scheme_price     = scheme.el.find( '.subscription-price' );
 
 						$scheme_price.html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
+
+						$scheme_price.trigger( 'wcsatt-updated-composite-price', [ scheme_price_html, scheme, composite ] );
 					}
 				} );
 			}
