@@ -674,7 +674,7 @@ class WCS_ATT_Admin {
 
 		echo '</div>';
 
-		echo '<div class="options_group subscription_one_time_shipping">';
+		echo '<div class="options_group subscription_one_time_shipping hide_if_subscription hide_if_variable-subscription">';
 
 		// Only one Subscription per customer
 		woocommerce_wp_checkbox( array(
