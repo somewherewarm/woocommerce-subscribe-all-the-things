@@ -35,9 +35,6 @@ class WCS_ATT_Admin {
 		// Creates the panel for configuring subscription options.
 		add_action( 'woocommerce_product_write_panels', __CLASS__ . '::product_write_panel' );
 
-		// Add subscription shipping options on edit product page.
-		add_action( 'woocommerce_product_options_shipping', __CLASS__ . '::subscription_shipping_fields' );
-
 		// Processes and saves the necessary post meta.
 		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta', 15, 1 );
 
@@ -664,27 +661,6 @@ class WCS_ATT_Admin {
 				<button type="button" class="button button-primary add_subscription_scheme"><?php _e( 'Add Option', WCS_ATT::TEXT_DOMAIN ); ?></button>
 			</p>
 		</div><?php
-	}
-
-	/**
-	 * Output subscription shipping options on the "Edit Product" admin screen
-	 */
-	public static function subscription_shipping_fields() {
-		global $post;
-
-		echo '</div>';
-
-		echo '<div class="options_group subscription_one_time_shipping hide_if_subscription hide_if_variable-subscription">';
-
-		// Only one Subscription per customer
-		woocommerce_wp_checkbox( array(
-			'id'          => '_subscription_one_time_shipping',
-			'label'       => __( 'One Time Shipping', 'woocommerce-subscriptions' ),
-			'description' => __( 'Shipping for subscription products is normally charged on the initial order and all renewal orders. Enable this to only charge shipping once on the initial order. Note: for shipping to be charged on the initial order, the subscription must not have a free trial.', 'woocommerce-subscriptions' ),
-			'desc_tip'    => true,
-		) );
-
-		do_action( 'woocommerce_subscriptions_product_options_shipping' );
 	}
 
 }
