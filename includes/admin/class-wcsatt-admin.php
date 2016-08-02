@@ -270,7 +270,6 @@ class WCS_ATT_Admin {
 	/**
 	 * Save subscription scheme option from the WooCommerce > Settings > Subscriptions administration screen.
 	 *
-	 * @param  int  $post_id
 	 * @return void
 	 */
 	public static function save_cart_level_settings() {
