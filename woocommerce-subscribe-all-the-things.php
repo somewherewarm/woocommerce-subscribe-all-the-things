@@ -232,10 +232,9 @@ endif; // end class_exists check
  * Returns the main instance of WCS_ATT to prevent the need to use globals.
  *
  * @since  1.0.0
- * @return WooCommerce Cart Subscriptions
+ * @return WooCommerce Subscribe All the Things
  */
 function WCS_ATT() {
-
   return WCS_ATT::instance();
 }
 
