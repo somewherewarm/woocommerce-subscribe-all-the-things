@@ -63,13 +63,13 @@ class WCS_ATT_Admin {
 		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array(
 
 			// Default to "every month" scheme.
-			array(
+			apply_filters( 'wcsatt_default_subscription_scheme', array(
 				'subscription_period_interval' => 1,
 				'subscription_period'          => 'month',
 				'subscription_length'          => 0,
 				'id'                           => '1_month_0',
 				'position'                     => 0,
-			)
+			) )
 		) );
 
 		?><tr valign="top">
