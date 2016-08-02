@@ -451,9 +451,9 @@ class WCS_ATT_Display {
 			$_product = apply_filters( 'wcsatt_overridden_subscription_prices_product', $_product, $subscription_scheme, $product );
 
 			$_product->is_converted_to_sub          = 'yes';
-			$_product->subscription_period          = $subscription_scheme[ 'subscription_period' ];
-			$_product->subscription_period_interval = $subscription_scheme[ 'subscription_period_interval' ];
-			$_product->subscription_length          = $subscription_scheme[ 'subscription_length' ];
+			$_product->subscription_period          = isset( $subscription_scheme[ 'subscription_period' ] ) ? $subscription_scheme[ 'subscription_period' ] : '';
+			$_product->subscription_period_interval = isset( $subscription_scheme[ 'subscription_period_interval' ] ) ?$subscription_scheme[ 'subscription_period_interval' ] : '';
+			$_product->subscription_length          = isset( $subscription_scheme[ 'subscription_length' ] ) ? $subscription_scheme[ 'subscription_length' ] : '';
 
 			// Add price method filters.
 			WCS_ATT_Scheme_Prices::add_price_filters( $_product, $subscription_scheme );
@@ -507,6 +507,8 @@ class WCS_ATT_Display {
 					self::$bypass_price_html_filter = true;
 					$lowest_scheme_price_html = $_product->get_price_html();
 					self::$bypass_price_html_filter = false;
+
+					$lowest_scheme_price_data = isset( $lowest_scheme_price_data ) ? $lowest_scheme_price_data : array();
 
 					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, apply_filters( 'wcsatt_get_single_product_lowest_price_string', array( 'price' => $lowest_scheme_price_html ), $lowest_scheme_price_data ) );
 
