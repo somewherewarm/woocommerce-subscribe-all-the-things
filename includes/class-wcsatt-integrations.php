@@ -105,6 +105,7 @@ class WCS_ATT_Integrations {
 	/**
 	 * Filter the prices of an entire bundle when it has a single subscription option and one-time purchases are disabled.
 	 *
+	 * @param  WC_Product $product
 	 * @return boolean
 	 */
 	private static function maybe_add_force_sub_price_filters( $product ) {
@@ -138,6 +139,9 @@ class WCS_ATT_Integrations {
 	/**
 	 * Filter the prices of composited products loaded via ajax when the composite has a single subscription option and one-time purchases are disabled.
 	 *
+	 * @param  WC_Product $product
+	 * @param  int        $composite_id
+	 * @param  object     $composite
 	 * @return void
 	 */
 	public static function add_composited_force_sub_price_filters( $product, $composite_id, $composite ) {
@@ -397,7 +401,7 @@ class WCS_ATT_Integrations {
 				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
 				if ( self::overrides_child_schemes( $container_cart_item ) ) {
 					$schemes = WCS_ATT_Schemes::get_subscription_schemes( $container_cart_item, $scope );
-					foreach ( $schemes as &$scheme ) {
+					foreach ( $schemes as $scheme ) {
 						if ( $scheme[ 'subscription_pricing_method' ] === 'override' ) {
 							$scheme[ 'subscription_pricing_method' ] = 'inherit';
 							$scheme[ 'subscription_discount' ]       = '';
@@ -413,9 +417,8 @@ class WCS_ATT_Integrations {
 	/**
 	 * Sub schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
-	 * @param  array  $schemes
-	 * @param  array  $cart_item
-	 * @param  string $scope
+	 * @param  array      $schemes
+	 * @param  WC_Product $product
 	 * @return array
 	 */
 	public static function get_bundle_product_schemes( $schemes, $product ) {

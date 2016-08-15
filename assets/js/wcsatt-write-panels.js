@@ -12,6 +12,29 @@ jQuery( function($) {
 		};
 
 	/* ------------------------------------*/
+	/* One Time Shipping
+	/* Shows the one time shipping option only if the product contains any subscription schemes */
+	/* ------------------------------------*/
+
+	$( 'select#product-type' ).change( function() {
+		var product_type = $( this ).val();
+
+		if ( 'subscription' != product_type || 'variable-subscription' != product_type ) {
+
+			if ( $wcsatt_schemes.length > 0 ) {
+				$( '.subscription_one_time_shipping' ).show();
+			} else {
+				$( '.subscription_one_time_shipping' ).hide();
+			}
+
+		}
+
+		$( document.body ).trigger( 'woocommerce-product-type-change', product_type, $( this ) );
+
+	}).change();
+
+
+	/* ------------------------------------*/
 	/* Subscription Schemes
 	/* ------------------------------------*/
 

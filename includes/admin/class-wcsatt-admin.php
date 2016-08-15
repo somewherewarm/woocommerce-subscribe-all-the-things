@@ -63,13 +63,13 @@ class WCS_ATT_Admin {
 		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array(
 
 			// Default to "every month" scheme.
-			array(
+			apply_filters( 'wcsatt_default_subscription_scheme', array(
 				'subscription_period_interval' => 1,
 				'subscription_period'          => 'month',
 				'subscription_length'          => 0,
 				'id'                           => '1_month_0',
 				'position'                     => 0,
-			)
+			) )
 		) );
 
 		?><tr valign="top">
@@ -143,6 +143,9 @@ class WCS_ATT_Admin {
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product_type, $supported_types ) ) {
+
+			// Save one time shipping option.
+			update_post_meta( $post_id, '_subscription_one_time_shipping', stripslashes( isset( $_POST['_subscription_one_time_shipping'] ) ? 'yes' : 'no' ) );
 
 			// Save subscription scheme options.
 			if ( isset( $_POST[ 'wcsatt_schemes' ] ) ) {
@@ -267,7 +270,6 @@ class WCS_ATT_Admin {
 	/**
 	 * Save subscription scheme option from the WooCommerce > Settings > Subscriptions administration screen.
 	 *
-	 * @param  int  $post_id
 	 * @return void
 	 */
 	public static function save_cart_level_settings() {
@@ -659,6 +661,7 @@ class WCS_ATT_Admin {
 			</p>
 		</div><?php
 	}
+
 }
 
 WCS_ATT_Admin::init();
