@@ -77,6 +77,10 @@ To offer customers cart subscription options:
 
 **Note:** if you do not wish to offer cart level subscription options, leave this section empty.
 
+#### Further Reading
+
+Want to learn more? Check out the excellent post about [Subscribe All the Things on SellWithWP.com](https://www.sellwithwp.com/woocommerce-subscribe-all-the-things/).
+
 #### License
 
 This plugin is released under [GNU General Public License v3.0](http://www.gnu.org/licenses/gpl-3.0.html).
