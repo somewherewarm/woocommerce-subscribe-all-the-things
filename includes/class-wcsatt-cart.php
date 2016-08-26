@@ -14,7 +14,7 @@ class WCS_ATT_Cart {
 		add_filter( 'woocommerce_is_subscription', __CLASS__ . '::is_converted_to_sub', 10, 3 );
 
 		// Add convert-to-sub configuration data to cart items that can be converted.
-		add_filter( 'woocommerce_add_cart_item', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 2 );
+		add_filter( 'woocommerce_add_cart_item_data', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 3 );
 
 		// Load convert-to-sub cart item session data.
 		add_filter( 'woocommerce_get_cart_item_from_session', __CLASS__ . '::load_convert_to_sub_session_data', 5, 2 );
@@ -99,15 +99,16 @@ class WCS_ATT_Cart {
 	/**
 	 * Add convert-to-sub subscription data to cart items that can be converted.
 	 *
-	 * @param array $cart_item
-	 * @param int   $product_id
+	 * @param  array $cart_item
+	 * @param  int   $product_id
+	 * @param  int   $variation_id
+	 * @return array
 	 */
-	public static function add_cart_item_convert_to_sub_data( $cart_item, $product_id ) {
+	public static function add_cart_item_convert_to_sub_data( $cart_item, $product_id, $variation_id ) {
 
-		if ( self::is_convertible_to_sub( $cart_item ) ) {
+		if ( self::is_convertible_to_sub( $product_id ) ) {
 
 			$posted_subscription_scheme_id = false;
-			$product_id                    = $cart_item[ 'product_id' ];
 
 			if ( ! empty( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
 				$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
@@ -232,19 +233,18 @@ class WCS_ATT_Cart {
 	 * True if a cart item can be converted from a one-shot purchase to a subscription and vice-versa.
 	 * Subscription product types can't be converted to non-sub items.
 	 *
-	 * @param  array  $cart_item
+	 * @param  int|array  $arg
 	 * @return boolean
 	 */
-	public static function is_convertible_to_sub( $cart_item ) {
+	public static function is_convertible_to_sub( $arg ) {
 
-		$product_id     = $cart_item[ 'product_id' ];
-		$is_convertible = true;
-
-		if ( WC_Subscriptions_Product::is_subscription( $product_id ) ) {
-			$is_convertible = false;
+		if ( is_array( $arg ) && isset( $arg[ 'product_id' ] ) ) {
+			$product_id = $arg[ 'product_id' ];
+		} else {
+			$product_id = absint( $arg );
 		}
 
-		return $is_convertible;
+		return WC_Subscriptions_Product::is_subscription( $product_id ) ? false : true;
 	}
 
 	/**
