@@ -496,7 +496,7 @@ class WCS_ATT_Display {
 				$suffix_price_html = '';
 
 				// Discount format vs Price format. Experimental use only.
-				if ( apply_filters( 'wcsatt_price_html_discount_format', false, $product ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' ) {
+				if ( apply_filters( 'wcsatt_price_html_discount_format', false, $product ) && WCS_ATT_Scheme_Prices::has_subscription_price_override( $subscription_scheme ) && $subscription_scheme[ 'subscription_pricing_method' ] === 'inherit' ) {
 
 					$discount          = $subscription_scheme[ 'subscription_discount' ];
 					$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37; off', WCS_ATT::TEXT_DOMAIN ), $discount ) . '</span><small>';

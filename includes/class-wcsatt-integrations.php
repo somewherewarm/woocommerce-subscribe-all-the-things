@@ -402,7 +402,7 @@ class WCS_ATT_Integrations {
 				if ( self::overrides_child_schemes( $container_cart_item ) ) {
 					$schemes = WCS_ATT_Schemes::get_subscription_schemes( $container_cart_item, $scope );
 					foreach ( $schemes as $scheme ) {
-						if ( $scheme[ 'subscription_pricing_method' ] === 'override' ) {
+						if ( WCS_ATT_Scheme_Prices::has_subscription_price_override( $scheme ) && $scheme[ 'subscription_pricing_method' ] === 'override' ) {
 							$scheme[ 'subscription_pricing_method' ] = 'inherit';
 							$scheme[ 'subscription_discount' ]       = '';
 						}
