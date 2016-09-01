@@ -4,34 +4,12 @@ jQuery( function($) {
 	var $wcsatt_data_tab    = $( '#wcsatt_data' );
 	var $wcsatt_schemes     = $wcsatt_data_tab.find( '.subscription_schemes' );
 	var wcsatt_block_params = {
-			message:    null,
-			overlayCSS: {
-				background: wcsatt_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
-				opacity:    0.6
-			}
-		};
-
-	/* ------------------------------------*/
-	/* One Time Shipping
-	/* Shows the one time shipping option only if the product contains any subscription schemes */
-	/* ------------------------------------*/
-
-	$( 'select#product-type' ).change( function() {
-		var product_type = $( this ).val();
-
-		if ( 'subscription' != product_type || 'variable-subscription' != product_type ) {
-
-			if ( $wcsatt_schemes.length > 0 ) {
-				$( '.subscription_one_time_shipping' ).show();
-			} else {
-				$( '.subscription_one_time_shipping' ).hide();
-			}
-
+		message:    null,
+		overlayCSS: {
+			background: wcsatt_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
+			opacity:    0.6
 		}
-
-		$( document.body ).trigger( 'woocommerce-product-type-change', product_type, $( this ) );
-
-	}).change();
+	};
 
 
 	/* ------------------------------------*/
@@ -109,6 +87,29 @@ jQuery( function($) {
 
 	}
 
+	// One-time shipping toggle. Shows the one time shipping option only if the product contains any subscription schemes.
+	function one_time_shipping_toggle() {
+
+		var product_type  = $( 'select#product-type' ).val();
+		var schemes_count = $wcsatt_schemes.find( '.subscription_scheme' ).length;
+
+		if ( 'subscription' !== product_type && 'variable-subscription' !== product_type ) {
+			if ( schemes_count > 0 ) {
+				$( '.subscription_one_time_shipping' ).show();
+			} else {
+				$( '.subscription_one_time_shipping' ).hide();
+			}
+		}
+	}
+
+	$wcsatt_data_tab.on( 'woocommerce_subscription_schemes_changed', function() {
+		one_time_shipping_toggle();
+	} );
+
+	$( 'select#product-type' ).change( function() {
+		one_time_shipping_toggle();
+	} ).change();
+
 	// Price override method.
 	$wcsatt_schemes.on( 'change', 'select.subscription_pricing_method_input', function() {
 
@@ -145,6 +146,8 @@ jQuery( function($) {
 		$parent.find('*').off();
 		$parent.remove();
 		subscription_schemes_row_indexes();
+
+		$wcsatt_data_tab.trigger( 'woocommerce_subscription_schemes_changed' );
 	} );
 
 	// Expand.
@@ -192,10 +195,10 @@ jQuery( function($) {
 			subscription_schemes_row_indexes();
 
 			$wcsatt_data_tab.unblock();
+
 			$wcsatt_data_tab.trigger( 'woocommerce_subscription_scheme_added', response );
 
-			// Trigger product type change event to show/hide type-specific fields.
-			$( document.body ).trigger( 'woocommerce-product-type-change' );
+			$wcsatt_data_tab.trigger( 'woocommerce_subscription_schemes_changed' );
 
 		}, 'json' );
 
