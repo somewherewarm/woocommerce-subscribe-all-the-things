@@ -390,7 +390,9 @@ class WCS_ATT_Admin {
 			$subscription_discount       = '';
 		}
 
-		?><div class="hide_if_variable"><?php
+		?><div class="options_group subscription_scheme_product_data">
+
+		<div class="hide_if_variable"><?php
 
 			// Subscription Price Override Method.
 			woocommerce_wp_select( array(
@@ -505,6 +507,8 @@ class WCS_ATT_Admin {
 				) );
 
 			?></div>
+		</div>
+
 		</div><?php
 	}
 
