@@ -2,6 +2,7 @@
 	display: block;
 	float:left;
 	padding-top: 4px;
+	margin-right: 16px;
 }
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
@@ -67,7 +68,7 @@
 	position: relative;
 	top: -40px;
 	margin-bottom: -30px;
-	display: block !important;
+	display: block;
 }
 
 #wcsatt_data .subscription_scheme_product_data {
@@ -75,6 +76,7 @@
 	display: block;
 	float: left;
 	clear: left;
+	width: 100%;
 }
 
 #wcsatt_data .subscription_scheme_product_data label {
