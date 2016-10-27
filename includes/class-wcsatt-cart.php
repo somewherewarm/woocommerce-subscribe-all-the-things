@@ -35,6 +35,10 @@ class WCS_ATT_Cart {
 			add_action( 'wp_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 			add_action( 'wp_ajax_nopriv_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 		}
+
+		// Add scheme ID to cart item meta so resubscribe can later fetch it by ID. Needed because length data is not
+		// stored on the subscription
+		add_action( 'woocommerce_add_subscription_item_meta', __CLASS__ . '::store_cart_item_wcsatt_id', 10, 2 );
 	}
 
 	/**
@@ -112,6 +116,13 @@ class WCS_ATT_Cart {
 
 			if ( ! empty( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
 				$posted_subscription_scheme_id = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
+			} elseif ( isset( $cart_item['subscription_resubscribe'] ) ) {
+				// let's see if we can grab the scheme id from the order item meta
+				$scheme_id = wc_get_order_item_meta( $cart_item['subscription_resubscribe']['subscription_line_item_id'], '_wcsatt_scheme_id', true );
+
+				if ( '' !== $scheme_id ) {
+					$posted_subscription_scheme_id = $scheme_id;
+				}
 			}
 
 			$cart_item[ 'wccsub_data' ] = array(
@@ -264,6 +275,21 @@ class WCS_ATT_Cart {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Hooked into woocommerce_add_subscription_item_meta, this will store the wcsatt scheme id against the order item.
+	 * Reason is that the resubscribe cart item data lacks a LOT of detail, so we need to reconstruct some of it.
+	 * Normally it could be inferred from the product's available schemes and the old subscription details, but because
+	 * lenght is not stored, it becomes ambiguous. Hence the need to store the ID.
+	 *
+	 * @param  integer      $item_id    ID of the order itemmeta
+	 * @param  array        $cart_item  data about the order item
+	 */
+	public static function store_cart_item_wcsatt_id( $item_id, $cart_item ) {
+		if ( isset( $cart_item['wccsub_data']['active_subscription_scheme_id'] ) ) {
+			wc_add_order_item_meta( $item_id, '_wcsatt_scheme_id', $cart_item['wccsub_data']['active_subscription_scheme_id'] );
+		}
 	}
 }
 
