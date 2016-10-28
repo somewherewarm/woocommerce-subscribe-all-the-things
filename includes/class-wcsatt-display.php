@@ -405,7 +405,7 @@ class WCS_ATT_Display {
 					?><li>
 						<label>
 							<input type="radio" name="convert_to_sub" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
-							<?php echo $option[ 'description' ]; ?>
+							<?php echo esc_html( $option[ 'description' ] ); ?>
 						</label>
 					</li><?php
 				}
