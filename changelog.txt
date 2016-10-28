@@ -1,5 +1,10 @@
 *** WooCommerce Subscribe All the Things ***
 
+2016.10.28 - version 1.1.1
+ * Fix - Resubscribing to products that have been subscription-enabled using SATT.
+ * Fix - Product Bundles v5.0.0 and Composite Products v3.7.0 support.
+ * Fix - Inconsistent visibility of the One-Time Shipping option and SATT-enabled products.
+
 2016.06.07 - version 1.1.0
  * Important - Template files modified and re-organized under '/cart' and '/single-product' directories. Please update any overridden SATT template files in your tree.
  * Fix - Wrong/static prices in the single-product template of Bundles and Composites when Per-Item Pricing is enabled. Totals next to SATT options are now properly updated to a) reflect changes in the configuration of a Bundle/Composite and b) include price discounts/overrides associated with each option.

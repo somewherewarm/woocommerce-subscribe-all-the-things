@@ -105,7 +105,7 @@ class WCS_ATT_Integrations {
 	/**
 	 * Filter the prices of an entire bundle when it has a single subscription option and one-time purchases are disabled.
 	 *
-	 * @param  WC_Product $product
+	 * @param  WC_Product  $product
 	 * @return boolean
 	 */
 	private static function maybe_add_force_sub_price_filters( $product ) {
@@ -139,9 +139,9 @@ class WCS_ATT_Integrations {
 	/**
 	 * Filter the prices of composited products loaded via ajax when the composite has a single subscription option and one-time purchases are disabled.
 	 *
-	 * @param  WC_Product $product
-	 * @param  int        $composite_id
-	 * @param  object     $composite
+	 * @param  WC_Product  $product
+	 * @param  int         $composite_id
+	 * @param  object      $composite
 	 * @return void
 	 */
 	public static function add_composited_force_sub_price_filters( $product, $composite_id, $composite ) {
@@ -155,14 +155,14 @@ class WCS_ATT_Integrations {
 	 * Do not filter bundled item prices when the 'override' method is used and the bundle is priced per product.
 	 * In this case, replace only the base prices with the override price values.
 	 *
-	 * @param  boolean    $allowed
-	 * @param  WC_Product $product
-	 * @param  array      $subscription_scheme
+	 * @param  boolean     $allowed
+	 * @param  WC_Product  $product
+	 * @param  array       $subscription_scheme
 	 * @return boolean
 	 */
 	public static function price_filters_allowed( $allowed, $product, $subscription_scheme ) {
 
-		if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' && self::is_bundle_type_product( $product ) && $product->is_priced_per_product() ) {
+		if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' && self::is_bundle_type_product( $product ) && self::has_individually_priced_bundled_contents( $product ) ) {
 			$allowed = false;
 		}
 
@@ -290,7 +290,7 @@ class WCS_ATT_Integrations {
 	/**
 	 * Checks if the passed cart item is a supported bundle type child. Returns the container item key name if yes, or false if not.
 	 *
-	 * @param  array $cart_item
+	 * @param  array  $cart_item
 	 * @return boolean|string
 	 */
 	public static function has_bundle_type_container( $cart_item ) {
@@ -310,7 +310,7 @@ class WCS_ATT_Integrations {
 	/**
 	 * Checks if the passed cart item is a supported bundle type container. Returns the child item key name if yes, or false if not.
 	 *
-	 * @param  array $cart_item
+	 * @param  array  $cart_item
 	 * @return boolean|string
 	 */
 	public static function has_bundle_type_children( $cart_item ) {
@@ -340,9 +340,9 @@ class WCS_ATT_Integrations {
 	/**
 	 * Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
 	 *
-	 * @param  string $subtotal
-	 * @param  array  $cart_item
-	 * @param  string $cart_item_key
+	 * @param  string  $subtotal
+	 * @param  array   $cart_item
+	 * @param  string  $cart_item_key
 	 * @return string
 	 */
 	public static function show_ppp_bundle_subtotal_details( $subtotal, $cart_item, $cart_item_key ) {
@@ -361,9 +361,9 @@ class WCS_ATT_Integrations {
 	/**
 	 * Bundled items inherit the active subscription scheme id of their parent.
 	 *
-	 * @param  string $scheme_id
-	 * @param  array  $cart_item
-	 * @param  array  $cart_level_schemes
+	 * @param  string  $scheme_id
+	 * @param  array   $cart_item
+	 * @param  array   $cart_level_schemes
 	 * @return string
 	 */
 	public static function set_bundled_item_subscription_scheme_id( $scheme_id, $cart_item, $cart_level_schemes ) {
@@ -387,9 +387,9 @@ class WCS_ATT_Integrations {
 	 *  - parent is statically priced, or
 	 *  - parent has subscription schemes defined at product-level.
 	 *
-	 * @param  array  $schemes
-	 * @param  array  $cart_item
-	 * @param  string $scope
+	 * @param  array   $schemes
+	 * @param  array   $cart_item
+	 * @param  string  $scope
 	 * @return array
 	 */
 	public static function get_bundled_item_schemes( $schemes, $cart_item, $scope ) {
@@ -417,14 +417,14 @@ class WCS_ATT_Integrations {
 	/**
 	 * Sub schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
-	 * @param  array      $schemes
-	 * @param  WC_Product $product
+	 * @param  array       $schemes
+	 * @param  WC_Product  $product
 	 * @return array
 	 */
 	public static function get_bundle_product_schemes( $schemes, $product ) {
 
 		if ( self::is_bundle_type_product( $product ) ) {
-			if ( $product->product_type === 'bundle' && $product->contains_sub() ) {
+			if ( $product->product_type === 'bundle' && self::bundle_contains_subscription( $product ) ) {
 				$schemes = array();
 			} elseif ( $product->product_type === 'mix-and-match' && $product->is_priced_per_product() ) {
 				$schemes = array();
@@ -437,9 +437,9 @@ class WCS_ATT_Integrations {
 	/**
 	 * Sub schemes attached on a Product Bundle should not work if the bundle contains a non-convertible product, such as a "legacy" subscription.
 	 *
-	 * @param  array  $schemes
-	 * @param  array  $cart_item
-	 * @param  string $scope
+	 * @param  array   $schemes
+	 * @param  array   $cart_item
+	 * @param  string  $scope
 	 * @return array
 	 */
 	public static function get_bundle_schemes( $schemes, $cart_item, $scope ) {
@@ -448,7 +448,7 @@ class WCS_ATT_Integrations {
 
 		if ( false !== $child_key ) {
 			$container = $cart_item[ 'data' ];
-			if ( $container->product_type === 'bundle' && $container->contains_sub() ) {
+			if ( $container->product_type === 'bundle' && self::bundle_contains_subscription( $container ) ) {
 				$schemes = array();
 			} elseif ( $container->product_type === 'mix-and-match' && $container->is_priced_per_product() ) {
 				$schemes = array();
@@ -463,9 +463,9 @@ class WCS_ATT_Integrations {
 	 *  - bundle has a static price, or
 	 *  - bundle has subscription schemes defined at bundle-level.
 	 *
-	 * @param  boolean $show
-	 * @param  array   $cart_item
-	 * @param  string  $cart_item_key
+	 * @param  boolean  $show
+	 * @param  array    $cart_item
+	 * @param  string   $cart_item_key
 	 * @return boolean
 	 */
 	public static function hide_bundled_item_options( $show, $cart_item, $cart_item_key ) {
@@ -487,9 +487,9 @@ class WCS_ATT_Integrations {
 	/**
 	 * Hide bundle container cart item subscription options if bundle is priced per-item.
 	 *
-	 * @param  boolean $show
-	 * @param  array   $cart_item
-	 * @param  string  $cart_item_key
+	 * @param  boolean  $show
+	 * @param  array    $cart_item
+	 * @param  string   $cart_item_key
 	 * @return boolean
 	 */
 	public static function hide_bundle_options( $show, $cart_item, $cart_item_key ) {
@@ -498,7 +498,7 @@ class WCS_ATT_Integrations {
 
 		if ( false !== $child_key ) {
 			$container = $cart_item[ 'data' ];
-			if ( $container->is_priced_per_product() ) {
+			if ( self::has_individually_priced_bundled_contents( $container ) ) {
 				$show = false;
 			}
 		}
@@ -509,7 +509,7 @@ class WCS_ATT_Integrations {
 	/**
 	 * True if there are sub schemes inherited from a container.
 	 *
-	 * @param  array $cart_item
+	 * @param  array  $cart_item
 	 * @return boolean
 	 */
 	public static function overrides_child_schemes( $cart_item ) {
@@ -521,6 +521,36 @@ class WCS_ATT_Integrations {
 		}
 
 		return $overrides;
+	}
+
+	/**
+	 * WC_Product_Bundle 'contains_sub' back-compat wrapper.
+	 *
+	 * @param  WC_Product_Bundle  $bundle
+	 * @return boolean
+	 */
+	private static function bundle_contains_subscription( $bundle ) {
+
+		if ( version_compare( WC_PB()->version, '5.0.0' ) < 0 ) {
+			return $bundle->contains_sub();
+		} else {
+			return $bundle->contains( 'subscription' );
+		}
+	}
+
+	/**
+	 * WC_Product_Bundle and WC_Product_Composite 'is_priced_per_product' back-compat wrapper.
+	 *
+	 * @param  WC_Product  $bundle
+	 * @return boolean
+	 */
+	private static function has_individually_priced_bundled_contents( $product ) {
+
+		if ( 'bundle' === $product->product_type ) {
+			return version_compare( WC_PB()->version, '5.0.0' ) < 0 ? $product->is_priced_per_product() : $product->contains( 'priced_individually' );
+		} elseif( 'composite' === $product->product_type ) {
+			return version_compare( WC_CP()->version, '3.7.0' ) < 0 ? $product->is_priced_per_product() : $product->contains( 'priced_individually' );
+		}
 	}
 }
 
