@@ -2,6 +2,7 @@
 	display: block;
 	float:left;
 	padding-top: 4px;
+	margin-right: 16px;
 }
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
@@ -67,23 +68,26 @@
 	position: relative;
 	top: -40px;
 	margin-bottom: -30px;
-	display: block !important;
+	display: block;
 }
 
 #wcsatt_data .subscription_scheme_product_data {
-	margin-top: 10px;
+	padding: 10px 0;
 	display: block;
 	float: left;
+	clear: left;
+	width: 100%;
 }
 
 #wcsatt_data .subscription_scheme_product_data label {
-	margin: 0 0 0 -220px;
-	width: 200px;
+	margin: 0 14px 0 0;
+	width: auto;
 }
 
 #wcsatt_data .subscription_scheme_product_data p.form-field {
 	margin: 0;
-	padding: 5px 20px 5px 227px !important;
+	padding: 5px 10px 5px 0px !important;
+	width: 100%;
 }
 
 #wcsatt_data .subscription_scheme_data:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit {
@@ -93,7 +97,6 @@
 }
 
 #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override p.form-field label, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit p.form-field label {
-	margin: 0 !important;
 	width: 100%;
 }
 

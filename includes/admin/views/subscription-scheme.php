@@ -22,11 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		// Additional Subscription Options for Products.
 		if ( $post_id > 0 ) {
-			?><div class="subscription_scheme_product_data"><?php
 
-				do_action( 'wcsatt_subscription_scheme_product_content', $index, $scheme_data, $post_id );
+			do_action( 'wcsatt_subscription_scheme_product_content', $index, $scheme_data, $post_id );
 
-			?></div><?php
 		}
 		?></div>
 	<?php
