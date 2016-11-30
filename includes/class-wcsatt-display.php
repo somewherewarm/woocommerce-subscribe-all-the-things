@@ -196,12 +196,12 @@ class WCS_ATT_Display {
 
 			ob_start();
 
-			wc_get_template( 'satt-product-options.php', array(
+			wc_get_template( 'single-product/satt-product-options.php', array(
 				'product'        => $product,
 				'options'        => $options,
 				'allow_one_time' => $allow_one_time_option,
 				'prompt'         => $prompt,
-			), false, WCS_ATT()->plugin_path() . '/templates/single-product/' );
+			), false, WCS_ATT()->plugin_path() . '/templates/' );
 
 			$content = ob_get_clean();
 		}
@@ -342,11 +342,11 @@ class WCS_ATT_Display {
 
 		$classes = $price_overrides_exist ? array( 'overrides_exist' ) : array();
 
-		wc_get_template( 'satt-cart-item-options.php', array(
+		wc_get_template( 'cart/satt-cart-item-options.php', array(
 			'options'       => $options,
 			'cart_item_key' => $cart_item_key,
 			'classes'       => implode( ' ', $classes ),
-		), false, WCS_ATT()->plugin_path() . '/templates/cart/' );
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
 
 		$convert_to_sub_options = ob_get_clean();
 
