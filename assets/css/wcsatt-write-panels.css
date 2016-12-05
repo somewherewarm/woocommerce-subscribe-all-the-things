@@ -49,44 +49,51 @@
 	border-bottom: 1px solid transparent;
 }
 
-#wcsatt_data .subscription_scheme_data .form-field {
-	float: left;
+#wcsatt_data .subscription_scheme_data p.form-field {
 	margin: 0;
-}
-
-#wcsatt_data .subscription_scheme_data > p.form-field {
-	padding: 0px 2px !important;
+	padding: 4px 20px 10px 122px !important;
 }
 
 #wcsatt_data .subscription_scheme {
 	border-radius: 0;
+	padding-top: 5px;
 }
 
 #wcsatt_data .subscription_scheme_data {
-	margin: 0 90px 0 40px;
-	position: relative;
-	top: -40px;
-	margin-bottom: -30px;
-	display: block !important;
+	font-weight: normal;
+	padding: 0.5em 0.75em;
+}
+
+#wcsatt_data .subscription_scheme_data .wc_input_subscription_period_interval {
+	margin-right: 5px;
 }
 
 #wcsatt_data .subscription_scheme_product_data {
-	margin-top: 10px;
 	display: block;
 	float: left;
 }
 
-#wcsatt_data .subscription_scheme_product_data label {
-	margin: 0 0 0 -220px;
-	width: 200px;
+#wcsatt_data .subscription_scheme_data label {
+	margin: 0 0 0 -120px;
+	width: 110px;
+	float: left;
 }
 
-#wcsatt_data .subscription_scheme_product_data p.form-field {
-	margin: 0;
-	padding: 5px 20px 5px 227px !important;
+#wcsatt_data .subscription_scheme .handle {
+	float: left;
 }
 
-#wcsatt_data .subscription_scheme_data:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit {
+#wcsatt_data .subscription_scheme .btn {
+	float: right;
+	padding: 0.75em 1em;
+}
+
+#wcsatt_data .subscription_scheme .data {
+	float: left;
+	max-width: 60%
+}
+
+#wcsatt_data .subscription_scheme:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit {
 	clear: both;
 	display: table;
 	content: " ";
@@ -101,6 +108,15 @@
  * Admin settings
  */
 
+.forminp #wcsatt_data .woocommerce-help-tip {
+	vertical-align: middle;
+}
+
+.forminp #wcsatt_data .wrap {
+	padding: 0;
+	margin: 0;
+}
+
 .forminp #wcsatt_data {
 	padding-top: 10px;
 }
@@ -113,14 +129,10 @@
 	background: none;
 }
 
-.forminp #wcsatt_data .wc-metabox h3 {
+.forminp #wcsatt_data .wc-metabox {
 	background: #fefefe;
 }
 
 .forminp #wcsatt_data .wc-metabox:first-of-type {
 	border-top: 0;
-}
-
-.forminp #wcsatt_data .add_subscription_scheme {
-	font-weight: bold;
 }

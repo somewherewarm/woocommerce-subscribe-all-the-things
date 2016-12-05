@@ -3,6 +3,7 @@
 2016.11.nn - version 1.1.2
  * Fix - Template overriding issues due to incorrect 'wc_get_template' arguments.
  * Fix - Escape subscription option description html.
+ * Fix - Subscription options styling issues in 'Product Data > Subscriptions' and 'Settings > Subscriptions' with WooCommerce Subscriptions 2.1+.
 
 2016.10.28 - version 1.1.1
  * Fix - Resubscribing to products that have been subscription-enabled using SATT.

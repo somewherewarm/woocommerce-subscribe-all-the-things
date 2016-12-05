@@ -333,37 +333,37 @@ class WCS_ATT_Admin {
 			$subscription_length          = '';
 		}
 
-		// Subscription Period Interval
-		woocommerce_wp_select( array(
-			'id'      => '_subscription_period_interval',
-			'class'   => 'wc_input_subscription_period_interval',
-			'label'   => __( 'Subscription Periods', 'woocommerce-subscriptions' ),
-			'value'   => $subscription_period_interval,
-			'options' => wcs_get_subscription_period_interval_strings(),
-			'name'    => 'wcsatt_schemes[' . $index . '][subscription_period_interval]'
-			)
-		);
 
-		// Billing Period
-		woocommerce_wp_select( array(
-			'id'          => '_subscription_period',
-			'class'       => 'wc_input_subscription_period',
-			'label'       => __( 'Billing Period', 'woocommerce-subscriptions' ),
-			'value'       => $subscription_period,
-			'description' => _x( 'for', 'for in "Every month _for_ 12 months"', 'woocommerce-subscriptions' ),
-			'options'     => wcs_get_subscription_period_strings(),
-			'name'        => 'wcsatt_schemes[' . $index . '][subscription_period]'
-			)
-		);
+		// Subscription Price, Interval and Period
+		?><p class="form-field _satt_subscription_details">
+			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', WCS_ATT::TEXT_DOMAIN ); ?></label>
+			<span class="wrap">
+				<label for="_satt_subscription_period_interval" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period_interval" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
+				<?php foreach ( wcs_get_subscription_period_interval_strings() as $value => $label ) { ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period_interval, true ) ?>><?php echo esc_html( $label ); ?></option>
+				<?php } ?>
+				</select>
+				<label for="_satt_subscription_period" class="wcs_hidden_label"><?php esc_html_e( 'Subscription period', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period]" class="wc_input_subscription_period last" >
+				<?php foreach ( wcs_get_subscription_period_strings() as $value => $label ) { ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period, true ) ?>><?php echo esc_html( $label ); ?></option>
+				<?php } ?>
+				</select>
+			</span>
+			<?php echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Choose the subscription billing interval and period.', WCS_ATT::TEXT_DOMAIN ) ); ?>
+		</p><?php
 
 		// Subscription Length
 		woocommerce_wp_select( array(
-			'id'      => '_subscription_length',
-			'class'   => 'wc_input_subscription_length',
-			'label'   => __( 'Subscription Length', 'woocommerce-subscriptions' ),
-			'value'   => $subscription_length,
-			'options' => wcs_get_subscription_ranges( $subscription_period ),
-			'name'    => 'wcsatt_schemes[' . $index . '][subscription_length]'
+			'id'          => '_satt_subscription_length',
+			'class'       => 'wc_input_subscription_length',
+			'label'       => __( 'Length', WCS_ATT::TEXT_DOMAIN ),
+			'value'       => $subscription_length,
+			'options'     => wcs_get_subscription_ranges( $subscription_period ),
+			'name'        => 'wcsatt_schemes[' . $index . '][subscription_length]',
+			'description' => __( 'Choose the subscription billing length.', WCS_ATT::TEXT_DOMAIN ),
+			'desc_tip'    => true
 			)
 		);
 	}
@@ -396,7 +396,7 @@ class WCS_ATT_Admin {
 			woocommerce_wp_select( array(
 				'id'      => '_subscription_pricing_method_input',
 				'class'   => 'subscription_pricing_method_input',
-				'label'   => __( 'Subscription Price', WCS_ATT::TEXT_DOMAIN ),
+				'label'   => __( 'Price', WCS_ATT::TEXT_DOMAIN ),
 				'value'   => $subscription_pricing_method,
 				'options' => array(
 						'inherit'  => __( 'Inherit from product', WCS_ATT::TEXT_DOMAIN ),
@@ -454,7 +454,7 @@ class WCS_ATT_Admin {
 			woocommerce_wp_select( array(
 				'id'      => '_subscription_pricing_method_input_variable',
 				'class'   => 'subscription_pricing_method_input',
-				'label'   => __( 'Subscription Price', WCS_ATT::TEXT_DOMAIN ),
+				'label'   => __( 'Price', WCS_ATT::TEXT_DOMAIN ),
 				'value'   => $subscription_pricing_method,
 				'options' => array(
 						'inherit'  => __( 'Inherit from chosen variation', WCS_ATT::TEXT_DOMAIN ),

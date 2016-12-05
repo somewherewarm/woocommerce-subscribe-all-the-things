@@ -39,11 +39,11 @@ jQuery( function($) {
 
 		$.each( wcsatt_admin_params.subscription_lengths[ $periodSelector.val() ], function( length, description ) {
 			if ( parseInt( length ) == 0 || 0 == ( parseInt( length ) % billingInterval ) ) {
-				$lengthElement.append( $( '<option></option>' ).attr( 'value',length ).text( description ) );
+				$lengthElement.append( $( '<option></option>' ).attr( 'value', length ).text( description ) );
 			}
 		} );
 
-		$lengthElement.children( 'option' ).each(function(){
+		$lengthElement.children( 'option' ).each( function() {
 			if ( this.value == selectedLength ) {
 				hasSelectedLength = true;
 				return false;
