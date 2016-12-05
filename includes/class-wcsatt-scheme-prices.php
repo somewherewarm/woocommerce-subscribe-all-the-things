@@ -24,13 +24,10 @@ class WCS_ATT_Scheme_Prices {
 			self::$price_overriding_scheme  = $subscription_scheme;
 			self::$price_overridden_product = $product;
 
-			if ( apply_filters( 'wcsatt_price_filters_allowed', true, $product, $subscription_scheme ) ) {
-
-				add_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
-				add_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
-				add_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
-				add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 3 );
-			}
+			add_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
+			add_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
+			add_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
+			add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 3 );
 
 			do_action( 'wcsatt_add_price_filters', $product, $subscription_scheme );
 		}
@@ -45,13 +42,10 @@ class WCS_ATT_Scheme_Prices {
 
 		if ( self::$price_overriding_scheme ) {
 
-			if ( apply_filters( 'wcsatt_price_filters_allowed', true, self::$price_overridden_product, self::$price_overriding_scheme ) ) {
-
-				remove_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
-				remove_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
-				remove_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
-				remove_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 3 );
-			}
+			remove_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
+			remove_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
+			remove_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
+			remove_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 3 );
 
 			do_action( 'wcsatt_remove_price_filters' );
 
@@ -74,34 +68,37 @@ class WCS_ATT_Scheme_Prices {
 
 		if ( $subscription_scheme && self::has_subscription_price_override( $subscription_scheme ) ) {
 
-			$prices         = array();
-			$regular_prices = array();
-			$sale_prices    = array();
+			if ( apply_filters( 'wcsatt_price_filters_allowed', true, self::$price_overridden_product, $subscription_scheme, $product ) ) {
 
-			$variation_ids  = array_keys( $prices_array[ 'price' ] );
+				$prices         = array();
+				$regular_prices = array();
+				$sale_prices    = array();
 
-			foreach ( $variation_ids as $variation_id ) {
+				$variation_ids  = array_keys( $prices_array[ 'price' ] );
 
-				$overridden_prices = self::get_subscription_scheme_prices( array(
-					'price'         => $prices_array[ 'price' ][ $variation_id  ],
-					'regular_price' => $prices_array[ 'regular_price' ][ $variation_id ],
-					'sale_price'    => $prices_array[ 'sale_price' ][ $variation_id ]
-				), $subscription_scheme );
+				foreach ( $variation_ids as $variation_id ) {
 
-				$prices[ $variation_id ]         = $overridden_prices[ 'price' ];
-				$regular_prices[ $variation_id ] = $overridden_prices[ 'regular_price' ];
-				$sale_prices[ $variation_id ]    = $overridden_prices[ 'sale_price' ];
+					$overridden_prices = self::get_subscription_scheme_prices( array(
+						'price'         => $prices_array[ 'price' ][ $variation_id  ],
+						'regular_price' => $prices_array[ 'regular_price' ][ $variation_id ],
+						'sale_price'    => $prices_array[ 'sale_price' ][ $variation_id ]
+					), $subscription_scheme );
+
+					$prices[ $variation_id ]         = $overridden_prices[ 'price' ];
+					$regular_prices[ $variation_id ] = $overridden_prices[ 'regular_price' ];
+					$sale_prices[ $variation_id ]    = $overridden_prices[ 'sale_price' ];
+				}
+
+				asort( $prices );
+				asort( $regular_prices );
+				asort( $sale_prices );
+
+				$prices_array = array(
+					'price'         => $prices,
+					'regular_price' => $regular_prices,
+					'sale_price'    => $sale_prices
+				);
 			}
-
-			asort( $prices );
-			asort( $regular_prices );
-			asort( $sale_prices );
-
-			$prices_array = array(
-				'price'         => $prices,
-				'regular_price' => $regular_prices,
-				'sale_price'    => $sale_prices
-			);
 		}
 
 		return $prices_array;
@@ -120,14 +117,17 @@ class WCS_ATT_Scheme_Prices {
 
 		if ( $subscription_scheme ) {
 
-			$prices_array = array(
-				'price'         => $price,
-				'regular_price' => $product->get_regular_price(),
-				'sale_price'    => $product->get_sale_price()
-			);
+			if ( apply_filters( 'wcsatt_price_filters_allowed', true, self::$price_overridden_product, $subscription_scheme, $product ) ) {
 
-			$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
-			$price             = $overridden_prices[ 'price' ];
+				$prices_array = array(
+					'price'         => $price,
+					'regular_price' => $product->regular_price,
+					'sale_price'    => $product->sale_price
+				);
+
+				$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
+				$price             = $overridden_prices[ 'price' ];
+			}
 		}
 
 		return $price;
@@ -146,18 +146,21 @@ class WCS_ATT_Scheme_Prices {
 
 		if ( $subscription_scheme ) {
 
-			self::$price_overriding_scheme = false;
+			if ( apply_filters( 'wcsatt_price_filters_allowed', true, self::$price_overridden_product, $subscription_scheme, $product ) ) {
 
-			$prices_array = array(
-				'price'         => $product->get_price(),
-				'regular_price' => $regular_price,
-				'sale_price'    => $product->get_sale_price()
-			);
+				self::$price_overriding_scheme = false;
 
-			self::$price_overriding_scheme = $subscription_scheme;
+				$prices_array = array(
+					'price'         => $product->price,
+					'regular_price' => $regular_price,
+					'sale_price'    => $product->sale_price
+				);
 
-			$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
-			$regular_price     = $overridden_prices[ 'regular_price' ];
+				self::$price_overriding_scheme = $subscription_scheme;
+
+				$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
+				$regular_price     = $overridden_prices[ 'regular_price' ];
+			}
 		}
 
 		return $regular_price;
@@ -176,18 +179,21 @@ class WCS_ATT_Scheme_Prices {
 
 		if ( $subscription_scheme ) {
 
-			self::$price_overriding_scheme = false;
+			if ( apply_filters( 'wcsatt_price_filters_allowed', true, self::$price_overridden_product, $subscription_scheme, $product ) ) {
 
-			$prices_array = array(
-				'price'         => $product->get_price(),
-				'regular_price' => $product->get_regular_price(),
-				'sale_price'    => $sale_price
-			);
+				self::$price_overriding_scheme = false;
 
-			self::$price_overriding_scheme = $subscription_scheme;
+				$prices_array = array(
+					'price'         => $product->get_price(),
+					'regular_price' => $product->get_regular_price(),
+					'sale_price'    => $sale_price
+				);
 
-			$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
-			$sale_price        = $overridden_prices[ 'sale_price' ];
+				self::$price_overriding_scheme = $subscription_scheme;
+
+				$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
+				$sale_price        = $overridden_prices[ 'sale_price' ];
+			}
 		}
 
 		return $sale_price;
@@ -328,30 +334,6 @@ class WCS_ATT_Scheme_Prices {
 	}
 
 	/**
-	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
-	 *
-	 * @return string
-	 */
-	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
-
-		$prices = array();
-
-		if ( empty( $active_subscription_scheme ) ) {
-			$active_subscription_scheme = WCS_ATT_Schemes::get_active_subscription_scheme( $cart_item );
-		}
-
-		if ( ! empty( $active_subscription_scheme ) ) {
-			$prices = self::get_subscription_scheme_prices( array(
-				'price'         => $cart_item[ 'data' ]->price,
-				'regular_price' => $cart_item[ 'data' ]->regular_price,
-				'sale_price'    => $cart_item[ 'data' ]->sale_price
-			), $active_subscription_scheme );
-		}
-
-		return $prices;
-	}
-
-	/**
 	 * Get regular price (before discount).
 	 *
 	 * @param  array  $prices_array
@@ -390,5 +372,17 @@ class WCS_ATT_Scheme_Prices {
 		$price = empty( $discount ) ? $price : ( empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, wc_get_price_decimals() ) );
 
 		return $price;
+	}
+
+	/**
+	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
+	 *
+	 * @deprecated  1.1.2
+	 *
+	 * @return string
+	 */
+	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
+		_deprecated_function( __METHOD__ . '()', '1.1.2', 'WCS_ATT_Cart::get_active_subscription_scheme_prices()' );
+		return WCS_ATT_Cart::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
 	}
 }
