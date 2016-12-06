@@ -67,13 +67,14 @@ class WCS_ATT_Integrations {
 
 			// Do not filter bundled item prices when the 'override' method is used and the bundle is priced per product.
 			// In this case, replace only the base prices with the override price values.
-			add_filter( 'wcsatt_price_filters_allowed', array( __CLASS__, 'price_filters_allowed' ), 10, 3 );
+			add_filter( 'wcsatt_price_filters_allowed', array( __CLASS__, 'price_filters_allowed' ), 10, 4 );
 
 			// Filter the prices of the entire bundle when it has a single subscription option and one-time purchases are disabled.
 			add_action( 'woocommerce_bundle_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 			add_action( 'woocommerce_composite_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 			add_action( 'woocommerce_mix-and-match_add_to_cart', array( __CLASS__ , 'add_force_sub_price_filters' ), 9 );
 
+			// Filter the prices of composited products loaded via ajax when the composite has a single subscription option and one-time purchases are disabled.
 			add_action( 'woocommerce_composite_products_apply_product_filters', array( __CLASS__ , 'add_composited_force_sub_price_filters' ), 10, 3 );
 		}
 	}
@@ -160,10 +161,12 @@ class WCS_ATT_Integrations {
 	 * @param  array       $subscription_scheme
 	 * @return boolean
 	 */
-	public static function price_filters_allowed( $allowed, $product, $subscription_scheme ) {
+	public static function price_filters_allowed( $allowed, $product, $subscription_scheme, $filtered_product ) {
 
 		if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' && self::is_bundle_type_product( $product ) && self::has_individually_priced_bundled_contents( $product ) ) {
-			$allowed = false;
+			if ( $filtered_product->id !== $product->id ) {
+				$allowed = false;
+			}
 		}
 
 		return $allowed;
@@ -401,10 +404,10 @@ class WCS_ATT_Integrations {
 				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
 				if ( self::overrides_child_schemes( $container_cart_item ) ) {
 					$schemes = WCS_ATT_Schemes::get_subscription_schemes( $container_cart_item, $scope );
-					foreach ( $schemes as $scheme ) {
+					foreach ( $schemes as $scheme_key => $scheme ) {
 						if ( WCS_ATT_Scheme_Prices::has_subscription_price_override( $scheme ) && $scheme[ 'subscription_pricing_method' ] === 'override' ) {
-							$scheme[ 'subscription_pricing_method' ] = 'inherit';
-							$scheme[ 'subscription_discount' ]       = '';
+							$schemes[ $scheme_key ][ 'subscription_pricing_method' ] = 'inherit';
+							$schemes[ $scheme_key ][ 'subscription_discount' ]       = '';
 						}
 					}
 				}

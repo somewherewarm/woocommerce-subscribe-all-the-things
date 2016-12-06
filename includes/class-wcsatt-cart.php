@@ -162,7 +162,7 @@ class WCS_ATT_Cart {
 
 			$cart_item[ 'data' ]->is_converted_to_sub = 'yes';
 
-			$subscription_prices = WCS_ATT_Scheme_Prices::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
+			$subscription_prices = self::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
 
 			if ( ! empty( $subscription_prices ) ) {
 				$cart_item[ 'data' ]->price                    = $subscription_prices[ 'price' ];
@@ -181,6 +181,30 @@ class WCS_ATT_Cart {
 		}
 
 		return apply_filters( 'wcsatt_cart_item', $cart_item );
+	}
+
+	/**
+	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
+	 *
+	 * @return string
+	 */
+	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
+
+		$prices = array();
+
+		if ( empty( $active_subscription_scheme ) ) {
+			$active_subscription_scheme = WCS_ATT_Schemes::get_active_subscription_scheme( $cart_item );
+		}
+
+		if ( ! empty( $active_subscription_scheme ) ) {
+			$prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( array(
+				'price'         => $cart_item[ 'data' ]->price,
+				'regular_price' => $cart_item[ 'data' ]->regular_price,
+				'sale_price'    => $cart_item[ 'data' ]->sale_price
+			), $active_subscription_scheme );
+		}
+
+		return apply_filters( 'wcsatt_cart_item_prices', $prices, $cart_item, $active_subscription_scheme );
 	}
 
 	/**
