@@ -77,6 +77,16 @@ To offer customers cart subscription options:
 
 **Note:** if you do not wish to offer cart level subscription options, leave this section empty.
 
+# Support
+
+Subscribe All the Things is released freely and openly to get feedback on experimental ideas and approaches to solving known limitations in the WooCommerce Subscriptions plugin. A lot of features available in Subscriptions are not supported, and you may have questions about how to use certain features with it.
+
+These questions and other issues with this plugin are not supported via the [WooCommerce support system](http://woocommerce.com/). As the extension is not sold via Woocommerce.com, the support team at WooCommerce.com are not educated about the extension and are not responsible for providing answers to questions.
+
+If you think you have found a bug in the extension, problem with the documentation or want to see a new feature added, please [open a new issue](https://github.com/Prospress/woocommerce-subscribe-all-the-things/issues/new) and one of the developers or other users from its tiny community will do their best to help you out.
+
+For feature requests, please understand this is a non-commercial extension and development time for it is effectively being donated and is therefore, limited.
+
 #### Further Reading
 
 Want to learn more? Check out the excellent post about [Subscribe All the Things on SellWithWP.com](https://www.sellwithwp.com/woocommerce-subscribe-all-the-things/).
