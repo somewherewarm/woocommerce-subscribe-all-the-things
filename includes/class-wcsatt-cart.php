@@ -6,6 +6,11 @@
  * @version  1.0.3
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WCS_ATT_Cart {
 
 	public static function init() {
@@ -165,10 +170,12 @@ class WCS_ATT_Cart {
 			$subscription_prices = self::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
 
 			if ( ! empty( $subscription_prices ) ) {
-				$cart_item[ 'data' ]->price                    = $subscription_prices[ 'price' ];
-				$cart_item[ 'data' ]->regular_price            = $subscription_prices[ 'regular_price' ];
-				$cart_item[ 'data' ]->sale_price               = $subscription_prices[ 'sale_price' ];
-				$cart_item[ 'data' ]->subscription_price       = $subscription_prices[ 'price' ];
+
+				WCS_ATT_Core_Compatibility::set_prop( $cart_item[ 'data' ], 'price', $subscription_prices[ 'price' ] );
+				WCS_ATT_Core_Compatibility::set_prop( $cart_item[ 'data' ], 'regular_price', $subscription_prices[ 'regular_price' ] );
+				WCS_ATT_Core_Compatibility::set_prop( $cart_item[ 'data' ], 'sale_price', $subscription_prices[ 'sale_price' ] );
+
+				$cart_item[ 'data' ]->subscription_price = $subscription_prices[ 'price' ];
 			}
 
 			$cart_item[ 'data' ]->subscription_period          = $active_subscription_scheme[ 'subscription_period' ];
@@ -198,9 +205,9 @@ class WCS_ATT_Cart {
 
 		if ( ! empty( $active_subscription_scheme ) ) {
 			$prices = WCS_ATT_Scheme_Prices::get_subscription_scheme_prices( array(
-				'price'         => $cart_item[ 'data' ]->price,
-				'regular_price' => $cart_item[ 'data' ]->regular_price,
-				'sale_price'    => $cart_item[ 'data' ]->sale_price
+				'price'         => WCS_ATT_Core_Compatibility::get_prop( $cart_item[ 'data' ], 'price' ),
+				'regular_price' => WCS_ATT_Core_Compatibility::get_prop( $cart_item[ 'data' ], 'regular_price' ),
+				'sale_price'    => WCS_ATT_Core_Compatibility::get_prop( $cart_item[ 'data' ], 'sale_price' )
 			), $active_subscription_scheme );
 		}
 
@@ -291,7 +298,7 @@ class WCS_ATT_Cart {
 	public static function is_supported_product_type( $cart_item ) {
 
 		$product         = $cart_item[ 'data' ];
-		$product_type    = $cart_item[ 'data' ]->product_type;
+		$product_type    = $cart_item[ 'data' ]->get_type();
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
 		if ( in_array( $product_type, $supported_types ) ) {

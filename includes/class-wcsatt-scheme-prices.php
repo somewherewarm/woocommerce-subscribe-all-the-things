@@ -6,6 +6,11 @@
  * @since  1.1.0
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WCS_ATT_Scheme_Prices {
 
 	public static $price_overriding_scheme  = false;
@@ -107,9 +112,9 @@ class WCS_ATT_Scheme_Prices {
 	/**
 	 * Filter get_price() calls to take price overrides into account.
 	 *
-	 * @param  double       $price      unmodified price
-	 * @param  WC_Product   $product    the bundled product
-	 * @return double                   modified price
+	 * @param  double      $price
+	 * @param  WC_Product  $product
+	 * @return double
 	 */
 	public static function filter_get_price( $price, $product ) {
 
@@ -121,8 +126,8 @@ class WCS_ATT_Scheme_Prices {
 
 				$prices_array = array(
 					'price'         => $price,
-					'regular_price' => $product->regular_price,
-					'sale_price'    => $product->sale_price
+					'regular_price' => WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' ),
+					'sale_price'    => WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' )
 				);
 
 				$overridden_prices = self::get_subscription_scheme_prices( $prices_array, $subscription_scheme );
@@ -136,9 +141,9 @@ class WCS_ATT_Scheme_Prices {
 	/**
 	 * Filter get_regular_price() calls to take price overrides into account.
 	 *
-	 * @param  double       $price      unmodified reg price
-	 * @param  WC_Product   $product    the bundled product
-	 * @return double                   modified reg price
+	 * @param  double      $price
+	 * @param  WC_Product  $product
+	 * @return double
 	 */
 	public static function filter_get_regular_price( $regular_price, $product ) {
 
@@ -151,9 +156,9 @@ class WCS_ATT_Scheme_Prices {
 				self::$price_overriding_scheme = false;
 
 				$prices_array = array(
-					'price'         => $product->price,
+					'price'         => WCS_ATT_Core_Compatibility::get_prop( $product, 'price' ),
 					'regular_price' => $regular_price,
-					'sale_price'    => $product->sale_price
+					'sale_price'    => WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' )
 				);
 
 				self::$price_overriding_scheme = $subscription_scheme;
@@ -169,9 +174,9 @@ class WCS_ATT_Scheme_Prices {
 	/**
 	 * Filter get_sale_price() calls to take price overrides into account.
 	 *
-	 * @param  double       $price      unmodified reg price
-	 * @param  WC_Product   $product    the bundled product
-	 * @return double                   modified reg price
+	 * @param  double      $price
+	 * @param  WC_Product  $product
+	 * @return double
 	 */
 	public static function filter_get_sale_price( $sale_price, $product ) {
 
@@ -285,9 +290,9 @@ class WCS_ATT_Scheme_Prices {
 		if ( ! empty( $subscription_schemes ) ) {
 
 			$lowest_scheme               = current( $subscription_schemes );
-			$lowest_scheme_price         = $product->price;
-			$lowest_scheme_sale_price    = $product->sale_price;
-			$lowest_scheme_regular_price = $product->regular_price;
+			$lowest_scheme_price         = WCS_ATT_Core_Compatibility::get_prop( $product, 'price' );
+			$lowest_scheme_sale_price    = WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' );
+			$lowest_scheme_regular_price = WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' );
 
 			$data = array(
 				'price'         => $lowest_scheme_price,
@@ -300,12 +305,16 @@ class WCS_ATT_Scheme_Prices {
 
 			if ( $price_overrides_exist ) {
 
+				$product_price         = WCS_ATT_Core_Compatibility::get_prop( $product, 'price' );
+				$product_sale_price    = WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' );
+				$product_regular_price = WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' );
+
 				foreach ( $subscription_schemes as $subscription_scheme ) {
 
 					$overridden_prices = self::get_subscription_scheme_prices( array(
-						'price'         => $product->price,
-						'regular_price' => $product->regular_price,
-						'sale_price'    => $product->sale_price
+						'price'         => $product_price,
+						'sale_price'    => $product_sale_price,
+						'regular_price' => $product_regular_price
 					), $subscription_scheme );
 
 					if ( ! empty( $overridden_prices ) ) {
@@ -318,7 +327,7 @@ class WCS_ATT_Scheme_Prices {
 					}
 				}
 
-				if ( $lowest_scheme_price < $product->price ) {
+				if ( $lowest_scheme_price < $product_price ) {
 
 					$data = array(
 						'price'         => $lowest_scheme_price,

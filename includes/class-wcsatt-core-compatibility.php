@@ -6,12 +6,88 @@
  * @since  1.0.0
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 class WCS_ATT_Core_Compatibility {
+
+	/**
+	 * Back-compat wrapper for getting CRUD object props directly.
+	 *
+	 * @since  1.1.3
+	 *
+	 * @param  WC_Product  $product
+	 * @return string
+	 */
+	public static function get_price_html_from_text( $product ) {
+		if ( self::is_wc_version_gte_2_7() ) {
+			$value = wc_get_price_html_from_text();
+		} else {
+			$value = $product->get_price_html_from_text();
+		}
+		return $value;
+	}
+
+	/**
+	 * Back-compat wrapper for 'get_id'.
+	 *
+	 * @since  1.1.3
+	 *
+	 * @param  WC_Product  $product
+	 * @return mixed
+	 */
+	public static function get_id( $product ) {
+		if ( self::is_wc_version_gte_2_7() ) {
+			$id = $product->get_id();
+		} else {
+			$id = $product->is_type( 'variation' ) ? absint( $product->variation_id ) : absint( $product->id );
+		}
+		return $id;
+	}
+
+	/**
+	 * Back-compat wrapper for getting CRUD object props directly.
+	 *
+	 * @since  1.1.3
+	 *
+	 * @param  object  $obj
+	 * @param  string  $name
+	 * @return mixed
+	 */
+	public static function get_prop( $obj, $name ) {
+		if ( self::is_wc_version_gte_2_7() ) {
+			$get_fn = 'get_' . $name;
+			$value = is_callable( array( $obj, $get_fn ) ) ? $obj->$get_fn( 'edit' ) : null;
+		} else {
+			$value = $obj->$name;
+		}
+		return $value;
+	}
+
+	/**
+	 * Back-compat wrapper for setting CRUD object props directly.
+	 *
+	 * @since  1.1.3
+	 *
+	 * @param  object  $obj
+	 * @param  string  $name
+	 * @param  mixed   $value
+	 * @return void
+	 */
+	public static function set_prop( $obj, $name, $value ) {
+		if ( self::is_wc_version_gte_2_7() ) {
+			$set_fn = 'set_' . $name;
+			if ( is_callable( array( $obj, $set_fn ) ) ) {
+				$obj->$set_fn( $value );
+			} else {
+				$obj->$name = $value;
+			}
+		} else {
+			$obj->$name = $value;
+		}
+	}
 
 	/**
 	 * Display a WooCommerce help tip.
@@ -22,7 +98,6 @@ class WCS_ATT_Core_Compatibility {
 	 * @return string
 	 */
 	public static function wc_help_tip( $tip ) {
-
 		if ( self::is_wc_version_gte_2_5() ) {
 			return wc_help_tip( $tip );
 		} else {
@@ -37,7 +112,6 @@ class WCS_ATT_Core_Compatibility {
 	 * @return string woocommerce version number or null
 	 */
 	private static function get_wc_version() {
-
 		return defined( 'WC_VERSION' ) && WC_VERSION ? WC_VERSION : null;
 	}
 

@@ -6,6 +6,11 @@
  * @since  1.0.0
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WCS_ATT_Display {
 
 	public static $bypass_price_html_filter = false;
@@ -106,14 +111,15 @@ class WCS_ATT_Display {
 		$show_subscription_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $product_level_schemes ), $product );
 
 		// Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
-		if ( $product->product_type === 'variable' ) {
+		if ( $product->get_type() === 'variable' ) {
 			$show_subscription_options = false;
 		}
 
 		if ( $show_subscription_options ) {
 
-			$force_subscription                   = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
-			$default_status                       = get_post_meta( $product->id, '_wcsatt_default_status', true );
+			$product_id                           = WCS_ATT_Core_Compatibility::get_id( $product );
+			$force_subscription                   = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+			$default_status                       = get_post_meta( $product_id, '_wcsatt_default_status', true );
 			$allow_one_time_option                = $force_subscription === 'yes' ? false : true;
 			$is_single_scheme_forced_subscription = $force_subscription === 'yes' && sizeof( $product_level_schemes ) === 1;
 
@@ -121,8 +127,8 @@ class WCS_ATT_Display {
 			$default_subscription_scheme          = current( $product_level_schemes );
 
 			// Option selected by default.
-			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product->id ] ) ) {
-				$default_subscription_scheme_id = $_REQUEST[ 'convert_to_sub_' . $product->id ];
+			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product_id ] ) ) {
+				$default_subscription_scheme_id = $_REQUEST[ 'convert_to_sub_' . $product_id ];
 			} else {
 				if ( $allow_one_time_option && $default_status !== 'subscription' ) {
 					$default_subscription_scheme_id = '0';
@@ -135,7 +141,7 @@ class WCS_ATT_Display {
 			// One-time option.
 			if ( $allow_one_time_option ) {
 				$none_string                 = _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN );
-				$one_time_option_description = $product->variation_id > 0 ? sprintf( __( '%1$s &ndash; %2$s', WCS_ATT::TEXT_DOMAIN ), $none_string, $product->get_price_html() ) : $none_string;
+				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', WCS_ATT::TEXT_DOMAIN ), $none_string, $product->get_price_html() ) : $none_string;
 
 				$options[ '0' ] = array(
 					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
@@ -190,7 +196,7 @@ class WCS_ATT_Display {
 				}
 			}
 
-			if ( $prompt = get_post_meta( $product->id, '_wcsatt_subscription_prompt', true ) ) {
+			if ( $prompt = get_post_meta( $product_id, '_wcsatt_subscription_prompt', true ) ) {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
@@ -200,6 +206,7 @@ class WCS_ATT_Display {
 
 			wc_get_template( 'single-product/satt-product-options.php', array(
 				'product'        => $product,
+				'product_id'     => $product_id,
 				'options'        => $options,
 				'allow_one_time' => $allow_one_time_option,
 				'prompt'         => $prompt,
@@ -438,6 +445,7 @@ class WCS_ATT_Display {
 
 		if ( ! empty( $product_level_schemes ) ) {
 
+			$product_id          = WCS_ATT_Core_Compatibility::get_id( $product );
 			$has_variable_price  = false;
 			$subscription_scheme = current( $product_level_schemes );
 
@@ -447,7 +455,7 @@ class WCS_ATT_Display {
 			}
 
 			// Reinstantiate variable products to re-populate a filtered version of the 'prices_array' property. Otherwise, a clone should do... but re-instantiate just in case.
-			$_product = wc_get_product( $product->id );
+			$_product = wc_get_product( $product_id );
 
 			// ...and let this be filterable.
 			$_product = apply_filters( 'wcsatt_overridden_subscription_prices_product', $_product, $subscription_scheme, $product );
@@ -463,7 +471,7 @@ class WCS_ATT_Display {
 			if ( count( $product_level_schemes ) > 1 ) {
 				$has_variable_price = true;
 			} else {
-				if ( 'variable' === $product->product_type && $_product->get_variation_price( 'min' ) !== $_product->get_variation_price( 'max' ) ) {
+				if ( 'variable' === $product->get_type() && $_product->get_variation_price( 'min' ) !== $_product->get_variation_price( 'max' ) ) {
 					$has_variable_price = true;
 
 					// If all variations prices are overridden, they will be equal.
@@ -471,15 +479,16 @@ class WCS_ATT_Display {
 						$has_variable_price = false;
 					}
 
-				} elseif ( 'bundle' === $product->product_type && $product->get_bundle_price( 'min' ) !== $product->get_bundle_price( 'max' ) ) {
+				} elseif ( 'bundle' === $product->get_type() && $product->get_bundle_price( 'min' ) !== $product->get_bundle_price( 'max' ) ) {
 					$has_variable_price = true;
 
-				} elseif ( 'composite' === $product->product_type && $product->get_composite_price( 'min' ) !== $product->get_composite_price( 'max' ) ) {
+				} elseif ( 'composite' === $product->get_type() && $product->get_composite_price( 'min' ) !== $product->get_composite_price( 'max' ) ) {
 					$has_variable_price = true;
 				}
 			}
 
-			$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+			$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+			$html_from_text     = WCS_ATT_Core_Compatibility::get_price_html_from_text( $_product );
 
 			if ( $force_subscription === 'yes' ) {
 
@@ -489,8 +498,8 @@ class WCS_ATT_Display {
 
 				$price = WC_Subscriptions_Product::get_price_string( $_product, array( 'price' => $price ) );
 
-				if ( $has_variable_price && false === strpos( $price, $_product->get_price_html_from_text() ) ) {
-					$price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), $_product->get_price_html_from_text(), $price );
+				if ( $has_variable_price && false === strpos( $price, $html_from_text ) ) {
+					$price = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), $html_from_text, $price );
 				}
 
 			} else {
@@ -515,7 +524,7 @@ class WCS_ATT_Display {
 					$lowest_scheme_price_html = WC_Subscriptions_Product::get_price_string( $_product, apply_filters( 'wcsatt_get_single_product_lowest_price_string', array( 'price' => $lowest_scheme_price_html ), $lowest_scheme_price_data ) );
 
 					if ( $has_variable_price ) {
-						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscribe from price', WCS_ATT::TEXT_DOMAIN ), str_replace( $_product->get_price_html_from_text(), '', $lowest_scheme_price_html ) );
+						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscribe from price', WCS_ATT::TEXT_DOMAIN ), str_replace( $html_from_text, '', $lowest_scheme_price_html ) );
 					} else {
 						$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="for">for </span>', 'subscribe for price', WCS_ATT::TEXT_DOMAIN ), $lowest_scheme_price_html );
 					}
@@ -545,10 +554,12 @@ class WCS_ATT_Display {
 
 		global $product;
 
-		$product_schemes    = get_post_meta( $product->id, '_wcsatt_schemes', true );
-		$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+		$product_id = WCS_ATT_Core_Compatibility::get_id( $product );
 
-		if ( in_array( $product->product_type, WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
+		$product_schemes    = get_post_meta( $product_id, '_wcsatt_schemes', true );
+		$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+
+		if ( in_array( $product->get_type(), WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
 			if ( 'yes' === $force_subscription ) {
 				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', WCS_ATT::TEXT_DOMAIN ) );
 			}

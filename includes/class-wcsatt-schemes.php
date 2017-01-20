@@ -6,6 +6,11 @@
  * @since  1.0.0
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WCS_ATT_Schemes {
 
 	/**
@@ -128,17 +133,16 @@ class WCS_ATT_Schemes {
 			return $schemes;
 		}
 
-		if ( $product->variation_id > 0 ) {
+		if ( $product->is_type( 'variation' ) ) {
 			return self::get_variation_subscription_schemes( $product );
 		}
 
 		$supported_types = WCS_ATT()->get_supported_product_types();
 
-		if ( in_array( $product->product_type, $supported_types ) ) {
+		if ( in_array( $product->get_type(), $supported_types ) ) {
 
 			// Get product-level subscription schemes stored in product meta.
-
-			$product_schemes = get_post_meta( $product->id, '_wcsatt_schemes', true );
+			$product_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_schemes', true );
 
 			if ( $product_schemes ) {
 				foreach ( $product_schemes as $scheme ) {

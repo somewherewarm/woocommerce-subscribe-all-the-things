@@ -6,6 +6,11 @@
  * @since  1.0.0
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WCS_ATT_Integrations {
 
 	public static $bundle_types        = array();
@@ -99,7 +104,7 @@ class WCS_ATT_Integrations {
 		global $product;
 
 		if ( $added = self::maybe_add_force_sub_price_filters( $product ) ) {
-			add_action( 'woocommerce_' . $product->product_type . '_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
+			add_action( 'woocommerce_' . $product->get_type() . '_add_to_cart', array( __CLASS__ , 'remove_force_sub_price_filters' ), 11 );
 		}
 	}
 
@@ -119,7 +124,8 @@ class WCS_ATT_Integrations {
 
 			if ( ! empty( $product_level_schemes ) && sizeof( $product_level_schemes ) === 1 ) {
 
-				$force_subscription = get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+				$product_id         = WCS_ATT_Core_Compatibility::get_id( $product );
+				$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
 
 				if ( $force_subscription === 'yes' ) {
 
@@ -164,7 +170,7 @@ class WCS_ATT_Integrations {
 	public static function price_filters_allowed( $allowed, $product, $subscription_scheme, $filtered_product ) {
 
 		if ( $subscription_scheme[ 'subscription_pricing_method' ] === 'override' && self::is_bundle_type_product( $product ) && self::has_individually_priced_bundled_contents( $product ) ) {
-			if ( $filtered_product->id !== $product->id ) {
+			if ( WCS_ATT_Core_Compatibility::get_id( $filtered_product ) !== WCS_ATT_Core_Compatibility::get_id( $product ) ) {
 				$allowed = false;
 			}
 		}
@@ -337,7 +343,7 @@ class WCS_ATT_Integrations {
 	 * @return boolean|string
 	 */
 	public static function is_bundle_type_product( $product ) {
-		return in_array( $product->product_type, self::$bundle_types ) ? $product->product_type : false;
+		return in_array( $product->get_type(), self::$bundle_types ) ? $product->get_type() : false;
 	}
 
 	/**
@@ -427,9 +433,9 @@ class WCS_ATT_Integrations {
 	public static function get_bundle_product_schemes( $schemes, $product ) {
 
 		if ( self::is_bundle_type_product( $product ) ) {
-			if ( $product->product_type === 'bundle' && self::bundle_contains_subscription( $product ) ) {
+			if ( $product->get_type() === 'bundle' && self::bundle_contains_subscription( $product ) ) {
 				$schemes = array();
-			} elseif ( $product->product_type === 'mix-and-match' && $product->is_priced_per_product() ) {
+			} elseif ( $product->get_type() === 'mix-and-match' && $product->is_priced_per_product() ) {
 				$schemes = array();
 			}
 		}
@@ -549,9 +555,9 @@ class WCS_ATT_Integrations {
 	 */
 	private static function has_individually_priced_bundled_contents( $product ) {
 
-		if ( 'bundle' === $product->product_type ) {
+		if ( 'bundle' === $product->get_type() ) {
 			return version_compare( WC_PB()->version, '5.0.0' ) < 0 ? $product->is_priced_per_product() : $product->contains( 'priced_individually' );
-		} elseif( 'composite' === $product->product_type ) {
+		} elseif( 'composite' === $product->get_type() ) {
 			return version_compare( WC_CP()->version, '3.7.0' ) < 0 ? $product->is_priced_per_product() : $product->contains( 'priced_individually' );
 		}
 	}

@@ -6,6 +6,11 @@
  * @since  1.0.4
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WCS_ATT_Admin {
 
 	public static function init() {
