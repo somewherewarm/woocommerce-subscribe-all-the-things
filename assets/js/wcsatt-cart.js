@@ -1,18 +1,19 @@
 /* global wcsatt_cart_params */
 jQuery( function( $ ) {
 
-	// wcsatt_cart_params is required to continue, ensure the object exists
+	// Ensure wcsatt_cart_params exists to continue.
 	if ( typeof wcsatt_cart_params === 'undefined' ) {
 		return false;
 	}
 
-	// Shipping calculator
+	// Reload cart elements when (de-)selecting a cart subscription option.
 	$( document ).on( 'change', '.wcsatt-options-cart input[type=radio][name^=convert_to_sub]', function() {
 
-		var selected_option = $(this).val();
-		var $cart_totals    = $( 'div.cart_totals' );
-		var $cart_table     = $( 'table.shop_table.cart' );
-		var $cart_wrapper   = $cart_table.closest( '.woocommerce' );
+		var $cart_totals    = $( 'div.cart_totals' ),
+			$cart_table     = $( 'table.shop_table.cart' ),
+			$cart_wrapper   = $cart_table.closest( '.woocommerce' ),
+			selected_option = $( this ).val(),
+			cart_referrer   = $cart_table.find( 'input[name="_wp_http_referer"]' ).val();
 
 		$cart_wrapper.block( {
 			message: null,
@@ -30,9 +31,17 @@ jQuery( function( $ ) {
 
 		$.post( wcsatt_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'wcsatt_update_cart_option' ), data, function( response ) {
 
-			var $response        = $( $.parseHTML( response ) );
-			var $response_totals = $response.find( 'div.cart_totals' );
-			var $response_table  = $response.find( 'table.shop_table.cart' );
+			var $response        = $( $.parseHTML( response ) ),
+				$response_totals = $response.find( 'div.cart_totals' ),
+				$response_table  = $response.find( 'table.shop_table.cart' );
+
+			if ( cart_referrer ) {
+				$response_table.find( 'input[name="_wp_http_referer"]' ).val( cart_referrer );
+			}
+
+			if ( 'yes' === wcsatt_cart_params.is_wc_version_gte_2_6 ) {
+				$response_table.find( 'input[name="update_cart"]' ).prop( 'disabled', true );
+			}
 
 			$cart_totals.replaceWith( $response_totals );
 			$cart_table.replaceWith( $response_table );
