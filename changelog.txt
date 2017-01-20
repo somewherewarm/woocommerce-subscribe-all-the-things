@@ -5,6 +5,7 @@
  * Fix - Escape subscription option description html.
  * Fix - Subscription options styling issues in 'Product Data > Subscriptions' and 'Settings > Subscriptions' with WooCommerce Subscriptions 2.1+.
  * Fix - Bundled item subscription plan prices are incorrect when the plan of the bundle price is defined using the 'Override product' method.
+ * Fix - Switching the active cart subscription option breaks Update Cart button functionality in WC 2.6.
 
 2016.10.28 - version 1.1.1
  * Fix - Resubscribing to products that have been subscription-enabled using SATT.
