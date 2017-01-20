@@ -2,8 +2,8 @@
 /**
  * Cart functionality for converting cart items to subscriptions.
  *
- * @class 	WCS_ATT_Cart
- * @version 1.0.3
+ * @class    WCS_ATT_Cart
+ * @version  1.0.3
  */
 
 class WCS_ATT_Cart {
@@ -36,8 +36,8 @@ class WCS_ATT_Cart {
 			add_action( 'wp_ajax_nopriv_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 		}
 
-		// Add scheme ID to cart item meta so resubscribe can later fetch it by ID. Needed because length data is not
-		// stored on the subscription
+		// Add scheme ID to cart item meta so resubscribe can later fetch it by ID.
+		// Needed because length data is not stored on the subscription.
 		add_action( 'woocommerce_add_subscription_item_meta', __CLASS__ . '::store_cart_item_wcsatt_id', 10, 2 );
 	}
 
@@ -71,7 +71,7 @@ class WCS_ATT_Cart {
 
 		WC()->cart->calculate_totals();
 
-		// Update the cart table apart from the totals in order to show modified price html strings with sub details
+		// Update the cart table apart from the totals in order to show modified price html strings with sub details.
 		wc_get_template( 'cart/cart.php' );
 
 		die();
@@ -80,7 +80,7 @@ class WCS_ATT_Cart {
 	/**
 	 * Updates the convert-to-sub status of a cart item based on the cart item option.
 	 *
-	 * @param  boolean $updated
+	 * @param  boolean  $updated
 	 * @return boolean
 	 */
 	public static function update_convert_to_sub_options( $updated ) {
@@ -103,9 +103,9 @@ class WCS_ATT_Cart {
 	/**
 	 * Add convert-to-sub subscription data to cart items that can be converted.
 	 *
-	 * @param  array $cart_item
-	 * @param  int   $product_id
-	 * @param  int   $variation_id
+	 * @param  array  $cart_item
+	 * @param  int    $product_id
+	 * @param  int    $variation_id
 	 * @return array
 	 */
 	public static function add_cart_item_convert_to_sub_data( $cart_item, $product_id, $variation_id ) {
@@ -153,7 +153,7 @@ class WCS_ATT_Cart {
 	/**
 	 * Converts a cart item to a subscription.
 	 *
-	 * @param  array   $cart_item
+	 * @param  array  $cart_item
 	 * @return array
 	 */
 	public static function convert_to_sub( $cart_item ) {
@@ -222,7 +222,7 @@ class WCS_ATT_Cart {
 	/**
 	 * Cart items are converted to subscriptions here, then Subs code does all the magic.
 	 *
-	 * @param  WC_Cart $cart
+	 * @param  WC_Cart  $cart
 	 * @return void
 	 */
 	public static function apply_convert_to_sub_session_data( $cart ) {
@@ -246,9 +246,9 @@ class WCS_ATT_Cart {
 	 * Hooks onto 'woocommerce_is_subscription' to trick Subs into thinking it is dealing with a subscription.
 	 * The necessary subscription properties are added to the product in 'load_convert_to_sub_session_data()'.
 	 *
-	 * @param  boolean    $is
-	 * @param  int        $product_id
-	 * @param  WC_Product $product
+	 * @param  boolean     $is
+	 * @param  int         $product_id
+	 * @param  WC_Product  $product
 	 * @return boolean
 	 */
 	public static function is_converted_to_sub( $is, $product_id, $product ) {
@@ -305,10 +305,10 @@ class WCS_ATT_Cart {
 	 * Hooked into woocommerce_add_subscription_item_meta, this will store the wcsatt scheme id against the order item.
 	 * Reason is that the resubscribe cart item data lacks a LOT of detail, so we need to reconstruct some of it.
 	 * Normally it could be inferred from the product's available schemes and the old subscription details, but because
-	 * lenght is not stored, it becomes ambiguous. Hence the need to store the ID.
+	 * length is not stored, it becomes ambiguous. Hence the need to store the ID.
 	 *
-	 * @param  integer      $item_id    ID of the order itemmeta
-	 * @param  array        $cart_item  data about the order item
+	 * @param  integer  $item_id    ID of the order itemmeta
+	 * @param  array    $cart_item  data about the order item
 	 */
 	public static function store_cart_item_wcsatt_id( $item_id, $cart_item ) {
 		if ( isset( $cart_item[ 'wccsub_data' ][ 'active_subscription_scheme_id' ] ) ) {
