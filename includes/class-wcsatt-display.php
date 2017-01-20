@@ -45,12 +45,14 @@ class WCS_ATT_Display {
 		wp_enqueue_style( 'wcsatt-css' );
 
 		if ( is_cart() ) {
+
 			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
 			wp_enqueue_script( 'wcsatt-cart' );
 
 			$params = array(
 				'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
 				'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+				'is_wc_version_gte_2_6'    => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_6() ? 'yes' : 'no'
 			);
 
 			wp_localize_script( 'wcsatt-cart', 'wcsatt_cart_params', $params );
