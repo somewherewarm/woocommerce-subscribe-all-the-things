@@ -3,7 +3,7 @@
 Contributors: SomewhereWarm, Prospress, franticpsyx
 Tags: woocommerce, subscriptions, subscribe, order, cart, product, convert, product type, bundle, composite, mix, match, extension
 Requires at least: 4.1
-Tested up to: 4.6
+Tested up to: 4.7
 Stable tag: 1.1.2
 WC requires at least: 2.3
 WC tested up to: 2.6

@@ -3,7 +3,7 @@
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
 * Description: Experimental extension for linking WooCommerce Subscriptions with simple products, variable products and product types created by WooCommerce extensions, such as Composite Products and Product Bundles.
-* Version: 1.1.2-dev
+* Version: 1.1.2
 * Author: Prospress Inc.
 * Author URI: http://prospress.com/
 *
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 class WCS_ATT {
 
 	/* Plugin version. */
-	const VERSION = '1.1.2-dev';
+	const VERSION = '1.1.2';
 
 	/* Required WC version. */
 	const REQ_WC_VERSION = '2.3.0';
