@@ -42,6 +42,16 @@ class WCS_ATT_Core_Compatibility {
 	}
 
 	/**
+	 * Returns true if the installed version of WooCommerce is 2.7 or greater.
+	 *
+	 * @since  1.1.2
+	 * @return boolean
+	 */
+	public static function is_wc_version_gte_2_7() {
+		return self::get_wc_version() && version_compare( self::get_wc_version(), '2.7', '>=' );
+	}
+
+	/**
 	 * Returns true if the installed version of WooCommerce is 2.6 or greater.
 	 *
 	 * @since  1.0.4
