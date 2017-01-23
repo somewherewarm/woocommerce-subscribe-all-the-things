@@ -16,7 +16,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for getting CRUD object props directly.
 	 *
-	 * @since  1.1.3
+	 * @since  1.2.0
 	 *
 	 * @param  WC_Product  $product
 	 * @return string
@@ -31,9 +31,25 @@ class WCS_ATT_Core_Compatibility {
 	}
 
 	/**
+	 * Back-compat wrapper for 'get_parent_id'.
+	 *
+	 * @since  1.2.0
+	 *
+	 * @param  WC_Product  $product
+	 * @return mixed
+	 */
+	public static function get_parent_id( $product ) {
+		if ( self::is_wc_version_gte_2_7() ) {
+			return $product->get_parent_id();
+		} else {
+			return $product->is_type( 'variation' ) ? absint( $product->id ) : 0;
+		}
+	}
+
+	/**
 	 * Back-compat wrapper for 'get_id'.
 	 *
-	 * @since  1.1.3
+	 * @since  1.2.0
 	 *
 	 * @param  WC_Product  $product
 	 * @return mixed
@@ -50,7 +66,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for getting CRUD object props directly.
 	 *
-	 * @since  1.1.3
+	 * @since  1.2.0
 	 *
 	 * @param  object  $obj
 	 * @param  string  $name
@@ -69,7 +85,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for setting CRUD object props directly.
 	 *
-	 * @since  1.1.3
+	 * @since  1.2.0
 	 *
 	 * @param  object  $obj
 	 * @param  string  $name

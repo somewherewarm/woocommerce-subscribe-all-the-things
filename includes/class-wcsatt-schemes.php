@@ -167,7 +167,7 @@ class WCS_ATT_Schemes {
 
 		// Get product-level subscription schemes stored in variation meta.
 
-		$variation_schemes = get_post_meta( $variation->variation_id, '_wcsatt_schemes', true );
+		$variation_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_id( $variation ), '_wcsatt_schemes', true );
 
 		if ( $variation_schemes ) {
 			foreach ( $variation_schemes as $scheme ) {
@@ -178,7 +178,7 @@ class WCS_ATT_Schemes {
 
 			// Get product-level subscription schemes stored in product meta.
 
-			$product_schemes = get_post_meta( $variation->id, '_wcsatt_schemes', true );
+			$product_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_parent_id( $variation ), '_wcsatt_schemes', true );
 
 			if ( $product_schemes ) {
 				foreach ( $product_schemes as $scheme ) {
