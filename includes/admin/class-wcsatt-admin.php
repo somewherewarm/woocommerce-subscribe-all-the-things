@@ -15,6 +15,9 @@ class WCS_ATT_Admin {
 
 	public static function init() {
 
+		// Metabox includes.
+		add_action( 'init', array( __CLASS__, 'admin_init' ) );
+
 		// Admin scripts and styles.
 		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_scripts' );
 
@@ -27,21 +30,8 @@ class WCS_ATT_Admin {
 		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
 		add_action( 'wcsatt_subscription_scheme_content',  __CLASS__ . '::subscription_scheme_content', 10, 3 );
 
-		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_product_content' action.
 		add_action( 'wcsatt_subscription_scheme_product_content',  __CLASS__ . '::subscription_scheme_product_content', 10, 3 );
-
-		/*
-		 * WC Product Metaboxes.
-		 */
-
-		// Creates the admin panel tab.
-		add_action( 'woocommerce_product_write_panel_tabs', __CLASS__ . '::product_write_panel_tab' );
-
-		// Creates the panel for configuring subscription options.
-		add_action( 'woocommerce_product_write_panels', __CLASS__ . '::product_write_panel' );
-
-		// Processes and saves the necessary post meta.
-		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta', 15, 1 );
 
 		/*
 		 * "Subscribe to Cart" settings.
@@ -55,6 +45,20 @@ class WCS_ATT_Admin {
 
 		// Display subscription scheme admin metaboxes in the "Subscribe to Cart/Order" section.
 		add_action( 'woocommerce_admin_field_subscription_schemes', __CLASS__ . '::subscription_schemes_content' );
+	}
+
+	/**
+	 * Admin init.
+	 */
+	public static function admin_init() {
+		self::includes();
+	}
+
+	/**
+	 * Include classes.
+	 */
+	public static function includes() {
+		require_once( 'meta-boxes/class-wcsatt-meta-box-product-data.php' );
 	}
 
 	/**
@@ -136,143 +140,6 @@ class WCS_ATT_Admin {
 	}
 
 	/**
-	 * Save subscription options.
-	 *
-	 * @param  int  $post_id
-	 * @return void
-	 */
-	public static function process_product_meta( $post_id ) {
-
-		// Get type.
-		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) );
-		$supported_types = WCS_ATT()->get_supported_product_types();
-
-		if ( in_array( $product_type, $supported_types ) ) {
-
-			// Save one time shipping option.
-			update_post_meta( $post_id, '_subscription_one_time_shipping', stripslashes( isset( $_POST['_subscription_one_time_shipping'] ) ? 'yes' : 'no' ) );
-
-			// Save subscription scheme options.
-			if ( isset( $_POST[ 'wcsatt_schemes' ] ) ) {
-
-				$posted_schemes = stripslashes_deep( $_POST[ 'wcsatt_schemes' ] );
-				$unique_schemes = array();
-
-				foreach ( $posted_schemes as $posted_scheme ) {
-
-					// Copy variable type fields.
-					if ( 'variable' === $product_type ) {
-						if ( isset( $posted_scheme[ 'subscription_regular_price_variable' ] ) ) {
-							$posted_scheme[ 'subscription_regular_price' ] = $posted_scheme[ 'subscription_regular_price_variable' ];
-						}
-						if ( isset( $posted_scheme[ 'subscription_sale_price_variable' ] ) ) {
-							$posted_scheme[ 'subscription_sale_price' ] = $posted_scheme[ 'subscription_sale_price_variable' ];
-						}
-						if ( isset( $posted_scheme[ 'subscription_discount_variable' ] ) ) {
-							$posted_scheme[ 'subscription_discount' ] = $posted_scheme[ 'subscription_discount_variable' ];
-						}
-						if ( isset( $posted_scheme[ 'subscription_pricing_method_variable' ] ) ) {
-							$posted_scheme[ 'subscription_pricing_method' ] = $posted_scheme[ 'subscription_pricing_method_variable' ];
-						}
-					}
-
-					// Format subscription prices.
-					if ( isset( $posted_scheme[ 'subscription_regular_price' ] ) ) {
-						$posted_scheme[ 'subscription_regular_price' ] = ( $posted_scheme[ 'subscription_regular_price'] === '' ) ? '' : wc_format_decimal( $posted_scheme[ 'subscription_regular_price' ] );
-					}
-
-					if ( isset( $posted_scheme[ 'subscription_sale_price' ] ) ) {
-						$posted_scheme[ 'subscription_sale_price' ] = ( $posted_scheme[ 'subscription_sale_price'] === '' ) ? '' : wc_format_decimal( $posted_scheme[ 'subscription_sale_price' ] );
-					}
-
-					if ( '' !== $posted_scheme[ 'subscription_sale_price' ] ) {
-						$posted_scheme[ 'subscription_price' ] = $posted_scheme[ 'subscription_sale_price' ];
-					} else {
-						$posted_scheme[ 'subscription_price' ] = ( $posted_scheme[ 'subscription_regular_price' ] === '' ) ? '' : $posted_scheme[ 'subscription_regular_price' ];
-					}
-
-					// Format subscription discount.
-					if ( isset( $posted_scheme[ 'subscription_discount' ] ) ) {
-
-						if ( is_numeric( $posted_scheme[ 'subscription_discount' ] ) ) {
-
-							$discount = (float) wc_format_decimal( $posted_scheme[ 'subscription_discount' ] );
-
-							if ( $discount < 0 || $discount > 100 ) {
-
-								WC_Admin_Meta_Boxes::add_error( __( 'Please enter positive subscription discount values, between 0-100.', WCS_ATT::TEXT_DOMAIN ) );
-								$posted_scheme[ 'subscription_discount' ] = '';
-
-							} else {
-								$posted_scheme[ 'subscription_discount' ] = $discount;
-							}
-						} else {
-							$posted_scheme[ 'subscription_discount' ] = '';
-						}
-					} else {
-						$posted_scheme[ 'subscription_discount' ] = '';
-					}
-
-					// Validate price override method.
-					if ( isset( $posted_scheme[ 'subscription_pricing_method' ] ) && $posted_scheme[ 'subscription_pricing_method' ] === 'override' ) {
-						if ( $posted_scheme[ 'subscription_price' ] === '' && $posted_scheme[ 'subscription_regular_price' ] === '' ) {
-							$posted_scheme[ 'subscription_pricing_method' ] = 'inherit';
-						}
-					} else {
-						$posted_scheme[ 'subscription_pricing_method' ] = 'inherit';
-					}
-
-					// Construct scheme id.
-					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
-
-					$unique_schemes[ $scheme_id ]         = $posted_scheme;
-					$unique_schemes[ $scheme_id ][ 'id' ] = $scheme_id;
-				}
-
-				update_post_meta( $post_id, '_wcsatt_schemes', $unique_schemes );
-
-			} else {
-				delete_post_meta( $post_id, '_wcsatt_schemes' );
-			}
-
-			// Save default status.
-
-			if ( isset( $_POST[ '_wcsatt_default_status' ] ) ) {
-				update_post_meta( $post_id, '_wcsatt_default_status', stripslashes( $_POST[ '_wcsatt_default_status' ] ) );
-			}
-
-			// Save one-time status.
-
-			$force_subscription = isset( $_POST[ '_wcsatt_force_subscription' ] ) ? 'yes' : 'no';
-
-			update_post_meta( $post_id, '_wcsatt_force_subscription', $force_subscription );
-
-			// Set regular price as ZERO should the shop owner forget.
-			// This helps make WooCommerce think it's still available for purchase.
-			if ( 'yes' === $force_subscription && empty( $_POST[ '_regular_price' ] ) ) {
-				update_post_meta( $post_id, '_regular_price', wc_format_decimal( 0 ) );
-				update_post_meta( $post_id, '_price', wc_format_decimal( 0 ) );
-			}
-
-			// Save prompt.
-
-			if ( ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ) {
-				$prompt = wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) );
-				update_post_meta( $post_id, '_wcsatt_subscription_prompt', $prompt );
-			} else {
-				delete_post_meta( $post_id, '_wcsatt_subscription_prompt' );
-			}
-
-		} else {
-
-			delete_post_meta( $post_id, '_wcsatt_schemes' );
-			delete_post_meta( $post_id, '_wcsatt_force_subscription' );
-			delete_post_meta( $post_id, '_wcsatt_default_status' );
-			delete_post_meta( $post_id, '_wcsatt_subscription_prompt' );
-		}
-	}
-
-	/**
 	 * Save subscription scheme option from the WooCommerce > Settings > Subscriptions administration screen.
 	 *
 	 * @return void
@@ -309,7 +176,7 @@ class WCS_ATT_Admin {
 	 * @return void
 	 */
 	public static function subscription_scheme( $index, $scheme_data, $post_id ) {
-		include( 'views/subscription-scheme.php' );
+		include( 'meta-boxes/views/subscription-scheme.php' );
 	}
 
 	/**
@@ -600,73 +467,6 @@ class WCS_ATT_Admin {
 			wp_localize_script( 'wcsatt_writepanel', 'wcsatt_admin_params', $params );
 		}
 	}
-
-	/**
-	 * Cart Subs writepanel tab.
-	 *
-	 * @return void
-	 */
-	public static function product_write_panel_tab() {
-
-		?><li class="cart_subscription_options cart_subscriptions_tab show_if_simple show_if_variable show_if_bundle hide_if_subscription hide_if_variable-subscription">
-			<a href="#wcsatt_data"><?php _e( 'Subscriptions', WCS_ATT::VERSION ); ?></a>
-		</li><?php
-	}
-
-	/**
-	 * Product writepanel for Subscriptions.
-	 *
-	 * @return void
-	 */
-	public static function product_write_panel() {
-
-		global $post;
-
-		$subscription_schemes = get_post_meta( $post->ID, '_wcsatt_schemes', true );
-
-		?><div id="wcsatt_data" class="panel woocommerce_options_panel wc-metaboxes-wrapper">
-			<div class="options_group"><?php
-
-				// Subscription Status.
-				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true, 'description' => __( 'Check this option to prevent one-time purchases of this product. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ) ) );
-
-				// Default Status.
-				woocommerce_wp_select( array( 'id' => '_wcsatt_default_status', 'wrapper_class'=> 'wcsatt_default_status', 'label' => __( 'Default to', WCS_ATT::TEXT_DOMAIN ), 'description' => '', 'options' => array(
-					'one-time'     => __( 'One-time purchase', WCS_ATT::TEXT_DOMAIN ),
-					'subscription' => __( 'Subscription', WCS_ATT::TEXT_DOMAIN ),
-				) ) );
-
-				// Subscription Prompt.
-				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Custom html/text to display before the available Subscription Options. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true ) );
-
-			?></div>
-
-			<p class="form-field">
-				<label>
-					<?php
-						echo __( 'Subscription Options', WCS_ATT::TEXT_DOMAIN );
-						echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Add one or more subscription options for this product.', WCS_ATT::TEXT_DOMAIN ) );
-			?></label></p>
-			<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
-
-				if ( $subscription_schemes ) {
-
-					$i = 0;
-
-					foreach ( $subscription_schemes as $subscription_scheme ) {
-						do_action( 'wcsatt_subscription_scheme', $i, $subscription_scheme, $post->ID );
-						$i++;
-					}
-				}
-
-			?></div>
-
-			<p class="toolbar">
-				<button type="button" class="button button-primary add_subscription_scheme"><?php _e( 'Add Option', WCS_ATT::TEXT_DOMAIN ); ?></button>
-			</p>
-		</div><?php
-	}
-
 }
 
 WCS_ATT_Admin::init();
