@@ -56,7 +56,7 @@ class WCS_ATT_Display {
 
 			$params = array(
 				'update_cart_option_nonce' => wp_create_nonce( 'wcsatt_update_cart_option' ),
-				'wc_ajax_url'              => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ? WC_AJAX::get_endpoint( "%%endpoint%%" ) : WC()->ajax_url(),
+				'wc_ajax_url'              => WC_AJAX::get_endpoint( "%%endpoint%%" ),
 				'is_wc_version_gte_2_6'    => WCS_ATT_Core_Compatibility::is_wc_version_gte_2_6() ? 'yes' : 'no'
 			);
 

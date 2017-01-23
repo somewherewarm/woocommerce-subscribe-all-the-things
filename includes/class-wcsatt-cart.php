@@ -34,12 +34,7 @@ class WCS_ATT_Cart {
 		add_filter( 'woocommerce_update_cart_action_cart_updated', __CLASS__ . '::update_convert_to_sub_options', 10 );
 
 		// Save the convert to sub cart-level setting via ajax.
-		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_4() ) {
-			add_action( 'wc_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
-		} else {
-			add_action( 'wp_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
-			add_action( 'wp_ajax_nopriv_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
-		}
+		add_action( 'wc_ajax_wcsatt_update_cart_option', __CLASS__ . '::update_convert_to_sub_cart_options' );
 
 		// Add scheme ID to cart item meta so resubscribe can later fetch it by ID.
 		// Needed because length data is not stored on the subscription.
