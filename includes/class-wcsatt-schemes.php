@@ -90,8 +90,9 @@ class WCS_ATT_Schemes {
 
 			if ( in_array( $scope, array( 'all', 'cart-item' ) ) ) {
 
+				$product         = $cart_item[ 'data' ];
 				$product_id      = $cart_item[ 'product_id' ];
-				$product_schemes = get_post_meta( $product_id, '_wcsatt_schemes', true );
+				$product_schemes = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_schemes', true ) : get_post_meta( $product_id, '_wcsatt_schemes', true );
 
 				if ( $product_schemes ) {
 					foreach ( $product_schemes as $scheme ) {
@@ -142,7 +143,7 @@ class WCS_ATT_Schemes {
 		if ( in_array( $product->get_type(), $supported_types ) ) {
 
 			// Get product-level subscription schemes stored in product meta.
-			$product_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_schemes', true );
+			$product_schemes = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_schemes', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_schemes', true );
 
 			if ( $product_schemes ) {
 				foreach ( $product_schemes as $scheme ) {
@@ -166,8 +167,7 @@ class WCS_ATT_Schemes {
 		$schemes = array();
 
 		// Get product-level subscription schemes stored in variation meta.
-
-		$variation_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_id( $variation ), '_wcsatt_schemes', true );
+		$variation_schemes = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $variation->get_meta( '_wcsatt_schemes', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $variation ), '_wcsatt_schemes', true );
 
 		if ( $variation_schemes ) {
 			foreach ( $variation_schemes as $scheme ) {
@@ -177,10 +177,14 @@ class WCS_ATT_Schemes {
 		} else {
 
 			// Get product-level subscription schemes stored in product meta.
+			if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
+				$product         = wc_get_product( $variation->get_parent_id() );
+				$product_schemes = $product ? $product->get_meta( '_wcsatt_schemes', true ) : array();
+			} else {
+				$product_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_parent_id( $variation ), '_wcsatt_schemes', true );
+			}
 
-			$product_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_parent_id( $variation ), '_wcsatt_schemes', true );
-
-			if ( $product_schemes ) {
+			if ( ! empty( $product_schemes ) ) {
 				foreach ( $product_schemes as $scheme ) {
 					$scheme[ 'scope' ] = 'cart-item';
 					$schemes[]         = $scheme;
@@ -230,9 +234,10 @@ class WCS_ATT_Schemes {
 
 				if ( $subscription_schemes = self::get_subscription_schemes( $cart_item, 'cart-item' ) ) {
 
+					$product            = $cart_item[ 'data' ];
 					$product_id         = $cart_item[ 'product_id' ];
-					$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
-					$default_status     = get_post_meta( $product_id, '_wcsatt_default_status', true );
+					$force_subscription = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+					$default_status     = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_default_status', true ) : get_post_meta( $product_id, '_wcsatt_default_status', true );
 					$default_scheme_id  = '0';
 
 					if ( $force_subscription === 'yes' || $default_status === 'subscription' ) {

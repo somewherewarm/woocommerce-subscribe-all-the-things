@@ -118,8 +118,8 @@ class WCS_ATT_Display {
 		if ( $show_subscription_options ) {
 
 			$product_id                           = WCS_ATT_Core_Compatibility::get_id( $product );
-			$force_subscription                   = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
-			$default_status                       = get_post_meta( $product_id, '_wcsatt_default_status', true );
+			$force_subscription                   = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+			$default_status                       = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_default_status', true ) : get_post_meta( $product_id, '_wcsatt_default_status', true );
 			$allow_one_time_option                = $force_subscription === 'yes' ? false : true;
 			$is_single_scheme_forced_subscription = $force_subscription === 'yes' && sizeof( $product_level_schemes ) === 1;
 
@@ -196,7 +196,7 @@ class WCS_ATT_Display {
 				}
 			}
 
-			if ( $prompt = get_post_meta( $product_id, '_wcsatt_subscription_prompt', true ) ) {
+			if ( $prompt = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_subscription_prompt', true ) : get_post_meta( $product_id, '_wcsatt_subscription_prompt', true ) ) {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
@@ -247,7 +247,7 @@ class WCS_ATT_Display {
 		$product_level_schemes = WCS_ATT_Schemes::get_subscription_schemes( $cart_item, 'cart-item' );
 
 		if ( ! empty( $product_level_schemes ) ) {
-			$force_subscription = get_post_meta( $cart_item[ 'product_id' ], '_wcsatt_force_subscription', true );
+			$force_subscription = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $cart_item[ 'data' ]->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $cart_item[ 'product_id' ], '_wcsatt_force_subscription', true );
 			if ( $force_subscription === 'yes' ) {
 				$allow_one_time_option = false;
 			}
@@ -487,7 +487,7 @@ class WCS_ATT_Display {
 				}
 			}
 
-			$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+			$force_subscription = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $product_id, '_wcsatt_force_subscription', true );
 			$html_from_text     = WCS_ATT_Core_Compatibility::get_price_html_from_text( $_product );
 
 			if ( $force_subscription === 'yes' ) {
@@ -554,10 +554,8 @@ class WCS_ATT_Display {
 
 		global $product;
 
-		$product_id = WCS_ATT_Core_Compatibility::get_id( $product );
-
-		$product_schemes    = get_post_meta( $product_id, '_wcsatt_schemes', true );
-		$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+		$product_schemes    = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_schemes', true ) : get_post_meta( $product->id, '_wcsatt_schemes', true );
+		$force_subscription = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 
 		if ( in_array( $product->get_type(), WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
 			if ( 'yes' === $force_subscription ) {

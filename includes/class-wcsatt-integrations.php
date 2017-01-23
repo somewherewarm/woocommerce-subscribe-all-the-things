@@ -124,8 +124,7 @@ class WCS_ATT_Integrations {
 
 			if ( ! empty( $product_level_schemes ) && sizeof( $product_level_schemes ) === 1 ) {
 
-				$product_id         = WCS_ATT_Core_Compatibility::get_id( $product );
-				$force_subscription = get_post_meta( $product_id, '_wcsatt_force_subscription', true );
+				$force_subscription = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $product->id, '_wcsatt_force_subscription', true );
 
 				if ( $force_subscription === 'yes' ) {
 
