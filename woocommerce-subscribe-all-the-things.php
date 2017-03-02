@@ -114,10 +114,22 @@ class WCS_ATT {
 			return false;
 		}
 
+		$this->includes();
+	}
+
+	/**
+	 * Load plugin files.
+	 *
+	 * @return void
+	 */
+	public function includes() {
+
 		require_once( 'includes/class-wcsatt-core-compatibility.php' );
-		require_once( 'includes/class-wcsatt-integrations.php' );
+		// require_once( 'includes/class-wcsatt-integrations.php' );
+		require_once( 'includes/class-wcsatt-scheme.php' );
 		require_once( 'includes/class-wcsatt-schemes.php' );
 		require_once( 'includes/class-wcsatt-scheme-prices.php' );
+		require_once( 'includes/class-wcsatt-product.php' );
 		require_once( 'includes/class-wcsatt-cart.php' );
 		require_once( 'includes/class-wcsatt-display.php' );
 
@@ -125,7 +137,6 @@ class WCS_ATT {
 		if ( is_admin() ) {
 			$this->admin_includes();
 		}
-
 	}
 
 	/**
