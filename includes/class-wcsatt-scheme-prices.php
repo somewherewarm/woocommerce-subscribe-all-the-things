@@ -32,9 +32,8 @@ class WCS_ATT_Scheme_Prices {
 		add_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
 		add_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
 		add_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
-
+		add_filter( 'woocommerce_get_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash' ), 0, 2 );
 		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 2 );
-		add_filter( 'woocommerce_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash', 0, 2 ) );
 
 		do_action( 'wcsatt_add_price_filters' );
 	}
@@ -49,9 +48,8 @@ class WCS_ATT_Scheme_Prices {
 		remove_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
 		remove_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
 		remove_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
-
+		remove_filter( 'woocommerce_get_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash' ), 0, 2 );
 		remove_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 2 );
-		remove_filter( 'woocommerce_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash', 0, 2 ) );
 
 		do_action( 'wcsatt_remove_price_filters' );
 	}
