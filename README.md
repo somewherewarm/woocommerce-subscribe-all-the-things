@@ -1,4 +1,4 @@
-#WooCommerce Subscribe All the Things
+# WooCommerce Subscribe All the Things
 
 WooCommerce Subscribe All the Things is an experimental mini-extension for [WooCommerce Subscriptions](http://www.woothemes.com/products/woocommerce-subscriptions/).
 
@@ -10,7 +10,7 @@ For example, using this extension, you can offer a subscription product for the 
 
 **Example screenshot of a Simple Product with Subscription Options as displayed to the customer in a store.**
 
-##Subscribe to Cart
+## Subscribe to Cart
 
 In addition to subscription schemes at the product level, you can also offer subscription options at the cart level. This feature allows your customers to subscribe to the entire contents of their cart in a single subscription.
 
@@ -20,9 +20,9 @@ In addition to subscription schemes at the product level, you can also offer sub
 
 If you have a store with a large number of products, using Cart Subscription Schemes can make it easier to offer your customers subscription options because you will not need to add subscription schemes to all products.
 
-#Guide
+# Guide
 
-###Requirements
+### Requirements
 
 In order to use the extension, you will need:
 
@@ -31,12 +31,12 @@ In order to use the extension, you will need:
 * A staging or test site, we do not recommend using this on live sites yet
 * A sense of adventure as the codebase is still pre-beta
 
-###Installation
+### Installation
 
 1. Upload the plugin's files to the `/wp-content/plugins/` directory of your WordPress site
 1. Activate the plugin through the **Plugins** menu in WordPress
 
-##Usage: Product Subscription Schemes
+## Usage: Product Subscription Schemes
 
 To add subscription options to a non-subscription product:
 
@@ -64,7 +64,7 @@ To offer customers discounted prices:
 
 ![Example Custom Prices for Subscription Options on a Simple Product](https://cldup.com/a_dlYS0yFr.png)
 
-##Usage: Subscribe to Cart
+## Usage: Subscribe to Cart
 
 To offer customers cart subscription options:
 
