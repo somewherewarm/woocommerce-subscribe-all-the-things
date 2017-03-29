@@ -123,6 +123,12 @@ class WCS_ATT_Cart {
 				if ( '' !== $scheme_id ) {
 					$posted_subscription_scheme_id = $scheme_id;
 				}
+			} elseif (isset( $cart_item['subscription_renewal'] ) ) {
+				$scheme_id = wc_get_order_item_meta( $cart_item[ 'subscription_renewal' ][ 'subscription_line_item_id' ], '_wcsatt_scheme_id', true );
+
+				if ( '' !== $scheme_id ) {
+					$posted_subscription_scheme_id = $scheme_id;
+				}
 			}
 
 			$cart_item[ 'wccsub_data' ] = array(
