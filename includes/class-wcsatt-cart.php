@@ -1,9 +1,10 @@
 <?php
 /**
- * Cart functionality for converting cart items to subscriptions.
+ * WCS_ATT_Cart class
  *
- * @class    WCS_ATT_Cart
- * @version  1.0.3
+ * @author   SomewhereWarm <info@somewherewarm.gr>
+ * @package  WooCommerce Subscribe All the Things
+ * @since    1.0.0
  */
 
 // Exit if accessed directly.
@@ -11,12 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Cart support.
+ *
+ * @class    WCS_ATT_Cart
+ * @version  1.2.0
+ */
 class WCS_ATT_Cart {
 
 	public static function init() {
-
-		// Allow subs to recognize a cart item of any product type as a subscription.
-		add_filter( 'woocommerce_is_subscription', __CLASS__ . '::is_converted_to_sub', 10, 3 );
 
 		// Add convert-to-sub configuration data to cart items that can be converted.
 		add_filter( 'woocommerce_add_cart_item_data', __CLASS__ . '::add_cart_item_convert_to_sub_data', 10, 3 );
@@ -242,28 +246,6 @@ class WCS_ATT_Cart {
 				WC()->cart->cart_contents[ $cart_item_key ] = self::convert_to_sub( $cart_item );
 			}
 		}
-	}
-
-	/**
-	 * Hooks onto 'woocommerce_is_subscription' to trick Subs into thinking it is dealing with a subscription.
-	 * The necessary subscription properties are added to the product in 'load_convert_to_sub_session_data()'.
-	 *
-	 * @param  boolean     $is
-	 * @param  int         $product_id
-	 * @param  WC_Product  $product
-	 * @return boolean
-	 */
-	public static function is_converted_to_sub( $is, $product_id, $product ) {
-
-		if ( ! $product ) {
-			return $is;
-		}
-
-		if ( isset( $product->is_converted_to_sub ) && $product->is_converted_to_sub === 'yes' ) {
-			$is = true;
-		}
-
-		return $is;
 	}
 
 	/**
