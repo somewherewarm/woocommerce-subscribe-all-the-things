@@ -1,9 +1,10 @@
 <?php
 /**
- * Loading and filtering of subscription scheme settings.
+ * WCS_ATT_Schemes class
  *
- * @class  WCS_ATT_Schemes
- * @since  1.0.0
+ * @author   SomewhereWarm <info@somewherewarm.gr>
+ * @package  WooCommerce Subscribe All The Things
+ * @since    1.0.0
  */
 
 // Exit if accessed directly.
@@ -11,6 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Loading and filtering of subscription scheme settings.
+ *
+ * @class    WCS_ATT_Schemes
+ * @version  1.2.0
+ */
 class WCS_ATT_Schemes {
 
 	/**
@@ -119,80 +126,6 @@ class WCS_ATT_Schemes {
 		}
 
 		return apply_filters( 'wcsatt_subscription_schemes', $schemes, $cart_item, $scope );
-	}
-
-	/**
-	 * Returns all available subscription schemes for displaying single-product options (product-level).
-	 *
-	 * @return array
-	 */
-	public static function get_product_subscription_schemes( $product ) {
-
-		$schemes = array();
-
-		if ( ! is_object( $product ) ) {
-			return $schemes;
-		}
-
-		if ( $product->is_type( 'variation' ) ) {
-			return self::get_variation_subscription_schemes( $product );
-		}
-
-		$supported_types = WCS_ATT()->get_supported_product_types();
-
-		if ( in_array( $product->get_type(), $supported_types ) ) {
-
-			// Get product-level subscription schemes stored in product meta.
-			$product_schemes = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_schemes', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_schemes', true );
-
-			if ( $product_schemes ) {
-				foreach ( $product_schemes as $scheme ) {
-					$scheme[ 'scope' ] = 'cart-item';
-					$schemes[]         = $scheme;
-				}
-			}
-		}
-
-		return apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $product );
-	}
-
-	/**
-	 * Returns all available subscription schemes attached to a variation.
-	 *
-	 * @param  WC_Product_Variation  $variation
-	 * @return array
-	 */
-	private static function get_variation_subscription_schemes( $variation ) {
-
-		$schemes = array();
-
-		// Get product-level subscription schemes stored in variation meta.
-		$variation_schemes = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $variation->get_meta( '_wcsatt_schemes', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $variation ), '_wcsatt_schemes', true );
-
-		if ( $variation_schemes ) {
-			foreach ( $variation_schemes as $scheme ) {
-				$scheme[ 'scope' ] = 'cart-item';
-				$schemes[]         = $scheme;
-			}
-		} else {
-
-			// Get product-level subscription schemes stored in product meta.
-			if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-				$product         = wc_get_product( $variation->get_parent_id() );
-				$product_schemes = $product ? $product->get_meta( '_wcsatt_schemes', true ) : array();
-			} else {
-				$product_schemes = get_post_meta( WCS_ATT_Core_Compatibility::get_parent_id( $variation ), '_wcsatt_schemes', true );
-			}
-
-			if ( ! empty( $product_schemes ) ) {
-				foreach ( $product_schemes as $scheme ) {
-					$scheme[ 'scope' ] = 'cart-item';
-					$schemes[]         = $scheme;
-				}
-			}
-		}
-
-		return apply_filters( 'wcsatt_variation_subscription_schemes', $schemes, $variation );
 	}
 
 	/**
@@ -322,5 +255,23 @@ class WCS_ATT_Schemes {
 		}
 
 		return $cart_level_schemes;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Returns all available subscription schemes for displaying single-product options (product-level).
+	 *
+	 * @deprecated  1.2.0
+	 *
+	 * @return array
+	 */
+	public static function get_product_subscription_schemes( $product ) {
+		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Scheme_Prices::get_scheme_prices()' );
+		return WCS_ATT_Product::get_subscription_schemes( $product );
 	}
 }
