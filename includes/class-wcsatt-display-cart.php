@@ -29,7 +29,7 @@ class WCS_ATT_Display_Cart {
 		add_action( 'woocommerce_before_cart_totals', array( __CLASS__, 'show_subscribe_to_cart_prompt' ) );
 
 		// Use radio buttons to mark a cart item as a one-time sale or as a subscription.
-		add_filter( 'woocommerce_cart_item_price', array( __CLASS__, 'convert_to_sub_cart_item_options' ), 1000, 3 );
+		add_filter( 'woocommerce_cart_item_price', array( __CLASS__, 'show_cart_item_subscription_options' ), 1000, 3 );
 	}
 
 	/*
@@ -46,7 +46,7 @@ class WCS_ATT_Display_Cart {
 	 * @param  string $cart_item_key
 	 * @return string
 	 */
-	public static function convert_to_sub_cart_item_options( $price, $cart_item, $cart_item_key ) {
+	public static function show_cart_item_subscription_options( $price, $cart_item, $cart_item_key ) {
 
 		$product                     = $cart_item[ 'data' ];
 		$subscription_schemes        = WCS_ATT_Cart::get_subscription_schemes( $cart_item, 'product' );
@@ -146,12 +146,15 @@ class WCS_ATT_Display_Cart {
 		} else {
 
 			// Grab bare price without subscription details.
-			remove_filter( 'woocommerce_cart_product_price', 'WC_Subscriptions_Cart' . '::cart_product_price', 10, 2 );
-			remove_filter( 'woocommerce_cart_item_price', __CLASS__ . '::convert_to_sub_cart_item_options', 1000, 3 );
-			$price = apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $cart_item[ 'data' ] ), $cart_item, $cart_item_key );
-			add_filter( 'woocommerce_cart_item_price', __CLASS__ . '::convert_to_sub_cart_item_options', 1000, 3 );
-			add_filter( 'woocommerce_cart_product_price', 'WC_Subscriptions_Cart' . '::cart_product_price', 10, 2 );
+			remove_filter( 'woocommerce_cart_product_price', array( 'WC_Subscriptions_Cart', 'cart_product_price' ), 10, 2 );
+			remove_filter( 'woocommerce_cart_item_price',  array( __CLASS__, 'show_cart_item_subscription_options' ), 1000, 3 );
 
+			$price = apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $cart_item[ 'data' ] ), $cart_item, $cart_item_key );
+
+			add_filter( 'woocommerce_cart_item_price', array( __CLASS__, 'show_cart_item_subscription_options' ), 1000, 3 );
+			add_filter( 'woocommerce_cart_product_price', array( 'WC_Subscriptions_Cart', 'cart_product_price' ), 10, 2 );
+
+			// Concatenate stuff.
 			$price = $price . $convert_to_sub_options;
 		}
 
