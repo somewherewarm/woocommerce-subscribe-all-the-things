@@ -11,18 +11,23 @@
  * @version 1.1.0
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-?><ul class="wcsatt-options <?php echo esc_attr( $classes ); ?>"><?php
+?>
+<ul class="wcsatt-options <?php echo esc_attr( $classes ); ?>">
+	<?php
 	foreach ( $options as $option_id => $option ) {
-		?><li>
-			<label>
-				<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
-				<?php echo $option[ 'description' ]; ?>
-			</label>
-		</li><?php
+		?>
+			<li>
+				<label>
+					<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+					<?php echo $option[ 'description' ]; ?>
+				</label>
+			</li>
+		<?php
 	}
-?></ul>
+	?>
+</ul>
