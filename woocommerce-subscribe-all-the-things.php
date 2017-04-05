@@ -132,6 +132,7 @@ class WCS_ATT {
 		require_once( 'includes/class-wcsatt-product.php' );
 		require_once( 'includes/class-wcsatt-cart.php' );
 		require_once( 'includes/class-wcsatt-display.php' );
+		require_once( 'includes/class-wcsatt-display-cart.php' );
 
 		// Admin includes
 		if ( is_admin() ) {
