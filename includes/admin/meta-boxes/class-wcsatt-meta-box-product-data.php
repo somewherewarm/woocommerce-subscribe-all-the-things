@@ -24,29 +24,29 @@ class WCS_ATT_Meta_Box_Product_Data {
 	 */
 	public static function init() {
 
-		// Creates the admin panel tab.
+		// Create the SATT Subscriptions tab.
 		add_action( 'woocommerce_product_data_tabs', array( __CLASS__, 'satt_product_data_tab' ) );
 
-		// Creates the panel for configuring subscription options.
+		// Create the SATT Subscriptions tab panel.
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
 			add_action( 'woocommerce_product_data_panels', array( __CLASS__, 'product_data_panel' ) );
 		} else {
 			add_action( 'woocommerce_product_write_panels', array( __CLASS__, 'product_data_panel' ) );
 		}
 
-		// Processes and saves the necessary post meta.
+		// Process and save the necessary meta.
 		add_action( 'woocommerce_process_product_meta', array( __CLASS__, 'process_product_meta' ), 15, 1 );
 	}
 
 	/**
-	 * Add SATT product options tab.
+	 * Add Subscriptions tab.
 	 *
 	 * @param  array  $tabs
 	 * @return void
 	 */
 	public static function satt_product_data_tab( $tabs ) {
 
-		$tabs[ 'satt_options' ] = array(
+		$tabs[ 'satt' ] = array(
 			'label'  => __( 'Subscriptions', WCS_ATT::TEXT_DOMAIN ),
 			'target' => 'wcsatt_data',
 			'class'  => array( 'cart_subscription_options', 'cart_subscriptions_tab', 'show_if_simple', 'show_if_variable', 'show_if_bundle', 'hide_if_subscription', 'hide_if_variable-subscription' )
@@ -249,9 +249,9 @@ class WCS_ATT_Meta_Box_Product_Data {
 
 					// Save prompt.
 					if ( false === $prompt ) {
-						$product->update_meta_data( '_wcsatt_subscription_prompt' );
+						$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
 					} else {
-						$product->delete_meta_data( '_wcsatt_subscription_prompt', $prompt );
+						$product->delete_meta_data( '_wcsatt_subscription_prompt' );
 					}
 
 					$product->save();
