@@ -83,6 +83,8 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			}
 		}
 
+		$this->data[ 'context' ] = isset( $args[ 'context' ] ) ? strval( $args[ 'context' ] ) : 'product';
+
 		$this->key = implode( '_', array_filter( array( $this->data[ 'interval' ], $this->data[ 'period' ], $this->data[ 'length' ] ) ) );
 	}
 	/**
@@ -102,6 +104,14 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 */
 	public function get_key() {
 		return $this->key;
+	}
+
+	/**
+	 * Gets the scheme context. Expected values: 'product', 'cart'.
+	 * @return string
+	 */
+	public function get_context() {
+		return $this->data[ 'context' ];
 	}
 
 	/**
