@@ -72,7 +72,7 @@ class WCS_ATT_Unit_Tests_Bootstrap {
 
 		require_once( $this->wp_tests_dir . '/includes/functions.php' );
 
-		tests_add_filter( 'muplugins_loaded', array( $this, 'load_plugins' ) );
+		tests_add_filter( 'plugins_loaded', array( $this, 'load_plugins' ) );
 
 		// Load the WCS testing environment.
 		require_once( $this->wp_plugins_dir . '/woocommerce-subscriptions/tests/bootstrap.php' );
