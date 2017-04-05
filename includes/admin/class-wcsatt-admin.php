@@ -1,9 +1,10 @@
 <?php
 /**
- * Cart functionality for converting cart items to subscriptions.
+ * WCS_ATT_Admin class
  *
- * @class  WCS_ATT_Admin
- * @since  1.0.4
+ * @author   SomewhereWarm <info@somewherewarm.gr>
+ * @package  WooCommerce Subscribe All The Things
+ * @since    1.0.4
  */
 
 // Exit if accessed directly.
@@ -11,6 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Admin includes and hooks.
+ *
+ * @class    WCS_ATT_Admin
+ * @version  1.2.0
+ */
 class WCS_ATT_Admin {
 
 	public static function init() {
@@ -19,32 +26,32 @@ class WCS_ATT_Admin {
 		add_action( 'init', array( __CLASS__, 'admin_init' ) );
 
 		// Admin scripts and styles.
-		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_scripts' );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_scripts' ) );
 
 		// Ajax add subscription scheme.
-		add_action( 'wp_ajax_wcsatt_add_subscription_scheme', __CLASS__ . '::ajax_add_subscription_scheme' );
+		add_action( 'wp_ajax_wcsatt_add_subscription_scheme', array( __CLASS__, 'ajax_add_subscription_scheme' ) );
 
 		// Subscription scheme markup added on the 'wcsatt_subscription_scheme' action.
-		add_action( 'wcsatt_subscription_scheme',  __CLASS__ . '::subscription_scheme', 10, 3 );
+		add_action( 'wcsatt_subscription_scheme', array( __CLASS__, 'subscription_scheme' ), 10, 3 );
 
 		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
-		add_action( 'wcsatt_subscription_scheme_content',  __CLASS__ . '::subscription_scheme_content', 10, 3 );
+		add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_content' ), 10, 3 );
 
 		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_product_content' action.
-		add_action( 'wcsatt_subscription_scheme_product_content',  __CLASS__ . '::subscription_scheme_product_content', 10, 3 );
+		add_action( 'wcsatt_subscription_scheme_product_content', array( __CLASS__, 'subscription_scheme_product_content' ), 10, 3 );
 
 		/*
 		 * "Subscribe to Cart" settings.
 		 */
 
 		// Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
-		add_filter( 'woocommerce_subscription_settings', __CLASS__ . '::cart_level_admin_settings' );
+		add_filter( 'woocommerce_subscription_settings', array( __CLASS__, 'cart_level_admin_settings' ) );
 
 		// Save posted cart subscription scheme settings.
-		add_action( 'woocommerce_update_options_subscriptions', __CLASS__ . '::save_cart_level_settings' );
+		add_action( 'woocommerce_update_options_subscriptions', array( __CLASS__, 'save_cart_level_settings' ) );
 
 		// Display subscription scheme admin metaboxes in the "Subscribe to Cart/Order" section.
-		add_action( 'woocommerce_admin_field_subscription_schemes', __CLASS__ . '::subscription_schemes_content' );
+		add_action( 'woocommerce_admin_field_subscription_schemes', array( __CLASS__, 'subscription_schemes_content' ) );
 	}
 
 	/**

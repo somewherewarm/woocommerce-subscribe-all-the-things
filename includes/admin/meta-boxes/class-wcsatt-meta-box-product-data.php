@@ -20,22 +20,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Meta_Box_Product_Data {
 
 	/**
-	 * Hook in.
+	 * Hook-in point.
 	 */
 	public static function init() {
 
 		// Creates the admin panel tab.
-		add_action( 'woocommerce_product_data_tabs', __CLASS__ . '::satt_product_data_tab' );
+		add_action( 'woocommerce_product_data_tabs', array( __CLASS__, 'satt_product_data_tab' ) );
 
 		// Creates the panel for configuring subscription options.
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			add_action( 'woocommerce_product_data_panels', __CLASS__ . '::product_data_panel' );
+			add_action( 'woocommerce_product_data_panels', array( __CLASS__, 'product_data_panel' ) );
 		} else {
-			add_action( 'woocommerce_product_write_panels', __CLASS__ . '::product_data_panel' );
+			add_action( 'woocommerce_product_write_panels', array( __CLASS__, 'product_data_panel' ) );
 		}
 
 		// Processes and saves the necessary post meta.
-		add_action( 'woocommerce_process_product_meta', __CLASS__ . '::process_product_meta', 15, 1 );
+		add_action( 'woocommerce_process_product_meta', array( __CLASS__, 'process_product_meta' ), 15, 1 );
 	}
 
 	/**
