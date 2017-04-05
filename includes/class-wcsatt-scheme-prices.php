@@ -156,7 +156,7 @@ class WCS_ATT_Scheme_Prices {
 
 				foreach ( $schemes as $scheme ) {
 
-					$scheme_price = WCS_ATT_Product::get_price( $product, $scheme->get_key() );
+					$scheme_price = WCS_ATT_Product::get_price( $product, $scheme->get_key(), 'edit' );
 
 					if ( $scheme_price < $base_scheme_price ) {
 						$base_scheme       = $scheme;
@@ -213,7 +213,7 @@ class WCS_ATT_Scheme_Prices {
 	public static function filter_get_price_html( $price_html, $product ) {
 
 		if ( WCS_ATT_Product::has_subscriptions( $product ) ) {
-			$price_html = WCS_ATT_Product::get_price_html( $product, '', $price_html );
+			$price_html = WCS_ATT_Product::get_price_html( $product, '', array( 'price' => $price_html ) );
 		}
 
 		return $price_html;
@@ -298,7 +298,7 @@ class WCS_ATT_Scheme_Prices {
 	public static function filter_get_price( $price, $product ) {
 
 		if ( WCS_ATT_Product::is_subscription( $product ) ) {
-			$price = WCS_ATT_Product::get_price( $product );
+			$price = WCS_ATT_Product::get_price( $product, '', 'edit' );
 		}
 
 		return $price;
@@ -314,7 +314,7 @@ class WCS_ATT_Scheme_Prices {
 	public static function filter_get_regular_price( $regular_price, $product ) {
 
 		if ( WCS_ATT_Product::is_subscription( $product ) ) {
-			$regular_price = WCS_ATT_Product::get_regular_price( $product );
+			$regular_price = WCS_ATT_Product::get_regular_price( $product, '', 'edit' );
 		}
 
 		return $regular_price;
@@ -330,7 +330,7 @@ class WCS_ATT_Scheme_Prices {
 	public static function filter_get_sale_price( $sale_price, $product ) {
 
 		if ( WCS_ATT_Product::is_subscription( $product ) ) {
-			$sale_price = WCS_ATT_Product::get_sale_price( $product );
+			$sale_price = WCS_ATT_Product::get_sale_price( $product, '', 'edit' );
 		}
 
 		return $sale_price;
@@ -397,17 +397,5 @@ class WCS_ATT_Scheme_Prices {
 		$data = array_merge( array( 'scheme' => $base_scheme ), self::get_subscription_scheme_prices( $base_scheme ) );
 		$data = apply_filters( 'wcsatt_get_lowest_price_sub_scheme_data', $data, $base_scheme );
 		return $data;
-	}
-
-	/**
-	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
-	 *
-	 * @deprecated  1.1.2
-	 *
-	 * @return string
-	 */
-	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
-		_deprecated_function( __METHOD__ . '()', '1.1.2', 'WCS_ATT_Cart::get_active_subscription_scheme_prices()' );
-		return WCS_ATT_Cart::get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme );
 	}
 }
