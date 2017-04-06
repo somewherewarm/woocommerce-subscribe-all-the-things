@@ -366,7 +366,7 @@ class WCS_ATT_Scheme_Prices {
 	 * @return string
 	 */
 	public static function get_subscription_scheme_prices( $raw_prices, $subscription_scheme ) {
-		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme_Prices::get_scheme_prices()' );.0
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Scheme_Prices::get_scheme_prices()' );
 		return self::get_scheme_prices( $raw_prices, $subscription_scheme );
 	}
 
@@ -379,7 +379,7 @@ class WCS_ATT_Scheme_Prices {
 	 * @return boolean
 	 */
 	public static function subscription_price_overrides_exist( $subscription_schemes ) {
-		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme_Prices::price_filter_exists()' );.0
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Scheme_Prices::price_filter_exists()' );
 		return self::price_filter_exists( $subscription_schemes );
 	}
 
@@ -392,7 +392,7 @@ class WCS_ATT_Scheme_Prices {
 	 * @return boolean
 	 */
 	public static function has_subscription_price_override( $subscription_scheme ) {
-		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme::has_price_filter()' );.0
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Scheme::has_price_filter()' );
 		return $subscription_scheme->has_price_filter();
 	}
 
@@ -406,7 +406,7 @@ class WCS_ATT_Scheme_Prices {
 	 * @return array
 	 */
 	public static function get_lowest_price_subscription_scheme_data( $product, $subscription_schemes ) {
-		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme_Prices::get_lowest_price_scheme_data()' );.0
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Scheme_Prices::get_lowest_price_scheme_data()' );
 		$base_scheme = self::get_base_scheme( $product );
 		$data = array_merge( array( 'scheme' => $base_scheme ), self::get_subscription_scheme_prices( $base_scheme ) );
 		$data = apply_filters( 'wcsatt_get_lowest_price_sub_scheme_data', $data, $base_scheme );
