@@ -52,6 +52,9 @@ class WCS_ATT_Order {
 		$scheme_key = null;
 		if ( isset( $order_item[ 'wcsatt_scheme' ] ) ) {
 			$scheme_key = 0 === absint( $order_item[ 'wcsatt_scheme' ] ) ? false : strval( $order_item[ 'wcsatt_scheme' ] );
+		// Backwards compatibility with v1.
+		} elseif ( isset( $order_item[ 'wcsatt_scheme_id' ] ) ) {
+			$scheme_key = 0 === absint( $order_item[ 'wcsatt_scheme_id' ] ) ? false : strval( $order_item[ 'wcsatt_scheme_id' ] );
 		}
 		return $scheme_key;
 	}
