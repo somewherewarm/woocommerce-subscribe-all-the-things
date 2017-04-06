@@ -39,9 +39,6 @@ class WCS_ATT_Cart {
 
 		// Ajax handler for saving the subscription scheme chosen at cart-level.
 		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_scheme' ) );
-
-		// Save subscription scheme in subscription item meta so it can be re-applied later.
-		add_action( 'woocommerce_add_subscription_item_meta', array( __CLASS__, 'save_subscription_scheme' ), 10, 2 );
 	}
 
 	/*
@@ -72,7 +69,7 @@ class WCS_ATT_Cart {
 	 */
 	public static function get_subscription_scheme( $cart_item ) {
 
-		$active_scheme = isset( $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] ) ? $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] : false;
+		$active_scheme = isset( $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] ) ? $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] : null;
 
 		return $active_scheme;
 	}
@@ -175,7 +172,7 @@ class WCS_ATT_Cart {
 
 	/*
 	|--------------------------------------------------------------------------
-	| Filters
+	| Hooks
 	|--------------------------------------------------------------------------
 	*/
 
@@ -189,24 +186,13 @@ class WCS_ATT_Cart {
 	 */
 	public static function add_cart_item_data( $cart_item, $product_id, $variation_id ) {
 
-		if ( self::is_supported_product_type( $product_id ) ) {
+		if ( self::is_supported_product_type( $product_id ) && ! isset( $cart_item[ 'wcsatt_data' ] ) ) { // Might be set - @see 'WCS_ATT_Order::restore_cart_item_from_order_item'.
 
 			$posted_subscription_scheme_key = null;
 
 			if ( isset( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
-
 				$posted_subscription_scheme_option = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
 				$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
-
-			} elseif ( isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
-
-				// Grab the scheme id from the order item meta.
-				$scheme_id = wc_get_order_item_meta( $cart_item[ 'subscription_resubscribe' ][ 'subscription_line_item_id' ], '_wcsatt_scheme_id', true );
-
-				if ( '' !== $scheme_id ) {
-					$posted_subscription_scheme_option = $scheme_id;
-					$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
-				}
 			}
 
 			$cart_item[ 'wcsatt_data' ] = array(
@@ -246,7 +232,10 @@ class WCS_ATT_Cart {
 	public static function apply_subscription_scheme( $cart_item ) {
 
 		if ( self::is_supported_product_type( $cart_item ) ) {
-			WCS_ATT_Product::set_subscription_scheme( $cart_item[ 'data' ], self::get_subscription_scheme( $cart_item ) );
+			$scheme_key = self::get_subscription_scheme( $cart_item );
+			if ( null !== $scheme_key ) {
+				WCS_ATT_Product::set_subscription_scheme( $cart_item[ 'data' ], $scheme_key );
+			}
 		}
 
 		return apply_filters( 'wcsatt_cart_item', $cart_item );
@@ -431,20 +420,7 @@ class WCS_ATT_Cart {
 		return $is_supported;
 	}
 
-	/**
-	 * Hooked into woocommerce_add_subscription_item_meta, this will store the scheme key against the order item.
-	 * Reason is that the resubscribe cart item data lacks a LOT of detail, so we need to reconstruct some of it.
-	 * Normally it could be inferred from the product's available schemes and the old subscription details, but because
-	 * length is not stored, it becomes ambiguous. Hence the need to store the ID.
-	 *
-	 * @param  integer  $item_id    ID of the order itemmeta
-	 * @param  array    $cart_item  data about the order item
-	 */
-	public static function save_subscription_scheme( $item_id, $cart_item ) {
-		if ( isset( $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] ) ) {
-			wc_add_order_item_meta( $item_id, '_wcsatt_scheme_id', $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] );
-		}
-	}
+
 
 	/*
 	|--------------------------------------------------------------------------
