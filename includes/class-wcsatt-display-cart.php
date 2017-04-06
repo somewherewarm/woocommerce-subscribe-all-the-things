@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart template modifications.
  *
  * @class    WCS_ATT_Display_Cart
- * @version  1.2.0
+ * @version  2.0.0
  */
 class WCS_ATT_Display_Cart {
 

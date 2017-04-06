@@ -3,7 +3,7 @@
  * WCS_ATT_Meta_Box_Product_Data class
  *
  * @package  WooCommerce Subscribe All the Things
- * @since    1.2.0
+ * @since    2.0.0
  */
 
 // Exit if accessed directly.
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Product meta-box data for SATT-enabled product types.
  *
  * @class    WCS_ATT_Meta_Box_Product_Data
- * @version  1.2.0
+ * @version  2.0.0
  */
 class WCS_ATT_Meta_Box_Product_Data {
 

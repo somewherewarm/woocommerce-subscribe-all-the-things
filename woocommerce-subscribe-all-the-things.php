@@ -3,7 +3,7 @@
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
 * Description: Experimental extension for linking WooCommerce Subscriptions with simple products, variable products and product types created by WooCommerce extensions, such as Composite Products and Product Bundles.
-* Version: 1.1.2
+* Version: 2.0.0
 * Author: Prospress Inc.
 * Author URI: http://prospress.com/
 *
@@ -11,9 +11,9 @@
 * Domain Path: /languages/
 *
 * Requires at least: 4.1
-* Tested up to: 4.6
+* Tested up to: 4.7
 *
-* Copyright: © 2009-2015 Prospress, Inc.
+* Copyright: © 2009-2017 Prospress, Inc.
 * License: GNU General Public License v3.0
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
@@ -28,7 +28,7 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 class WCS_ATT {
 
 	/* Plugin version. */
-	const VERSION = '1.1.2';
+	const VERSION = '2.0.0';
 
 	/* Required WC version. */
 	const REQ_WC_VERSION = '2.3.0';
@@ -102,13 +102,13 @@ class WCS_ATT {
 
 		global $woocommerce;
 
-		// Subs 2 check
+		// Subs 2.0+ check.
 		if ( ! function_exists( 'wcs_is_subscription' ) ) {
 			add_action( 'admin_notices', array( $this, 'wcs_admin_notice' ) );
 			return false;
 		}
 
-		// WC 2 check
+		// WC version check.
 		if ( version_compare( $woocommerce->version, self::REQ_WC_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wc_admin_notice' ) );
 			return false;
@@ -230,7 +230,7 @@ class WCS_ATT {
 
 		if ( $file == plugin_basename( __FILE__ ) ) {
 			$author1 = '<a href="' . $data[ 'AuthorURI' ] . '">' . $data[ 'Author' ] . '</a>';
-			$author2 = '<a href="http://somewherewarm.net/">SomewhereWarm</a>';
+			$author2 = '<a href="http://somewherewarm.gr/">SomewhereWarm</a>';
 			$links[ 1 ] = sprintf( __( 'By %s' ), sprintf( __( '%s and %s' ), $author1, $author2 ) );
 		}
 

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart support.
  *
  * @class    WCS_ATT_Cart
- * @version  1.2.0
+ * @version  2.0.0
  */
 class WCS_ATT_Cart {
 
@@ -53,6 +53,8 @@ class WCS_ATT_Cart {
 	/**
 	 * Returns all subscription schemes associated with a cart item - @see 'WCS_ATT_Product::get_subscription_schemes'.
 	 *
+	 * @since  2.0.0
+	 *
 	 * @param  array   $cart_item
 	 * @param  string  $context
 	 * @return array
@@ -64,7 +66,7 @@ class WCS_ATT_Cart {
 	/**
 	 * Returns the active subscription scheme key of a cart item, or false if the cart item is a one-time purchase.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @return string
 	 */
@@ -80,6 +82,8 @@ class WCS_ATT_Cart {
 	 * Subscription options defined at product-level and "legacy" subscription-type products "block" the display of cart-level subscription options.
 	 *
 	 * Must be called after all cart session data has been loaded.
+	 *
+	 * @since  2.0.0
 	 *
 	 * @return array|boolean
 	 */
@@ -126,6 +130,8 @@ class WCS_ATT_Cart {
 	/**
 	 * Returns the active cart-level subscription scheme id, or false if none is set.
 	 *
+	 * @since  2.0.0
+	 *
 	 * @return string|false|null
 	 */
 	public static function get_cart_subscription_scheme() {
@@ -135,6 +141,8 @@ class WCS_ATT_Cart {
 
 	/**
 	 * Returns the active cart-level subscription scheme id, or false if none is set.
+	 *
+	 * @since  2.0.0
 	 *
 	 * @param  string|false  $scheme_key
 	 */
@@ -146,7 +154,7 @@ class WCS_ATT_Cart {
 	/**
 	 * Equivalent of 'WC_Cart::get_product_price' that utilizes 'WCS_ATT_Product::get_price' instead of 'WC_Product::get_price'.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @param  string      $scheme_key
@@ -230,7 +238,7 @@ class WCS_ATT_Cart {
 	 * Applies a saved subscription key to a cart item.
 	 * @see 'WCS_ATT_Product::set_subscription_scheme'.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  array  $cart_item
 	 * @return array
@@ -447,26 +455,26 @@ class WCS_ATT_Cart {
 	/**
 	 * Returns modified raw prices based on subscription scheme settings.
 	 *
-	 * @deprecated 1.2.0
+	 * @deprecated 2.0.0
 	 *
 	 * @param  array  $raw_prices
 	 * @param  array  $subscription_scheme
 	 * @return string
 	 */
 	public static function convert_to_sub( $cart_item ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Cart::apply_subscription_scheme()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::apply_subscription_scheme()' );
 		return self::apply_subscription_scheme( $cart_item );
 	}
 
 	/**
 	 * Returns cart item pricing data based on the active subscription scheme settings of a cart item.
 	 *
-	 * @deprecated 1.2.0
+	 * @deprecated 2.0.0
 	 *
 	 * @return string
 	 */
 	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Product::get_{regular_/sale_}price()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product::get_{regular_/sale_}price()' );
 
 		$prices = array();
 
@@ -488,13 +496,13 @@ class WCS_ATT_Cart {
 	/**
 	 * True if a cart item is allowed to have subscription schemes attached by SATT.
 	 *
-	 * @deprecated 1.2.0
+	 * @deprecated 2.0.0
 	 *
 	 * @param  int|array  $arg
 	 * @return boolean
 	 */
 	public static function is_convertible_to_sub( $arg ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Cart::is_supported_product_type() and WCS_ATT_Product::is_legacy_subscription()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::is_supported_product_type() and WCS_ATT_Product::is_legacy_subscription()' );
 
 		if ( is_array( $arg ) && isset( $arg[ 'product_id' ] ) ) {
 			$product_id = $arg[ 'product_id' ];

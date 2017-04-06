@@ -4,7 +4,7 @@
  *
  * @author   SomewhereWarm <info@somewherewarm.gr>
  * @package  WooCommerce Subscribe All the Things
- * @since    1.2.0
+ * @since    2.0.0
  */
 
 // Exit if accessed directly.
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * API for working with subscription-enabled product objects.
  *
  * @class    WCS_ATT_Product
- * @version  1.2.0
+ * @version  2.0.0
  */
 class WCS_ATT_Product {
 

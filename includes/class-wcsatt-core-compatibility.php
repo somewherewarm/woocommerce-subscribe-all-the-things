@@ -101,7 +101,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Returns true if the installed version of WooCommerce is greater than or equal to $version.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  string  $version
 	 * @return boolean
@@ -137,7 +137,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for getting CRUD object props directly.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @return string
@@ -154,7 +154,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for 'get_parent_id'.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @return mixed
@@ -170,7 +170,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for 'get_id'.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @return mixed
@@ -187,7 +187,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for getting CRUD object props directly.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  object  $obj
 	 * @param  string  $name
@@ -206,7 +206,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for setting CRUD object props directly.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  object  $obj
 	 * @param  string  $name
@@ -229,7 +229,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for 'wc_get_price_including_tax'.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @param  array       $args
@@ -250,7 +250,7 @@ class WCS_ATT_Core_Compatibility {
 	/**
 	 * Back-compat wrapper for 'wc_get_price_excluding_tax'.
 	 *
-	 * @since  1.2.0
+	 * @since  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @param  array       $args

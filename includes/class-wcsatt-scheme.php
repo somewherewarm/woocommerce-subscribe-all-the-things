@@ -4,7 +4,7 @@
  *
  * @author   SomewhereWarm <info@somewherewarm.gr>
  * @package  WooCommerce Subscribe All The Things
- * @since    1.2.0
+ * @since    2.0.0
  */
 
 // Exit if accessed directly.
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Subscription scheme object. May extend the WC_Data class or handle CRUD in the future, if schemes are moved out of meta.
  *
  * @class  WCS_ATT_Scheme
- * @since  1.2.0
+ * @since  2.0.0
  */
 class WCS_ATT_Scheme implements ArrayAccess {
 

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin includes and hooks.
  *
  * @class    WCS_ATT_Admin
- * @version  1.2.0
+ * @version  2.0.0
  */
 class WCS_ATT_Admin {
 

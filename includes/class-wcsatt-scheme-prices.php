@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Tiny subscription scheme prices API and filters.
  *
  * @class    WCS_ATT_Scheme_Prices
- * @version  1.2.0
+ * @version  2.0.0
  */
 class WCS_ATT_Scheme_Prices {
 
@@ -359,54 +359,54 @@ class WCS_ATT_Scheme_Prices {
 	/**
 	 * Returns modified raw prices based on subscription scheme settings.
 	 *
-	 * @deprecated  1.2.0
+	 * @deprecated  2.0.0
 	 *
 	 * @param  array  $raw_prices
 	 * @param  array  $subscription_scheme
 	 * @return string
 	 */
 	public static function get_subscription_scheme_prices( $raw_prices, $subscription_scheme ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Scheme_Prices::get_scheme_prices()' );
+		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme_Prices::get_scheme_prices()' );.0
 		return self::get_scheme_prices( $raw_prices, $subscription_scheme );
 	}
 
 	/**
 	 * True if any of the subscription schemes overrides the default price.
 	 *
-	 * @deprecated  1.2.0
+	 * @deprecated  2.0.0
 	 *
 	 * @param  array  $subscription_schemes
 	 * @return boolean
 	 */
 	public static function subscription_price_overrides_exist( $subscription_schemes ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Scheme_Prices::price_filter_exists()' );
+		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme_Prices::price_filter_exists()' );.0
 		return self::price_filter_exists( $subscription_schemes );
 	}
 
 	/**
 	 * True if a subscription scheme modifies the price of the product it's attached onto when active.
 	 *
-	 * @deprecated  1.2.0
+	 * @deprecated  2.0.0
 	 *
 	 * @param  WCS_ATT_Scheme  $subscription_scheme
 	 * @return boolean
 	 */
 	public static function has_subscription_price_override( $subscription_scheme ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Scheme::has_price_filter()' );
+		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme::has_price_filter()' );.0
 		return $subscription_scheme->has_price_filter();
 	}
 
 	/**
 	 * Returns lowest price data for a product given the subscription schemes attached to it.
 	 *
-	 * @deprecated  1.2.0
+	 * @deprecated  2.0.0
 	 *
 	 * @param  WC_Product  $product
 	 * @param  array       $subscription_schemes
 	 * @return array
 	 */
 	public static function get_lowest_price_subscription_scheme_data( $product, $subscription_schemes ) {
-		_deprecated_function( __METHOD__ . '()', '1.2.0', 'WCS_ATT_Scheme_Prices::get_lowest_price_scheme_data()' );
+		_deprecated_function( __METHOD__ . '()', '2.0', 'WCS_ATT_Scheme_Prices::get_lowest_price_scheme_data()' );.0
 		$base_scheme = self::get_base_scheme( $product );
 		$data = array_merge( array( 'scheme' => $base_scheme ), self::get_subscription_scheme_prices( $base_scheme ) );
 		$data = apply_filters( 'wcsatt_get_lowest_price_sub_scheme_data', $data, $base_scheme );
