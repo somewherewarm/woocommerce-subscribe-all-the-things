@@ -213,7 +213,7 @@ class WCS_ATT_Admin {
 		}
 
 
-		// Subscription Price, Interval and Period
+		// Subscription Price, Interval and Period.
 		?><p class="form-field _satt_subscription_details">
 			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', WCS_ATT::TEXT_DOMAIN ); ?></label>
 			<span class="wrap">
@@ -233,7 +233,7 @@ class WCS_ATT_Admin {
 			<?php echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Choose the subscription billing interval and period.', WCS_ATT::TEXT_DOMAIN ) ); ?>
 		</p><?php
 
-		// Subscription Length
+		// Subscription Length.
 		woocommerce_wp_select( array(
 			'id'          => '_satt_subscription_length',
 			'class'       => 'wc_input_subscription_length',

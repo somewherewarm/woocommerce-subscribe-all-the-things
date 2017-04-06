@@ -139,7 +139,7 @@ jQuery( function($) {
 	} );
 
 	// Remove.
-	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
+	$wcsatt_data_tab.on( 'click', 'a.remove_row', function() {
 
 		var $parent = $( this ).closest( '.subscription_scheme' );
 
@@ -148,6 +148,8 @@ jQuery( function($) {
 		subscription_schemes_row_indexes();
 
 		$wcsatt_data_tab.trigger( 'woocommerce_subscription_schemes_changed' );
+
+		return false;
 	} );
 
 	// Expand.
@@ -234,7 +236,7 @@ jQuery( function($) {
 			items:                '.subscription_scheme',
 			cursor:               'move',
 			axis:                 'y',
-			handle:               'h3',
+			handle:               'span.scheme-handle',
 			scrollSensitivity:    40,
 			forcePlaceholderSize: true,
 			helper:               'clone',
