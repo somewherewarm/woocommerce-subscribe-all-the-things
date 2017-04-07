@@ -131,8 +131,8 @@ class WCS_ATT_Admin {
 			),
 
 			array(
-				'name' => __( 'Subscribe to Cart Options', WCS_ATT::TEXT_DOMAIN ),
-				'desc' => __( 'Offer customers the following options for subscribing to the contents of their cart.', WCS_ATT::TEXT_DOMAIN ),
+				'name' => __( 'Subscribe to Cart', WCS_ATT::TEXT_DOMAIN ),
+				'desc' => __( 'Options for purchasing cart contents on a recurring basis.', WCS_ATT::TEXT_DOMAIN ),
 				'id'   => 'wcsatt_subscribe_to_cart_schemes',
 				'type' => 'subscription_schemes',
 			),
