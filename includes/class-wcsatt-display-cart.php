@@ -181,7 +181,7 @@ class WCS_ATT_Display_Cart {
 			);
 
 			// Create a dummy product.
-			$dummy_product = new WC_Product( '1' );
+			$dummy_product = new WC_Product( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? 0 : 1 );
 
 			// Set the cart-level schemes on it.
 			WCS_ATT_Product::set_subscription_schemes( $dummy_product, $subscription_schemes );
