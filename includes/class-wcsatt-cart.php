@@ -302,6 +302,9 @@ class WCS_ATT_Cart {
 				} else {
 					$scheme_key_to_apply = false;
 				}
+
+				// Save in session.
+				self::set_cart_subscription_scheme( $scheme_key_to_apply );
 			}
 
 		} else {
