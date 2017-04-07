@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Subscribe All the Things 1.1.2\n"
+"Project-Id-Version: WooCommerce Subscribe All the Things 2.0.0\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2017-04-05 13:47:57+00:00\n"
+"POT-Creation-Date: 2017-04-07 08:31:26+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,90 +14,88 @@ msgstr ""
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Generator: grunt-wp-i18n 0.5.4\n"
 
-#: includes/admin/class-wcsatt-admin.php:100
+#: includes/admin/class-wcsatt-admin.php:107
 #: includes/admin/meta-boxes/class-wcsatt-meta-box-product-data.php:111
 msgid "Add Option"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:120
+#: includes/admin/class-wcsatt-admin.php:127
 msgid "Subscribe to Cart"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:127
-msgid "Subscribe to Cart Options"
+#: includes/admin/class-wcsatt-admin.php:134
+msgid "Cart Subscription Options"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:128
-msgid ""
-"Offer customers the following options for subscribing to the contents of "
-"their cart."
+#: includes/admin/class-wcsatt-admin.php:135
+msgid "Options for purchasing cart contents on a recurring basis."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:211
+#: includes/admin/class-wcsatt-admin.php:218
 msgid "Interval"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:213
+#: includes/admin/class-wcsatt-admin.php:220
 msgid "Subscription interval"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:219
+#: includes/admin/class-wcsatt-admin.php:226
 msgid "Subscription period"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:226
+#: includes/admin/class-wcsatt-admin.php:233
 msgid "Choose the subscription billing interval and period."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:233
+#: includes/admin/class-wcsatt-admin.php:240
 msgid "Length"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:237
+#: includes/admin/class-wcsatt-admin.php:244
 msgid "Choose the subscription billing length."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:271
-#: includes/admin/class-wcsatt-admin.php:329
+#: includes/admin/class-wcsatt-admin.php:278
+#: includes/admin/class-wcsatt-admin.php:336
 msgid "Price"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:274
+#: includes/admin/class-wcsatt-admin.php:281
 msgid "Inherit from product"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:275
+#: includes/admin/class-wcsatt-admin.php:282
 msgid "Override product"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:290
-#: includes/admin/class-wcsatt-admin.php:348
+#: includes/admin/class-wcsatt-admin.php:297
+#: includes/admin/class-wcsatt-admin.php:355
 msgid "Regular Price"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:301
-#: includes/admin/class-wcsatt-admin.php:359
+#: includes/admin/class-wcsatt-admin.php:308
+#: includes/admin/class-wcsatt-admin.php:366
 msgid "Sale Price"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:315
-#: includes/admin/class-wcsatt-admin.php:373
+#: includes/admin/class-wcsatt-admin.php:322
+#: includes/admin/class-wcsatt-admin.php:380
 msgid "Discount %"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:316
+#: includes/admin/class-wcsatt-admin.php:323
 msgid "Discount applied on the <strong>Regular Price</strong> of the product."
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:332
+#: includes/admin/class-wcsatt-admin.php:339
 msgid "Inherit from chosen variation"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:333
+#: includes/admin/class-wcsatt-admin.php:340
 msgid "Override all variations"
 msgstr ""
 
-#: includes/admin/class-wcsatt-admin.php:374
+#: includes/admin/class-wcsatt-admin.php:381
 msgid ""
 "Discount applied on the <strong>Regular Price</strong> of the chosen "
 "variation."
@@ -151,15 +149,11 @@ msgstr ""
 msgid "Please enter positive subscription discount values, between 0-100."
 msgstr ""
 
-#: includes/admin/meta-boxes/views/subscription-scheme.php:29
-msgid "Remove"
-msgstr ""
-
 #: includes/class-wcsatt-display-cart.php:83
 msgid "only now"
 msgstr ""
 
-#: includes/class-wcsatt-display-cart.php:196
+#: includes/class-wcsatt-display-cart.php:199
 msgid "Yes, %s."
 msgstr ""
 
@@ -216,23 +210,23 @@ msgstr ""
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:160
+#: woocommerce-subscribe-all-the-things.php:161
 msgid ""
 "WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
 "order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:170
+#: woocommerce-subscribe-all-the-things.php:171
 msgid ""
 "WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
 "version 2.0+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:234
+#: woocommerce-subscribe-all-the-things.php:235
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:234
+#: woocommerce-subscribe-all-the-things.php:235
 msgid "%s and %s"
 msgstr ""
 
@@ -259,7 +253,7 @@ msgstr ""
 msgid "http://prospress.com/"
 msgstr ""
 
-#: includes/class-wcsatt-display-cart.php:176
+#: includes/class-wcsatt-display-cart.php:179
 msgctxt "cart subscription selection - negative response"
 msgid "No thanks."
 msgstr ""
