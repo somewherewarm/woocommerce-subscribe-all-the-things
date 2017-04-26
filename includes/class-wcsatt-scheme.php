@@ -33,7 +33,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	private $key = '';
 
 	/**
-	 * Maps array key names to object data keys for back-compat.
+	 * Maps meta array key names to object data keys for back-compat.
 	 * @var array
 	 */
 	private $offset_map = array(
@@ -87,6 +87,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 
 		$this->key = implode( '_', array_filter( array( $this->data[ 'interval' ], $this->data[ 'period' ], $this->data[ 'length' ] ) ) );
 	}
+
 	/**
 	 *
 	 * Returns a unique scheme identifier. For now it just returns the key. Later it could be a CRUD object identifier.
@@ -107,7 +108,17 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	}
 
 	/**
+	 * Returns the raw scheme data array.
+	 *
+	 * @return array
+	 */
+	public function get_data() {
+		return $this->data;
+	}
+
+	/**
 	 * Gets the scheme context. Expected values: 'product', 'cart'.
+	 *
 	 * @return string
 	 */
 	public function get_context() {
@@ -115,7 +126,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	}
 
 	/**
-	 * Returns the period of thr subscription scheme.
+	 * Returns the period of the subscription scheme.
 	 *
 	 * @return string  A string representation of the period, either Day, Week, Month or Year.
 	 */
@@ -196,14 +207,11 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		return 'override' === $this->get_pricing_mode() ? $this->data[ 'sale_price' ] : null;
 	}
 
-	/**
-	 * Indicates whether the scheme modifies the price of the product it's attached onto when active.
-	 *
-	 * @return boolean
-	 */
-	public function has_price_filter() {
-		return 'override' === $this->get_pricing_mode() || ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 );
-	}
+	/*
+	|--------------------------------------------------------------------------
+	| Other Getters.
+	|--------------------------------------------------------------------------
+	*/
 
 	/**
 	 * Returns the date on which the subscription scheme will expire,
@@ -261,6 +269,126 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		}
 
 		return $trial_expiration_date;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Conditionals.
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Indicates whether the scheme modifies the price of the product it's attached onto when active.
+	 *
+	 * @return boolean
+	 */
+	public function has_price_filter() {
+		return 'override' === $this->get_pricing_mode() || ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 );
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Setters.
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Sets the scheme context. Expected values: 'product', 'cart'.
+	 *
+	 * @param  string  $value
+	 */
+	public function set_context( $value ) {
+		$this->data[ 'context' ] = strval( $value );
+	}
+
+	/**
+	 * Sets the period of the subscription scheme. Does not validate input.
+	 *
+	 * @param  string  $value
+	 */
+	public function set_period( $value ) {
+		$this->data[ 'period' ] = strval( $value );
+	}
+
+	/**
+	 * Sets the interval of the subscription scheme.
+	 *
+	 * @param  int  $value
+	 */
+	public function set_interval( $value ) {
+		$this->data[ 'interval' ] = absint( $value );
+	}
+
+	/**
+	 * Sets the length of the subscription scheme.
+	 *
+	 * @param  int  $value
+	 */
+	public function set_length( $value ) {
+		$this->data[ 'length' ] = absint( $value );
+	}
+
+	/**
+	 * Sets the trial period of the subscription scheme.
+	 *
+	 * @param  string  $value
+	 */
+	public function set_trial_period( $value ) {
+		$this->data[ 'trial_period' ] = strval( $value );
+	}
+
+	/**
+	 * Sets the trial length of the subscription scheme.
+	 *
+	 * @param  int  $value
+	 */
+	public function set_trial_length( $value ) {
+		$this->data[ 'trial_length' ] = absint( $value );
+	}
+
+	/**
+	 * Sets the pricing mode of the scheme - 'inherit' or 'override'.
+	 * Indicates how the subscription scheme modifies the price of a product when active.
+	 *
+	 * @param  string  $value
+	 */
+	public function set_pricing_mode( $value ) {
+		$this->data[ 'pricing_mode' ] = in_array( $value, array( 'inherit', 'override' ) ) ? $value : 'inherit';
+	}
+
+	/**
+	 * Sets the price discount applied by the scheme when its pricing mode is 'inherit'.
+	 *
+	 * @param  mixed  $value
+	 */
+	public function set_discount( $value ) {
+		if ( 'inherit' === $this->get_pricing_mode() ) {
+			$this->data[ 'discount' ] = wc_format_decimal( $value );
+		}
+	}
+
+	/**
+	 * Sets the overridden regular price applied by the scheme when its pricing mode is 'override'.
+	 *
+	 * @param  mixed  $value
+	 */
+	public function set_regular_price( $value ) {
+		if ( 'override' === $this->get_pricing_mode() ) {
+			$this->data[ 'regular_price' ] = wc_format_decimal( $value );
+			$this->data[ 'price' ]         = '' !== $this->data[ 'sale_price' ] && $this->data[ 'sale_price' ] < $this->data[ 'regular_price' ] ? $this->data[ 'sale_price' ] : $this->data[ 'regular_price' ];
+		}
+	}
+
+	/**
+	 * Sets the overridden sale price applied by the scheme when its pricing mode is 'override'.
+	 *
+	 * @param  mixed  $value
+	 */
+	public function set_sale_price( $value ) {
+		if ( 'override' === $this->get_pricing_mode() ) {
+			$this->data[ 'sale_price' ] = wc_format_decimal( $value );
+			$this->data[ 'price' ]      = '' !== $this->data[ 'sale_price' ] && $this->data[ 'sale_price' ] < $this->data[ 'regular_price' ] ? $this->data[ 'sale_price' ] : $this->data[ 'regular_price' ];
+		}
 	}
 
 	/*
