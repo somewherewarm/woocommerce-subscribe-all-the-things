@@ -57,7 +57,7 @@ class WCS_ATT_Cart {
 	 * @return array
 	 */
 	public static function get_subscription_schemes( $cart_item, $context = 'any' ) {
-		return apply_filters( 'wcsatt_subscription_schemes', WCS_ATT_Product::get_subscription_schemes( $cart_item[ 'data' ], $context ), $cart_item, $context );
+		return apply_filters( 'wcsatt_cart_item_subscription_schemes', WCS_ATT_Product::get_subscription_schemes( $cart_item[ 'data' ], $context ), $cart_item, $context );
 	}
 
 	/**
