@@ -83,8 +83,9 @@ class WCS_ATT_Display_Cart {
 				$description = __( 'only now', WCS_ATT::TEXT_DOMAIN );
 			}
 
-			$options[ '0' ] = array(
+			$options[] = array(
 				'description' => $description,
+				'value'       => '0',
 				'selected'    => false === $active_subscription_scheme_key,
 			);
 		}
@@ -114,8 +115,9 @@ class WCS_ATT_Display_Cart {
 				) );
 			}
 
-			$options[ $subscription_scheme_key ] = array(
+			$options[] = array(
 				'description' => $description,
+				'value'       => $subscription_scheme_key,
 				'selected'    => $active_subscription_scheme_key === $subscription_scheme_key,
 			);
 		}

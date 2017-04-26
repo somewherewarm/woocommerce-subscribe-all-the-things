@@ -266,7 +266,7 @@ class WCS_ATT_Product {
 					if ( WCS_ATT_Scheme_Prices::price_filter_exists( $schemes ) ) {
 						$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or %s', '&ndash; subscription plans %s', sizeof( $schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
 					} else {
-						$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription available', '&ndash; subscription plans available', sizeof( $schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
+						$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription plan available', '&ndash; subscription plans available', sizeof( $schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
 					}
 
 					$price_html = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price_html, $suffix );

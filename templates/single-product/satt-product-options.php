@@ -8,7 +8,7 @@
  * We try to do this as little as possible, but it does happen.
  * When this occurs the version of the template file will be bumped and the readme will list any important changes.
  *
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 // Exit if accessed directly.
@@ -28,10 +28,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	}
 
 	?><ul class="wcsatt-options-product"><?php
-		foreach ( $options as $option_id => $option ) {
-			?><li class="<?php echo $option_id !== '0' ? 'subscription-option' : 'one-time-option'; ?>">
+		foreach ( $options as $option ) {
+			?><li class="<?php echo $option[ 'value' ] !== '0' ? 'subscription-option' : 'one-time-option'; ?>">
 				<label>
-					<input type="radio" name="convert_to_sub_<?php echo $product_id; ?>" data-custom_data="<?php echo esc_attr( json_encode( $option[ 'data' ] ) ); ?>" value="<?php echo $option_id; ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+					<input type="radio" name="convert_to_sub_<?php echo $product_id; ?>" data-custom_data="<?php echo esc_attr( json_encode( $option[ 'data' ] ) ); ?>" value="<?php echo esc_attr( $option[ 'value' ] ); ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 					<?php echo $option[ 'description' ]; ?>
 				</label>
 			</li><?php

@@ -140,8 +140,9 @@ class WCS_ATT_Display {
 				$none_string                 = _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN );
 				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', WCS_ATT::TEXT_DOMAIN ), $none_string, '<span class="price">' . $product->get_price_html() . '</span>' ) : $none_string;
 
-				$options[ '0' ] = array(
+				$options[] = array(
 					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
+					'value'       => '0',
 					'selected'    => '0' === $default_subscription_scheme_option_value,
 					'data'        => apply_filters( 'wcsatt_single_product_one_time_option_data', array(), $product )
 				);
@@ -150,16 +151,17 @@ class WCS_ATT_Display {
 			// Subscription options.
 			foreach ( $subscription_schemes as $subscription_scheme ) {
 
-				$sub_price_html = '<span class="price">' . WCS_ATT_Product::get_price_html( $product, $subscription_scheme->get_key() ) . '</span>';
+				$sub_price_html = '<span class="price subscription-price">' . WCS_ATT_Product::get_price_html( $product, $subscription_scheme->get_key() ) . '</span>';
 
 				$option_data = array(
-					'subscription_scheme'   => $subscription_scheme,
+					'subscription_scheme'   => $subscription_scheme->get_data(),
 					'overrides_price'       => $subscription_scheme->has_price_filter(),
 					'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false )
 				);
 
-				$options[ $subscription_scheme->get_key() ] = array(
+				$options[] = array(
 					'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( false === $force_subscription ? sprintf( __( '%s', 'product subscription selection - positive response', WCS_ATT::TEXT_DOMAIN ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $subscription_scheme->has_price_filter(), false === $force_subscription, $product, $subscription_scheme ),
+					'value'       => $subscription_scheme->get_key(),
 					'selected'    => $default_subscription_scheme_option_value === $subscription_scheme->get_key(),
 					'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )
 				);
