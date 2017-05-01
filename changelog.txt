@@ -1,5 +1,13 @@
 *** WooCommerce Subscribe All the Things ***
 
+2017.05.01 - version 2.0.0
+
+ * Fix - WooCommerce 3.0 compatibility.
+ * Dev - Introduced Product API for managing the subscription state of product objects and getting product prices and subscription parameters associated with specific subscription schemes. Refactored the plugin to utilize the new 'WCS_ATT_Product_API' class. Important: Price filter callbacks required to implement subscription price overrides and discounts are now "always-on". Refer to the 'WCS_ATT_Scheme_Prices' and 'WCS_ATT_Product_API' classes for details.
+ * Dev - Introduced 'WCS_ATT_Scheme' class for getting/setting subscription scheme data.
+ * Dev - Added basic set of unit tests.
+ * Tweak - Streamlined the UI of the 'Product Data > Subscriptions' tab panel.
+
 2017.01.20 - version 1.1.2
  * Fix - Template overriding issues due to incorrect 'wc_get_template' arguments.
  * Fix - Escape subscription option description html.
