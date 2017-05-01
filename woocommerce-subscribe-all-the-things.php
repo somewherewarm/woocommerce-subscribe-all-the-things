@@ -125,7 +125,7 @@ class WCS_ATT {
 	public function includes() {
 
 		require_once( 'includes/class-wcsatt-core-compatibility.php' );
-		// require_once( 'includes/class-wcsatt-integrations.php' );
+		require_once( 'includes/class-wcsatt-integrations.php' );
 		require_once( 'includes/class-wcsatt-scheme.php' );
 		require_once( 'includes/class-wcsatt-schemes.php' );
 		require_once( 'includes/class-wcsatt-scheme-prices.php' );
