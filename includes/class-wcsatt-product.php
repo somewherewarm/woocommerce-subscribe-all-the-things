@@ -25,6 +25,9 @@ class WCS_ATT_Product {
 		// Allow WCS to recognize any product as a subscription.
 		add_filter( 'woocommerce_is_subscription', array( __CLASS__, 'filter_is_subscription' ), 10, 3 );
 
+		// Delete object meta in use by the application layer.
+		add_action( 'woocommerce_before_product_object_save', array( __CLASS__, 'delete_reserved_meta' ) );
+
 		// Make product prices scheme-dependent.
 		WCS_ATT_Scheme_Prices::add_price_filters();
 		WCS_ATT_Scheme_Prices::add_price_html_filters();
@@ -744,8 +747,7 @@ class WCS_ATT_Product {
 	private static function get_product_property( $product, $property ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			$get_fn = 'get_' . $property;
-			$value  = is_callable( array( $product, $get_fn ) ) ? $product->$get_fn( 'edit' ) : $product->get_meta( '_' . $property, true );
+			$value = $product->get_meta( '_' . $property, true );
 		} else {
 			$value = isset( $product->$property ) ? $product->$property : '';
 		}
@@ -795,6 +797,18 @@ class WCS_ATT_Product {
 		}
 
 		return $is;
+	}
+
+	/**
+	 * Delete object meta in use by the application layer.
+	 *
+	 * @param  WC_Product  $product
+	 */
+	public static function delete_reserved_meta( $product ) {
+		$reserved_meta_keys = array( 'has_forced_subscription', 'subscription_schemes', 'active_subscription_scheme_key', 'default_subscription_scheme_key' );
+		foreach ( $reserved_meta_keys as $reserved_meta_key ) {
+			$product->delete_meta_data( $reserved_meta_key );
+		}
 	}
 
 	/*
