@@ -223,14 +223,24 @@ class WCS_ATT_Product {
 
 				} else {
 
-					$suffix_price_html = '';
+					$suffix_price_html        = '';
+					$use_discount_html_format = false;
+
+					// Show discount format if all schemes are of the 'inherit' pricing mode type.
+					$subscription_schemes = self::get_subscription_schemes( $product );
+
+					foreach ( $subscription_schemes as $subscription_scheme ) {
+						if ( $subscription_scheme->has_price_filter() && 'inherit' === $subscription_scheme->get_pricing_mode() ) {
+							$use_discount_html_format = true;
+						}
+					}
 
 					// Discount format vs Price format. Experimental use only.
-					if ( apply_filters( 'wcsatt_price_html_discount_format', false, $product ) && $subscription_scheme->has_price_filter() && 'inherit' === $subscription_scheme->get_pricing_mode() ) {
+					if ( apply_filters( 'wcsatt_price_html_discount_format', $use_discount_html_format, $product ) ) {
 
-						$discount          = $subscription_scheme->get_discount();
-						$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37; off', WCS_ATT::TEXT_DOMAIN ), $discount ) . '</span><small>';
-						$suffix_price_html = sprintf( __( 'at%1$s%2$s', WCS_ATT::TEXT_DOMAIN ), ( $has_variable_price || sizeof( $schemes ) > 1 ) ? __( ' up to', WCS_ATT::TEXT_DOMAIN ) : '', $discount_html );
+						$discount          = $base_scheme->get_discount();
+						$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37;', WCS_ATT::TEXT_DOMAIN ), $discount ) . '</span><small>';
+						$suffix_price_html = sprintf( __( 'subscribe and save %1$s%2$s', WCS_ATT::TEXT_DOMAIN ), ( $has_variable_price || sizeof( $schemes ) > 1 ) ? __( ' up to', WCS_ATT::TEXT_DOMAIN ) : '', $discount_html );
 
 					} else {
 

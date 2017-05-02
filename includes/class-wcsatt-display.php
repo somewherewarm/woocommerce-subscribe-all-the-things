@@ -138,7 +138,7 @@ class WCS_ATT_Display {
 			// Non-recurring (one-time) option.
 			if ( false === $force_subscription ) {
 				$none_string                 = _x( 'None', 'product subscription selection - negative response', WCS_ATT::TEXT_DOMAIN );
-				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', WCS_ATT::TEXT_DOMAIN ), $none_string, '<span class="price">' . $product->get_price_html() . '</span>' ) : $none_string;
+				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', WCS_ATT::TEXT_DOMAIN ), $none_string, '<span class="price">' . WCS_ATT_Product::get_price_html( $product, false ) . '</span>' ) : $none_string;
 
 				$options[] = array(
 					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),

@@ -33,6 +33,9 @@ class WCS_ATT_Scheme_Prices {
 			add_filter( 'woocommerce_product_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
 			add_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
 			add_filter( 'woocommerce_product_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
 		} else {
 			add_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
 			add_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
@@ -56,6 +59,9 @@ class WCS_ATT_Scheme_Prices {
 			remove_filter( 'woocommerce_product_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
 			remove_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
 			remove_filter( 'woocommerce_product_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'filter_get_regular_price' ), 0, 2 );
 		} else {
 			remove_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_get_price' ), 0, 2 );
 			remove_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_get_sale_price' ), 0, 2 );
@@ -242,10 +248,10 @@ class WCS_ATT_Scheme_Prices {
 	 */
 	public static function filter_variation_prices_hash( $hash, $product ) {
 
-		$active_scheme_key = WCS_ATT_Product::get_subscription_scheme( $product );
+		$active_scheme = WCS_ATT_Product::get_subscription_scheme( $product );
 
-		if ( ! empty( $active_scheme_key ) ) {
-			$hash[] = $active_scheme_key;
+		if ( ! empty( $active_scheme ) ) {
+			$hash[] = $active_scheme ? $active_scheme : '0';
 		}
 
 		return $hash;
