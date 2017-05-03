@@ -190,6 +190,9 @@ jQuery( function($) {
 			// Run scripts against added markup.
 			added.wcsatt_scripts();
 
+			// Trigger 'change' event to show/hide type-dependent inputs.
+			$( 'input#_virtual' ).change();
+
 			// Trigger 'change' event to show/hide price override method options.
 			added.find( 'select.subscription_pricing_method_input' ).change();
 
