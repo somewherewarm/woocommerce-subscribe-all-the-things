@@ -34,6 +34,15 @@ class WCS_ATT_Meta_Box_Product_Data {
 			add_action( 'woocommerce_product_write_panels', array( __CLASS__, 'product_data_panel' ) );
 		}
 
+		// Subscription scheme markup added on the 'wcsatt_subscription_scheme' action.
+		add_action( 'wcsatt_subscription_scheme', array( __CLASS__, 'subscription_scheme' ), 10, 3 );
+
+		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+		add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_content' ), 10, 3 );
+
+		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_product_content' action.
+		add_action( 'wcsatt_subscription_scheme_product_content', array( __CLASS__, 'subscription_scheme_product_content' ), 10, 3 );
+
 		// Process and save the necessary meta.
 		add_action( 'woocommerce_process_product_meta', array( __CLASS__, 'process_product_meta' ), 15, 1 );
 	}
@@ -110,6 +119,220 @@ class WCS_ATT_Meta_Box_Product_Data {
 			<p class="toolbar">
 				<button type="button" class="button button-primary add_subscription_scheme"><?php _e( 'Add Option', WCS_ATT::TEXT_DOMAIN ); ?></button>
 			</p>
+		</div><?php
+	}
+
+
+	/**
+	 * Subscription scheme markup adeed on the 'wcsatt_subscription_scheme' action.
+	 *
+	 * @param  int     $index
+	 * @param  array   $scheme_data
+	 * @param  int     $post_id
+	 * @return void
+	 */
+	public static function subscription_scheme( $index, $scheme_data, $post_id ) {
+		include( 'views/subscription-scheme.php' );
+	}
+
+	/**
+	 * Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+	 *
+	 * @param  int     $index
+	 * @param  array   $scheme_data
+	 * @param  int     $post_id
+	 * @return void
+	 */
+	public static function subscription_scheme_content( $index, $scheme_data, $post_id ) {
+
+		global $thepostid;
+
+		if ( empty( $thepostid ) ) {
+			$thepostid = '-1';
+		}
+
+		if ( ! empty( $scheme_data ) ) {
+			$subscription_period          = $scheme_data[ 'subscription_period' ];
+			$subscription_period_interval = $scheme_data[ 'subscription_period_interval' ];
+			$subscription_length          = $scheme_data[ 'subscription_length' ];
+		} else {
+			$subscription_period          = 'month';
+			$subscription_period_interval = '';
+			$subscription_length          = '';
+		}
+
+
+		// Subscription Price, Interval and Period.
+		?><p class="form-field _satt_subscription_details">
+			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', WCS_ATT::TEXT_DOMAIN ); ?></label>
+			<span class="wrap">
+				<label for="_satt_subscription_period_interval" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period_interval" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
+				<?php foreach ( wcs_get_subscription_period_interval_strings() as $value => $label ) { ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period_interval, true ) ?>><?php echo esc_html( $label ); ?></option>
+				<?php } ?>
+				</select>
+				<label for="_satt_subscription_period" class="wcs_hidden_label"><?php esc_html_e( 'Subscription period', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period]" class="wc_input_subscription_period last" >
+				<?php foreach ( wcs_get_subscription_period_strings() as $value => $label ) { ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period, true ) ?>><?php echo esc_html( $label ); ?></option>
+				<?php } ?>
+				</select>
+			</span>
+			<?php echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Choose the subscription billing interval and period.', WCS_ATT::TEXT_DOMAIN ) ); ?>
+		</p><?php
+
+		// Subscription Length.
+		woocommerce_wp_select( array(
+			'id'          => '_satt_subscription_length',
+			'class'       => 'wc_input_subscription_length',
+			'label'       => __( 'Length', WCS_ATT::TEXT_DOMAIN ),
+			'value'       => $subscription_length,
+			'options'     => wcs_get_subscription_ranges( $subscription_period ),
+			'name'        => 'wcsatt_schemes[' . $index . '][subscription_length]',
+			'description' => __( 'Choose the subscription billing length.', WCS_ATT::TEXT_DOMAIN ),
+			'desc_tip'    => true
+			)
+		);
+	}
+
+	/**
+	 * Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+	 *
+	 * @param  int     $index
+	 * @param  array   $scheme_data
+	 * @param  int     $post_id
+	 * @return void
+	 */
+	public static function subscription_scheme_product_content( $index, $scheme_data, $post_id ) {
+
+		if ( ! empty( $scheme_data ) ) {
+			$subscription_pricing_method = ! empty( $scheme_data[ 'subscription_pricing_method' ] ) ? $scheme_data[ 'subscription_pricing_method' ] : 'inherit';
+			$subscription_regular_price  = isset( $scheme_data[ 'subscription_regular_price' ] ) ? $scheme_data[ 'subscription_regular_price' ] : '';
+			$subscription_sale_price     = isset( $scheme_data[ 'subscription_sale_price' ] ) ? $scheme_data[ 'subscription_sale_price' ] : '';
+			$subscription_discount       = isset( $scheme_data[ 'subscription_discount' ] ) ? $scheme_data[ 'subscription_discount' ] : '';
+		} else {
+			$subscription_pricing_method = '';
+			$subscription_regular_price  = '';
+			$subscription_sale_price     = '';
+			$subscription_discount       = '';
+		}
+
+		?><div class="hide_if_variable"><?php
+
+			// Subscription Price Override Method.
+			woocommerce_wp_select( array(
+				'id'      => '_subscription_pricing_method_input',
+				'class'   => 'subscription_pricing_method_input',
+				'label'   => __( 'Price', WCS_ATT::TEXT_DOMAIN ),
+				'value'   => $subscription_pricing_method,
+				'options' => array(
+						'inherit'  => __( 'Inherit from product', WCS_ATT::TEXT_DOMAIN ),
+						'override' => __( 'Override product', WCS_ATT::TEXT_DOMAIN ),
+					),
+				'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method]'
+				)
+			);
+
+			?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
+
+				// Price.
+				woocommerce_wp_text_input( array(
+					'id'            => '_override_subscription_regular_price',
+					'name'          => 'wcsatt_schemes[' . $index . '][subscription_regular_price]',
+					'value'         => $subscription_regular_price,
+					'wrapper_class' => 'override_subscription_regular_price',
+					'class'         => 'short',
+					'label'         => __( 'Regular Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+					'data_type'     => 'price'
+				) );
+
+				// Sale Price.
+				woocommerce_wp_text_input( array(
+					'id'            => '_override_subscription_sale_price',
+					'name'          => 'wcsatt_schemes[' . $index . '][subscription_sale_price]',
+					'value'         => $subscription_sale_price,
+					'wrapper_class' => 'override_subscription_sale_price',
+					'class'         => 'short',
+					'label'         => __( 'Sale Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+					'data_type'     => 'price'
+				) );
+
+			?></div>
+			<div class="subscription_pricing_method subscription_pricing_method_inherit"><?php
+
+				// Discount.
+				woocommerce_wp_text_input( array(
+					'id'            => '_subscription_price_discount',
+					'name'          => 'wcsatt_schemes[' . $index . '][subscription_discount]',
+					'value'         => $subscription_discount,
+					'wrapper_class' => 'subscription_price_discount',
+					'class'         => 'short',
+					'label'         => __( 'Discount %', WCS_ATT::TEXT_DOMAIN ),
+					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', WCS_ATT::TEXT_DOMAIN ),
+					'desc_tip'      => true,
+					'data_type'     => 'decimal'
+				) );
+
+			?></div>
+		</div>
+		<div class="show_if_variable" style="display:none"><?php
+
+			// Subscription Price Override Method.
+			woocommerce_wp_select( array(
+				'id'      => '_subscription_pricing_method_input_variable',
+				'class'   => 'subscription_pricing_method_input',
+				'label'   => __( 'Price', WCS_ATT::TEXT_DOMAIN ),
+				'value'   => $subscription_pricing_method,
+				'options' => array(
+						'inherit'  => __( 'Inherit from chosen variation', WCS_ATT::TEXT_DOMAIN ),
+						'override' => __( 'Override all variations', WCS_ATT::TEXT_DOMAIN ),
+					),
+				'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method_variable]'
+				)
+			);
+
+			?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
+
+				// Price.
+				woocommerce_wp_text_input( array(
+					'id'            => '_override_subscription_regular_price_variable',
+					'name'          => 'wcsatt_schemes[' . $index . '][subscription_regular_price_variable]',
+					'value'         => $subscription_regular_price,
+					'wrapper_class' => 'override_subscription_regular_price',
+					'class'         => 'short',
+					'label'         => __( 'Regular Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+					'data_type'     => 'price'
+				) );
+
+				// Sale Price.
+				woocommerce_wp_text_input( array(
+					'id'            => '_override_subscription_sale_price_variable',
+					'name'          => 'wcsatt_schemes[' . $index . '][subscription_sale_price_variable]',
+					'value'         => $subscription_sale_price,
+					'wrapper_class' => 'override_subscription_sale_price',
+					'class'         => 'short',
+					'label'         => __( 'Sale Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+					'data_type'     => 'price'
+				) );
+
+			?></div>
+			<div class="subscription_pricing_method subscription_pricing_method_inherit"><?php
+
+				// Discount.
+				woocommerce_wp_text_input( array(
+					'id'            => '_subscription_price_discount_variable',
+					'name'          => 'wcsatt_schemes[' . $index . '][subscription_discount_variable]',
+					'value'         => $subscription_discount,
+					'wrapper_class' => 'subscription_price_discount',
+					'class'         => 'short',
+					'label'         => __( 'Discount %', WCS_ATT::TEXT_DOMAIN ),
+					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the chosen variation.', WCS_ATT::TEXT_DOMAIN ),
+					'desc_tip'      => true,
+					'data_type'     => 'decimal'
+				) );
+
+			?></div>
 		</div><?php
 	}
 
