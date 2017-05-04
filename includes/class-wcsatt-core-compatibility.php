@@ -286,6 +286,26 @@ class WCS_ATT_Core_Compatibility {
 	}
 
 	/**
+	 * Back-compat wrapper for 'wc_get_price_to_display'.
+	 *
+	 * @param  WC_Product  $product
+	 * @param  array       $args
+	 * @return double
+	 */
+	public static function wc_get_price_to_display( $product, $args = array() ) {
+
+		if ( self::is_wc_version_gte_2_7() ) {
+			return wc_get_price_to_display( $product, $args );
+		} else {
+
+			$price = isset( $args[ 'price' ] ) ? $args[ 'price' ] : '';
+			$qty   = isset( $args[ 'qty' ] ) ? $args[ 'qty' ] : 1;
+
+			return $product->get_display_price( $price, $qty );
+		}
+	}
+
+	/**
 	 * Back-compat wrapper for 'WC_Product_Factory::get_product_type'.
 	 *
 	 * @since  3.9.0

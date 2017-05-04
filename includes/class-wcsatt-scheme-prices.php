@@ -45,6 +45,8 @@ class WCS_ATT_Scheme_Prices {
 		add_filter( 'woocommerce_get_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash' ), 0, 2 );
 		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 2 );
 
+		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'filter_variation_data' ), 0, 3 );
+
 		do_action( 'wcsatt_add_price_filters' );
 	}
 
@@ -70,6 +72,8 @@ class WCS_ATT_Scheme_Prices {
 
 		remove_filter( 'woocommerce_get_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash' ), 0, 2 );
 		remove_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_get_variation_prices' ), 0, 2 );
+
+		remove_filter( 'woocommerce_available_variation', array( __CLASS__, 'filter_variation_data' ), 0, 3 );
 
 		do_action( 'wcsatt_remove_price_filters' );
 	}
@@ -240,6 +244,45 @@ class WCS_ATT_Scheme_Prices {
 	}
 
 	/**
+	 * Filter variation data based on the subscription scheme that is activated on the parent.
+	 *
+	 * @param  array                 $variation_data
+	 * @param  WC_Product_Variable   $product
+	 * @param  WC_Product_Variation  $variation
+	 * @return array
+	 */
+	public static function filter_variation_data( $variation_data, $product, $variation ) {
+
+		$product_schemes   = WCS_ATT_Product::get_subscription_schemes( $product );
+		$variation_schemes = WCS_ATT_Product::get_subscription_schemes( $variation );
+
+		$variation_data_update_needed = false;
+
+		// Copy product schemes to child.
+		if ( ! empty( $product_schemes ) && array_keys( $product_schemes ) !== array_keys( $variation_schemes ) ) {
+			WCS_ATT_Product::set_subscription_schemes( $variation, $product_schemes );
+			$variation_data_update_needed = true;
+		}
+
+		$product_scheme   = WCS_ATT_Product::get_subscription_scheme( $product );
+		$variation_scheme = WCS_ATT_Product::get_subscription_scheme( $variation );
+
+		// Set active product scheme on child.
+		if ( $product_scheme !== $variation_scheme ) {
+			WCS_ATT_Product::set_subscription_scheme( $variation, $product_scheme );
+			$variation_data_update_needed = true;
+		}
+
+		if ( $variation_data_update_needed ) {
+			$variation_data[ 'display_price' ]         = WCS_ATT_Core_Compatibility::wc_get_price_to_display( $variation );
+			$variation_data[ 'display_regular_price' ] = WCS_ATT_Core_Compatibility::wc_get_price_to_display( $variation, array( 'price' => $variation->get_regular_price() ) );
+			$variation_data[ 'price_html' ]            = $variation_data[ 'price_html' ] ? '<span class="price">' . $variation->get_price_html() . '</span>' : '';
+		}
+
+		return $variation_data;
+	}
+
+	/**
 	 * Filter variation prices hash to load different prices depending on the scheme that's active on the object.
 	 *
 	 * @param  array                $hash
@@ -249,6 +292,7 @@ class WCS_ATT_Scheme_Prices {
 	public static function filter_variation_prices_hash( $hash, $product ) {
 
 		$active_scheme = WCS_ATT_Product::get_subscription_scheme( $product );
+
 
 		if ( ! empty( $active_scheme ) ) {
 			$hash[] = $active_scheme ? $active_scheme : '0';

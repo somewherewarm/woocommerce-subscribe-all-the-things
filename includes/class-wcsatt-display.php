@@ -35,7 +35,7 @@ class WCS_ATT_Display {
 		add_filter( 'woocommerce_product_single_add_to_cart_text', array( __CLASS__, 'add_to_cart_text' ), 10, 1 );
 
 		// Replace plain variation price html with subscription options template.
-		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'add_subscription_options_to_variation_data' ), 10, 3 );
+		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'add_subscription_options_to_variation_data' ), 0, 3 );
 	}
 
 	/*
@@ -79,14 +79,17 @@ class WCS_ATT_Display {
 	 * Subscription options are updated by the core variations script when a variation is selected.
 	 *
 	 * @param  array                 $variation_data
-	 * @param  WC_Product_Variable   $product
-	 * @param  WC_Product_Variation  $variation
+	 * @param  WC_Product_Variable   $variable_product
+	 * @param  WC_Product_Variation  $variation_product
 	 * @return array
 	 */
-	public static function add_subscription_options_to_variation_data( $variation_data, $product, $variation ) {
+	public static function add_subscription_options_to_variation_data( $variation_data, $variable_product, $variation_product ) {
+		global $product;
 
-		if ( $subscription_options_content = self::get_subscription_options_content( $variation ) ) {
-			$variation_data[ 'price_html' ] = $subscription_options_content;
+		if ( $product && WCS_ATT_Core_Compatibility::get_id( $variable_product ) === WCS_ATT_Core_Compatibility::get_id( $product ) ) {
+			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product ) ) {
+				$variation_data[ 'price_html' ] = $subscription_options_content;
+			}
 		}
 
 		return $variation_data;
