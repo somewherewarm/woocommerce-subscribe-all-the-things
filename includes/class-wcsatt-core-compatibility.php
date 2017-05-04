@@ -185,6 +185,23 @@ class WCS_ATT_Core_Compatibility {
 	}
 
 	/**
+	 * Back-compat wrapper for 'get_parent_id' with fallback to 'get_id'.
+	 *
+	 * @since  2.0.0
+	 *
+	 * @param  WC_Product  $product
+	 * @return mixed
+	 */
+	public static function get_product_id( $product ) {
+		if ( self::is_wc_version_gte_2_7() ) {
+			$parent_id = $product->get_parent_id();
+			return $parent_id ? $parent_id : $product->get_id();
+		} else {
+			return absint( $product->id );
+		}
+	}
+
+	/**
 	 * Back-compat wrapper for getting CRUD object props directly.
 	 *
 	 * @since  2.0.0

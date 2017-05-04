@@ -406,6 +406,8 @@ class WCS_ATT_Cart {
 	 */
 	public static function is_supported_product_type( $arg ) {
 
+		$is_supported = false;
+
 		if ( is_a( $arg, 'WC_Product' ) ) {
 			$is_supported = $arg->is_type( WCS_ATT()->get_supported_product_types() );
 		} elseif ( is_array( $arg ) ) {
