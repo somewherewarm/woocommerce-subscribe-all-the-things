@@ -485,66 +485,71 @@ class WCS_ATT_Integrations {
 	 */
 	public static function container_item_options( $options, $subscription_schemes, $cart_item, $cart_item_key ) {
 
-		$product                        = $cart_item[ 'data' ];
-		$price_filter_exists            = WCS_ATT_Scheme_Prices::price_filter_exists( $subscription_schemes );
-		$force_subscription             = WCS_ATT_Product::has_forced_subscription( $product );
-		$active_subscription_scheme_key = WCS_ATT_Product::get_subscription_scheme( $product );
-		$scheme_keys                    = array_merge( $force_subscription ? array() : array( false ), array_keys( $subscription_schemes ) );
+		if ( self::has_bundle_type_children( $cart_item ) ) {
 
-		if ( $price_filter_exists ) {
+			$product                        = $cart_item[ 'data' ];
+			$price_filter_exists            = WCS_ATT_Scheme_Prices::price_filter_exists( $subscription_schemes );
+			$force_subscription             = WCS_ATT_Product::has_forced_subscription( $product );
+			$active_subscription_scheme_key = WCS_ATT_Product::get_subscription_scheme( $product );
+			$scheme_keys                    = array_merge( $force_subscription ? array() : array( false ), array_keys( $subscription_schemes ) );
 
-			$tax_display_cart = get_option( 'woocommerce_tax_display_cart' );
+			if ( $price_filter_exists ) {
 
-			foreach ( $scheme_keys as $scheme_key ) {
+				$tax_display_cart = get_option( 'woocommerce_tax_display_cart' );
 
-				$price_key = false === $scheme_key ? '0' : $scheme_key;
+				foreach ( $scheme_keys as $scheme_key ) {
 
-				if ( 'excl' === $tax_display_cart ) {
-					$bundle_price[ $price_key ] = WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product::get_price( $product, $scheme_key ) ) );
-				} else {
-					$bundle_price[ $price_key ] = WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product::get_price( $product, $scheme_key ) ) );
-				}
+					$price_key = false === $scheme_key ? '0' : $scheme_key;
 
-				foreach ( WC()->cart->cart_contents as $child_key => $child_item ) {
+					if ( 'excl' === $tax_display_cart ) {
+						$bundle_price[ $price_key ] = WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product::get_price( $product, $scheme_key ) ) );
+					} else {
+						$bundle_price[ $price_key ] = WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product::get_price( $product, $scheme_key ) ) );
+					}
 
-					$container_key = self::has_bundle_type_container( $child_item );
+					foreach ( WC()->cart->cart_contents as $child_key => $child_item ) {
 
-					if ( $cart_item_key === $container_key ) {
+						$container_key = self::has_bundle_type_container( $child_item );
 
-						$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
+						if ( $cart_item_key === $container_key ) {
 
-						if ( 'excl' === $tax_display_cart ) {
-							$bundle_price[ $price_key ] += WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-						} else {
-							$bundle_price[ $price_key ] += WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+							$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
+
+							if ( 'excl' === $tax_display_cart ) {
+								$bundle_price[ $price_key ] += WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+							} else {
+								$bundle_price[ $price_key ] += WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+							}
 						}
 					}
 				}
-			}
 
-			// Non-recurring (one-time) option.
-			if ( false === $force_subscription ) {
+				// Non-recurring (one-time) option.
+				if ( false === $force_subscription ) {
 
-				$options[ '0' ] = array(
-					'description' => wc_price( $bundle_price[ '0' ] ),
-					'selected'    => false === $active_subscription_scheme_key,
-				);
-			}
+					$options[] = array(
+						'description' => wc_price( $bundle_price[ '0' ] ),
+						'value'       => '0',
+						'selected'    => false === $active_subscription_scheme_key,
+					);
+				}
 
-			// Subscription options.
-			foreach ( $subscription_schemes as $subscription_scheme ) {
+				// Subscription options.
+				foreach ( $subscription_schemes as $subscription_scheme ) {
 
-				$subscription_scheme_key = $subscription_scheme->get_key();
+					$subscription_scheme_key = $subscription_scheme->get_key();
 
-				$description = WCS_ATT_Product::get_price_string( $product, array(
-					'scheme_key' => $subscription_scheme_key,
-					'price'      => wc_price( $bundle_price[ $subscription_scheme_key ] )
-				) );
+					$description = WCS_ATT_Product::get_price_string( $product, array(
+						'scheme_key' => $subscription_scheme_key,
+						'price'      => wc_price( $bundle_price[ $subscription_scheme_key ] )
+					) );
 
-				$options[ $subscription_scheme_key ] = array(
-					'description' => $description,
-					'selected'    => $active_subscription_scheme_key === $subscription_scheme_key,
-				);
+					$options[] = array(
+						'description' => $description,
+						'value'       => $subscription_scheme_key,
+						'selected'    => $active_subscription_scheme_key === $subscription_scheme_key,
+					);
+				}
 			}
 		}
 
