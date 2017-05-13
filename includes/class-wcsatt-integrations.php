@@ -528,6 +528,8 @@ class WCS_ATT_Integrations {
 					}
 				}
 
+				$options = array();
+
 				// Non-recurring (one-time) option.
 				if ( false === $force_subscription ) {
 
