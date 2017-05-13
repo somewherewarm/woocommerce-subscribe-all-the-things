@@ -380,24 +380,28 @@ class WCS_ATT_Integrations {
 			if ( ! empty( $bundled_items ) ) {
 				foreach ( $bundled_items as $bundled_item ) {
 
-					if ( $bundled_product = $bundled_item->get_product() ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
+					// Callable since PB 5.2.4.
+					if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
 
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
+						if ( $bundled_product = $bundled_item->get_product() ) {
+							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
+						}
 
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
+						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
+							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
+						}
 
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
+						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
+							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
+						}
 
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
+						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
+							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
+						}
+
+						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
+							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
+						}
 					}
 				}
 			}
