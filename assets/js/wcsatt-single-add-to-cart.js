@@ -142,7 +142,7 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
 
-				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data } );
+				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html_o: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
 		};
 
@@ -157,6 +157,7 @@
 				if ( composite.satt_schemes.length > 0 ) {
 					if ( composite.satt_schemes.length > 1 || composite.$composite_data.find( '.composite_wrap .wcsatt-options-product .one-time-option' ).length > 0 ) {
 						composite.actions.add_action( 'composite_totals_changed', self.update_subscription_totals, 101, self );
+						composite.actions.add_action( 'composite_validation_status_changed', self.update_subscription_totals, 101, self );
 					} else {
 						composite.filters.add_filter( 'composite_price_html', self.filter_price_html, 10, self );
 					}
@@ -168,9 +169,9 @@
 		// In this case, simply grab the subscription details from the option and append them to the composite price string.
 		this.filter_price_html = function( price, view, price_data ) {
 
-			var $scheme_details = composite.satt_schemes[0].el.find( '.subscription-details' );
+			var scheme_details_html = composite.satt_schemes[0].details_html;
 
-			price = $( price ).append( $scheme_details.clone() ).prop( 'outerHTML' );
+			price = $( price ).append( scheme_details_html ).prop( 'outerHTML' );
 
 			return price;
 		};
@@ -181,6 +182,9 @@
 			if ( composite.satt_schemes.length > 0 ) {
 
 				$.each( composite.satt_schemes, function( index, scheme ) {
+
+					var scheme_price_html = composite.composite_price_view.get_price_html();
+						$scheme_price     = scheme.el.find( '.subscription-price' );
 
 					// Calculate the subscription price for each option that overrides default prices and update its html string.
 					if ( scheme.data.overrides_price === true ) {
@@ -212,14 +216,17 @@
 						var totals = composite.data_model.calculate_totals( price_data );
 
 						price_data.totals = totals;
-
-						var scheme_price_html = composite.composite_price_view.get_price_html( price_data ),
-							$scheme_price     = scheme.el.find( '.subscription-price' );
-
-						$scheme_price.html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
-
-						$scheme_price.trigger( 'wcsatt-updated-composite-price', [ scheme_price_html, scheme, composite ] );
+						scheme_price_html = composite.composite_price_view.get_price_html( price_data );
 					}
+
+					if ( 'pass' === composite.api.get_composite_validation_status() ) {
+						$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
+					} else {
+						$scheme_price.html( scheme.price_html_o );
+					}
+
+					$scheme_price.trigger( 'wcsatt-updated-composite-price', [ scheme_price_html, scheme, composite, self ] );
+
 				} );
 			}
 		};

@@ -69,9 +69,6 @@ class WCS_ATT_Integrations {
 			// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
 			add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'add_container_item_subtotal_subscription_details' ), 1000, 3 );
 
-			// Hide bundle container cart item options.
-			// add_filter( 'wcsatt_show_cart_item_options', array( __CLASS__, 'hide_container_item_options' ), 10, 3 );
-
 			// Modify bundle container cart item options to include child item prices.
 			add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
 
@@ -79,7 +76,10 @@ class WCS_ATT_Integrations {
 			 * Bundles.
 			 */
 
-			// When showing a bundle in a single-product page, always set the default scheme key on the object.
+			/*
+			 * When showing a bundle in a single-product page, always set the default scheme key on the object.
+			 * This is to ensure that the subscription scheme will be set on the displayed bundled item objects, too.
+			 */
 			add_action( 'woocommerce_before_single_product', array( __CLASS__, 'set_forced_subscription_bundle_scheme' ), 0 );
 
 			// Bundled products inherit the subscription schemes of their container object.
@@ -92,14 +92,8 @@ class WCS_ATT_Integrations {
 			 * Composites.
 			 */
 
-			// When a forced-subscription composite is done syncing, always set the default scheme key on the object.
-			add_action( 'woocommerce_composite_synced', array( __CLASS__, 'set_forced_subscription_bundle_scheme' ) );
-
-			// Products in component option class inherit the subscription schemes of their container object.
+			// Products in component option class inherit the subscription schemes of their container object -- SLOW!
 			add_action( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
-
-			// Filter the prices of composited products loaded via ajax when the composite has a single subscription option and one-time purchases are disabled.
-			// add_action( 'woocommerce_composite_products_apply_product_filters', array( __CLASS__ , 'add_composited_force_sub_price_filters' ), 10, 3 );
 		}
 	}
 
@@ -369,124 +363,6 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Bundled products inherit the subscription schemes of their container object.
-	 *
-	 * @param  string      $scheme_key
-	 * @param  WC_Product  $product
-	 */
-	public static function set_product_bundle_scheme( $scheme_key, $product ) {
-
-		if ( $product->is_type( 'bundle' ) ) {
-
-			$bundled_items = $product->get_bundled_items();
-
-			if ( ! empty( $bundled_items ) ) {
-				foreach ( $bundled_items as $bundled_item ) {
-
-					// Callable since PB 5.2.4.
-					if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
-
-						if ( $bundled_product = $bundled_item->get_product() ) {
-							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-						}
-
-						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
-							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-						}
-
-						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
-							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-						}
-
-						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
-							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-						}
-
-						if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
-							self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * When loading bundled items, always set the active bundle scheme on the bundled objects.
-	 *
-	 * @param  array              $bundled_items
-	 * @param  WC_Product_Bundle  $product
-	 */
-	public static function set_bundled_items_scheme( $bundled_items, $product ) {
-
-		if ( ! empty( $bundled_items ) && $product->is_synced() ) {
-			foreach ( $bundled_items as $bundled_item ) {
-
-				// Callable since PB 5.2.4.
-				if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
-
-					if ( $bundled_product = $bundled_item->get_product() ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
-
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
-
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
-
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
-
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $product );
-					}
-				}
-			}
-		}
-
-		return $bundled_items;
-	}
-
-	/**
-	 * Composited products inherit the subscription schemes of their container object.
-	 *
-	 * @param  WC_CP_Product         $component_option
-	 * @param  string                $component_id
-	 * @param  WC_Product_Composite  $composite
-	 */
-	public static function set_component_option_scheme( $component_option, $component_id, $composite ) {
-
-		if ( $component_option && $composite->is_synced() ) {
-
-			if ( $product = $component_option->get_product() ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-		}
-
-		return $component_option;
-	}
-
-	/**
 	 * Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
 	 *
 	 * @param  string  $subtotal
@@ -507,17 +383,6 @@ class WCS_ATT_Integrations {
 		return $subtotal;
 	}
 
-	/**
-	 * When a forced-subscription bundle is displayed, always set the default scheme key on the object.
-	 */
-	public static function set_forced_subscription_bundle_scheme() {
-
-		global $product;
-
-		if ( is_a( $product, 'WC_Product' ) && WCS_ATT_Product::has_subscriptions( $product ) && WCS_ATT_Product::has_forced_subscription( $product ) ) {
-			WCS_ATT_Product::set_subscription_scheme( $product, WCS_ATT_Product::get_default_subscription_scheme( $product ) );
-		}
-	}
 
 	/**
 	 * Modify bundle container cart item subscription options to include child item prices.
@@ -603,40 +468,125 @@ class WCS_ATT_Integrations {
 		return $options;
 	}
 
-
 	/**
-	 * Hide bundle container cart item subscription options.
-	 *
-	 * @param  boolean  $show
-	 * @param  array    $cart_item
-	 * @param  string   $cart_item_key
-	 * @return boolean
+	 * When a forced-subscription bundle is displayed, always set the default scheme key on the object.
 	 */
-	public static function hide_container_item_options( $show, $cart_item, $cart_item_key ) {
+	public static function set_forced_subscription_bundle_scheme() {
 
-		if ( self::has_bundle_type_children( $cart_item ) ) {
-			$container = $cart_item[ 'data' ];
-			if ( self::has_individually_priced_bundled_contents( $container ) ) {
-				$show = false;
-			}
+		global $product;
+
+		if ( is_a( $product, 'WC_Product' ) && WCS_ATT_Product::has_subscriptions( $product ) && WCS_ATT_Product::has_forced_subscription( $product ) ) {
+			WCS_ATT_Product::set_subscription_scheme( $product, WCS_ATT_Product::get_default_subscription_scheme( $product ) );
 		}
-
-		return $show;
 	}
 
 	/**
-	 * Filter the prices of composited products loaded via ajax when the composite has a single subscription option and one-time purchases are disabled.
+	 * Bundled products inherit the subscription schemes of their container object.
 	 *
+	 * @param  string      $scheme_key
 	 * @param  WC_Product  $product
-	 * @param  int         $composite_id
-	 * @param  object      $composite
-	 * @return void
 	 */
-	public static function add_composited_force_sub_price_filters( $product, $composite_id, $composite ) {
+	public static function set_product_bundle_scheme( $scheme_key, $product ) {
 
-		if ( did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
-			self::maybe_add_force_sub_price_filters( $composite );
+		if ( $product->is_type( 'bundle' ) ) {
+
+			$bundled_items = $product->get_bundled_items();
+
+			if ( ! empty( $bundled_items ) ) {
+				foreach ( $bundled_items as $bundled_item ) {
+					self::set_bundled_item_scheme( $bundled_item, $product );
+				}
+			}
 		}
+	}
+
+	/**
+	 * When loading bundled items, always set the active bundle scheme on the bundled objects.
+	 *
+	 * @param  array              $bundled_items
+	 * @param  WC_Product_Bundle  $bundle
+	 */
+	public static function set_bundled_items_scheme( $bundled_items, $bundle ) {
+
+		if ( ! empty( $bundled_items ) && $bundle->is_synced() ) {
+			foreach ( $bundled_items as $bundled_item ) {
+				self::set_bundled_item_scheme( $bundled_item, $bundle );
+			}
+		}
+
+		return $bundled_items;
+	}
+
+	/**
+	 * Set the active bundle scheme on a bundled item.
+	 *
+	 * @param  WC_Bundled_Item    $bundled_item
+	 * @param  WC_Product_Bundle  $bundle
+	 */
+	public static function set_bundled_item_scheme( $bundled_item, $bundle ) {
+
+		// Callable since PB 5.2.4.
+		if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
+
+			if ( $bundled_product = $bundled_item->get_product() ) {
+				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			}
+
+			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			}
+
+			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			}
+
+			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			}
+
+			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			}
+		}
+	}
+
+	/**
+	 * Composited products inherit the subscription schemes of their container object.
+	 *
+	 * @param  WC_CP_Product         $component_option
+	 * @param  string                $component_id
+	 * @param  WC_Product_Composite  $composite
+	 */
+	public static function set_component_option_scheme( $component_option, $component_id, $composite ) {
+
+		if ( $component_option ) {
+
+			if ( WCS_ATT_Product::has_subscriptions( $composite ) && WCS_ATT_Product::has_forced_subscription( $composite ) ) {
+				WCS_ATT_Product::set_subscription_scheme( $composite, WCS_ATT_Product::get_default_subscription_scheme( $composite ) );
+			}
+
+			if ( $product = $component_option->get_product() ) {
+				self::set_bundled_product_subscription_schemes( $product, $composite );
+			}
+
+			if ( $product = $component_option->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $product, $composite );
+			}
+
+			if ( $product = $component_option->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $product, $composite );
+			}
+
+			if ( $product = $component_option->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $product, $composite );
+			}
+
+			if ( $product = $component_option->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
+				self::set_bundled_product_subscription_schemes( $product, $composite );
+			}
+		}
+
+		return $component_option;
 	}
 }
 
