@@ -819,7 +819,7 @@ class WCS_ATT_Product {
 	public static function delete_reserved_meta( $product ) {
 		$reserved_meta_keys = array( 'has_forced_subscription', 'subscription_schemes', 'active_subscription_scheme_key', 'default_subscription_scheme_key' );
 		foreach ( $reserved_meta_keys as $reserved_meta_key ) {
-			$product->delete_meta_data( $reserved_meta_key );
+			$product->delete_meta_data( '_' . $reserved_meta_key );
 		}
 	}
 
