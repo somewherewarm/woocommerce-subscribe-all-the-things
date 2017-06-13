@@ -76,24 +76,28 @@ class WCS_ATT_Integrations {
 			 * Bundles.
 			 */
 
-			/*
-			 * When showing a bundle in a single-product page, always set the default scheme key on the object.
-			 * This is to ensure that the subscription scheme will be set on the displayed bundled item objects, too.
-			 */
-			add_action( 'woocommerce_before_single_product', array( __CLASS__, 'set_forced_subscription_bundle_scheme' ), 0 );
+			if ( class_exists( 'WC_Bundles' ) ) {
+				/*
+				 * When showing a bundle in a single-product page, always set the default scheme key on the object.
+				 * This is to ensure that the subscription scheme will be set on the displayed bundled item objects, too.
+				 */
+				add_action( 'woocommerce_before_single_product', array( __CLASS__, 'set_forced_subscription_bundle_scheme' ), 0 );
 
-			// Bundled products inherit the subscription schemes of their container object.
-			add_action( 'wcsatt_set_product_subscription_scheme', array( __CLASS__, 'set_product_bundle_scheme' ), 10, 2 );
+				// Bundled products inherit the subscription schemes of their container object.
+				add_action( 'wcsatt_set_product_subscription_scheme', array( __CLASS__, 'set_product_bundle_scheme' ), 10, 2 );
 
-			// When loading bundled items, always set the active bundle scheme on the bundled objects.
-			add_action( 'woocommerce_bundled_items', array( __CLASS__, 'set_bundled_items_scheme' ), 10, 2 );
+				// When loading bundled items, always set the active bundle scheme on the bundled objects.
+				add_action( 'woocommerce_bundled_items', array( __CLASS__, 'set_bundled_items_scheme' ), 10, 2 );
+			}
 
 			/*
 			 * Composites.
 			 */
 
-			// Products in component option class inherit the subscription schemes of their container object -- SLOW!
-			add_action( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
+			if ( class_exists( 'WC_Composite_Products' ) ) {
+				// Products in component option objects inherit the subscription schemes of their container object -- SLOW!
+				add_action( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
+			}
 		}
 	}
 
