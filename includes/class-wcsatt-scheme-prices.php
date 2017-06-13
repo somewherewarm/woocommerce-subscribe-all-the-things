@@ -183,8 +183,18 @@ class WCS_ATT_Scheme_Prices {
 					$scheme_price = WCS_ATT_Product::get_price( $product, $scheme->get_key(), 'edit' );
 
 					if ( $scheme_price < $base_scheme_price ) {
+
 						$base_scheme       = $scheme;
 						$base_scheme_price = $scheme_price;
+
+					} elseif ( $scheme_price === $base_scheme_price ) {
+
+						$scheme_discount = $scheme->get_discount();
+
+						if ( $scheme_discount && ( is_null( $base_scheme ) || $base_scheme->get_discount() < $scheme_discount ) ) {
+							$base_scheme       = $scheme;
+							$base_scheme_price = $scheme_price;
+						}
 					}
 				}
 			}
