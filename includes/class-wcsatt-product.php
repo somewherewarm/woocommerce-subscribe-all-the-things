@@ -738,7 +738,7 @@ class WCS_ATT_Product {
 			$scheme_set = true;
 		}
 
-		do_action( 'wcsatt_set_product_subscription_scheme', $key, $product );
+		do_action( 'wcsatt_set_product_subscription_scheme', $key, $active_scheme_key, $product );
 
 		return $scheme_set;
 	}

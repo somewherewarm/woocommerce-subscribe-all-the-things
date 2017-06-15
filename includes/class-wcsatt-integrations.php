@@ -87,6 +87,10 @@ class WCS_ATT_Integrations {
 			 */
 
 			if ( class_exists( 'WC_Composite_Products' ) ) {
+
+				// Ensure composites in cached component objects have up-to-date scheme data.
+				add_action( 'wcsatt_set_product_subscription_scheme', array( __CLASS__, 'set_composite_product_scheme' ), 10, 3 );
+
 				// Products in component option objects inherit the subscription schemes of their container object -- SLOW!
 				add_action( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
 			}
@@ -524,6 +528,27 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
+	 * Ensure composites in cached component objects have up-to-date scheme data.
+	 *
+	 * @param  string      $scheme_key
+	 * @param  string      $previous_scheme_key
+	 * @param  WC_Product  $product
+	 */
+	public static function set_composite_product_scheme( $scheme_key, $previous_scheme_key, $product ) {
+
+		if ( $product->is_type( 'composite' ) && $scheme_key !== $previous_scheme_key ) {
+
+			$components = $product->get_components();
+
+			if ( ! empty( $components ) ) {
+				foreach ( $components as $component ) {
+					WCS_ATT_Product::set_subscription_scheme( $component->get_composite(), WCS_ATT_Product::get_subscription_scheme( $product ) );
+				}
+			}
+		}
+	}
+
+	/**
 	 * Composited products inherit the subscription schemes of their container object.
 	 *
 	 * @param  WC_CP_Product         $component_option
@@ -534,8 +559,10 @@ class WCS_ATT_Integrations {
 
 		if ( $component_option ) {
 
-			if ( WCS_ATT_Product::has_subscriptions( $composite ) && WCS_ATT_Product::has_forced_subscription( $composite ) ) {
-				WCS_ATT_Product::set_subscription_scheme( $composite, WCS_ATT_Product::get_default_subscription_scheme( $composite ) );
+			// Set the default scheme when one-time purchases are disabled and no scheme is set on the object.
+			if ( WCS_ATT_Product::has_subscriptions( $composite ) && WCS_ATT_Product::has_forced_subscription( $composite ) && ! WCS_ATT_Product::get_subscription_scheme( $composite ) ) {
+				$base_scheme = WCS_ATT_Scheme_Prices::get_base_scheme( $composite );
+				// WCS_ATT_Product::set_subscription_scheme( $composite, $base_scheme );
 			}
 
 			if ( $product = $component_option->get_product() ) {
