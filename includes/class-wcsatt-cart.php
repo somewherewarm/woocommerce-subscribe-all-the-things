@@ -269,6 +269,27 @@ class WCS_ATT_Cart {
 
 				// Convert the cart item to a subscription, if needed.
 				self::apply_subscription_scheme( $cart_item );
+
+				// Keep a single scheme when resubscribing, renewing, or paying for a failed order.
+				if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
+
+					$schemes = array();
+
+					foreach ( self::get_subscription_schemes( $cart_item ) as $scheme_key => $scheme ) {
+						if ( $scheme_key === $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] ) {
+
+							if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
+								$scheme->set_pricing_mode( 'inherit' );
+								$scheme->set_discount( '' );
+							}
+
+							$schemes[ $scheme_key ] = $scheme;
+						}
+					}
+
+					WCS_ATT_Product::set_subscription_schemes( $cart_item[ 'data' ], $schemes );
+					WCS_ATT_Product::set_forced_subscription( $cart_item[ 'data' ], true );
+				}
 			}
 		}
 	}
