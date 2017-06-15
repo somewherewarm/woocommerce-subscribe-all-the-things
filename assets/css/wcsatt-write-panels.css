@@ -115,6 +115,10 @@
 	float: left;
 }
 
+#wcsatt_data .subscription_scheme_data p._satt_subscription_details span.wrap label {
+	clear:both;
+}
+
 #wcsatt_data .subscription_scheme_data label {
 	margin: 0 0 0 -138px;
 	width: 118px;
