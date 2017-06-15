@@ -337,8 +337,8 @@ class WCS_ATT_Integrations {
 			WCS_ATT_Product::set_subscription_scheme( $bundled_product, $container_scheme );
 		}
 
-		// Copy "Force Subscription" option.
-		WCS_ATT_Product::set_product_property( $bundled_product, 'has_forced_subscription', WCS_ATT_Product::has_forced_subscription( $container_product ) ? 'yes' : 'no' );
+		// Copy "Force Subscription" state.
+		WCS_ATT_Product::set_forced_subscription( $bundled_product, WCS_ATT_Product::has_forced_subscription( $container_product ) );
 	}
 
 	/**

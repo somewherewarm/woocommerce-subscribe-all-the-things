@@ -61,7 +61,7 @@ class WCS_ATT_Product {
 	}
 
 	/**
-	 * Determines if the product is only purchasable on a recurring basis.
+	 * Determines if the product is purchasable on a recurring basis only.
 	 *
 	 * @param  WC_Product  $product  Product object to check.
 	 * @return boolean               Result of check.
@@ -743,6 +743,16 @@ class WCS_ATT_Product {
 		return $scheme_set;
 	}
 
+	/**
+	 * Set the product as purchasable on a recurring basis only.
+	 *
+	 * @param  WC_Product  $product                 Product object to set.
+	 * @param  boolean     $is_forced_subscription  Value.
+	 */
+	public static function set_forced_subscription( $product, $is_forced_subscription ) {
+		self::set_product_property( $product, 'has_forced_subscription', $is_forced_subscription ? 'yes' : 'no' );
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Helpers
@@ -756,7 +766,7 @@ class WCS_ATT_Product {
 	 * @param  string      $property  Property name.
 	 * @return mixed
 	 */
-	public static function get_product_property( $product, $property ) {
+	private static function get_product_property( $product, $property ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
 			$value = $product->get_meta( '_' . $property, true );
@@ -775,7 +785,7 @@ class WCS_ATT_Product {
 	 * @param  string      $value    Property value.
 	 * @return mixed
 	 */
-	public static function set_product_property( $product, $name, $value ) {
+	private static function set_product_property( $product, $name, $value ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
 			$product->add_meta_data( '_' . $name, $value, true );

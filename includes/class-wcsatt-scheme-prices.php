@@ -283,12 +283,12 @@ class WCS_ATT_Scheme_Prices {
 			$variation_data_update_needed = true;
 		}
 
-		// Copy "Force Subscription" option.
+		// Copy "Force Subscription" state.
 		$product_has_forced_sub   = WCS_ATT_Product::has_forced_subscription( $product );
 		$variation_has_forced_sub = WCS_ATT_Product::has_forced_subscription( $variation );
 
 		if ( $product_has_forced_sub !== $variation_has_forced_sub ) {
-			WCS_ATT_Product::set_product_property( $variation, 'has_forced_subscription', WCS_ATT_Product::has_forced_subscription( $product ) ? 'yes' : 'no' );
+			WCS_ATT_Product::set_forced_subscription( $variation, WCS_ATT_Product::has_forced_subscription( $product ) );
 			$variation_data_update_needed = true;
 		}
 
