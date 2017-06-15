@@ -756,7 +756,7 @@ class WCS_ATT_Product {
 	 * @param  string      $property  Property name.
 	 * @return mixed
 	 */
-	private static function get_product_property( $product, $property ) {
+	public static function get_product_property( $product, $property ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
 			$value = $product->get_meta( '_' . $property, true );
@@ -775,7 +775,7 @@ class WCS_ATT_Product {
 	 * @param  string      $value    Property value.
 	 * @return mixed
 	 */
-	private static function set_product_property( $product, $name, $value ) {
+	public static function set_product_property( $product, $name, $value ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
 			$product->add_meta_data( '_' . $name, $value, true );

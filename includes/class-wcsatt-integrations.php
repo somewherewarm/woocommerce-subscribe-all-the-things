@@ -77,14 +77,6 @@ class WCS_ATT_Integrations {
 			 */
 
 			if ( class_exists( 'WC_Bundles' ) ) {
-				/*
-				 * When showing a bundle in a single-product page, always set the default scheme key on the object.
-				 * This is to ensure that the subscription scheme will be set on the displayed bundled item objects, too.
-				 */
-				add_action( 'woocommerce_before_single_product', array( __CLASS__, 'set_forced_subscription_bundle_scheme' ), 0 );
-
-				// Bundled products inherit the subscription schemes of their container object.
-				add_action( 'wcsatt_set_product_subscription_scheme', array( __CLASS__, 'set_product_bundle_scheme' ), 10, 2 );
 
 				// When loading bundled items, always set the active bundle scheme on the bundled objects.
 				add_action( 'woocommerce_bundled_items', array( __CLASS__, 'set_bundled_items_scheme' ), 10, 2 );
@@ -340,6 +332,9 @@ class WCS_ATT_Integrations {
 		if ( $container_scheme !== $bundled_product_scheme ) {
 			WCS_ATT_Product::set_subscription_scheme( $bundled_product, $container_scheme );
 		}
+
+		// Copy "Force Subscription" option.
+		WCS_ATT_Product::set_product_property( $bundled_product, 'has_forced_subscription', WCS_ATT_Product::has_forced_subscription( $container_product ) ? 'yes' : 'no' );
 	}
 
 	/**
@@ -473,38 +468,6 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * When a forced-subscription bundle is displayed, always set the default scheme key on the object.
-	 */
-	public static function set_forced_subscription_bundle_scheme() {
-
-		global $product;
-
-		if ( is_a( $product, 'WC_Product' ) && WCS_ATT_Product::has_subscriptions( $product ) && WCS_ATT_Product::has_forced_subscription( $product ) ) {
-			WCS_ATT_Product::set_subscription_scheme( $product, WCS_ATT_Product::get_default_subscription_scheme( $product ) );
-		}
-	}
-
-	/**
-	 * Bundled products inherit the subscription schemes of their container object.
-	 *
-	 * @param  string      $scheme_key
-	 * @param  WC_Product  $product
-	 */
-	public static function set_product_bundle_scheme( $scheme_key, $product ) {
-
-		if ( $product->is_type( 'bundle' ) ) {
-
-			$bundled_items = $product->get_bundled_items();
-
-			if ( ! empty( $bundled_items ) ) {
-				foreach ( $bundled_items as $bundled_item ) {
-					self::set_bundled_item_scheme( $bundled_item, $product );
-				}
-			}
-		}
-	}
-
-	/**
 	 * When loading bundled items, always set the active bundle scheme on the bundled objects.
 	 *
 	 * @param  array              $bundled_items
@@ -513,6 +476,12 @@ class WCS_ATT_Integrations {
 	public static function set_bundled_items_scheme( $bundled_items, $bundle ) {
 
 		if ( ! empty( $bundled_items ) && $bundle->is_synced() ) {
+
+			// Set the default scheme when one-time purchases are disabled, no scheme is set on the object, and only a single sub scheme exists.
+			if ( 1 === sizeof( WCS_ATT_Product::get_subscription_schemes( $bundle ) ) && WCS_ATT_Product::has_forced_subscription( $bundle ) && ! WCS_ATT_Product::get_subscription_scheme( $bundle ) ) {
+				WCS_ATT_Product::set_subscription_scheme( $bundle, WCS_ATT_Product::get_default_subscription_scheme( $bundle ) );
+			}
+
 			foreach ( $bundled_items as $bundled_item ) {
 				self::set_bundled_item_scheme( $bundled_item, $bundle );
 			}
