@@ -80,6 +80,9 @@ class WCS_ATT_Integrations {
 
 				// When loading bundled items, always set the active bundle scheme on the bundled objects.
 				add_action( 'woocommerce_bundled_items', array( __CLASS__, 'set_bundled_items_scheme' ), 10, 2 );
+
+				// Add scheme data to runtime price cache hashes.
+				add_filter( 'woocommerce_bundle_prices_hash', array( __CLASS__, 'bundle_prices_hash' ), 10, 2 );
 			}
 
 			/*
@@ -93,6 +96,9 @@ class WCS_ATT_Integrations {
 
 				// Products in component option objects inherit the subscription schemes of their container object -- SLOW!
 				add_action( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
+
+				// Add scheme data to runtime price cache hashes.
+				add_filter( 'woocommerce_composite_prices_hash', array( __CLASS__, 'composite_prices_hash' ), 10, 2 );
 			}
 		}
 	}
@@ -495,6 +501,22 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
+	 * Add scheme data to runtime price cache hashes.
+	 *
+	 * @param  array              $hash
+	 * @param  WC_Product_Bundle  $bundle
+	 * @return array
+	 */
+	public static function bundle_prices_hash( $hash, $bundle ) {
+
+		if ( $scheme = WCS_ATT_Product::get_subscription_scheme( $bundle ) ) {
+			$hash[ 'satt_scheme' ] = $scheme;
+		}
+
+		return $hash;
+	}
+
+	/**
 	 * Set the active bundle scheme on a bundled item.
 	 *
 	 * @param  WC_Bundled_Item    $bundled_item
@@ -587,6 +609,22 @@ class WCS_ATT_Integrations {
 		}
 
 		return $component_option;
+	}
+
+	/**
+	 * Add scheme data to runtime price cache hashes.
+	 *
+	 * @param  array                 $hash
+	 * @param  WC_Product_Composite  $composite
+	 * @return array
+	 */
+	public static function composite_prices_hash( $hash, $composite ) {
+
+		if ( $scheme = WCS_ATT_Product::get_subscription_scheme( $composite ) ) {
+			$hash[ 'satt_scheme' ] = $scheme;
+		}
+
+		return $hash;
 	}
 }
 
