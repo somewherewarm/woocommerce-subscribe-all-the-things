@@ -1,0 +1,14 @@
+{
+  "name": "prospress/woocommerce-subscribe-all-the-things",
+  "description": "The goal of this experimental extension is to provide subscription support for non-subscription product types, allowing you to offer any product in your store as a subscription product. Don't use for production.",
+  "homepage": "https://github.com/prospress/woocommerce-subscribe-all-the-things",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0",
+  "require": {
+    "composer/installers": "~1.0"
+  },
+  "require-dev": {
+  },
+  "scripts": {
+  }
+}
