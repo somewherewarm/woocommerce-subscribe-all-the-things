@@ -60,7 +60,7 @@ class WCS_ATT_Admin {
 	 * Include classes.
 	 */
 	public static function includes() {
-		require_once( 'meta-boxes/class-wcsatt-meta-box-product-data.php' );
+		require_once( 'meta-boxes/class-wcs-att-meta-box-product-data.php' );
 	}
 
 	/**
@@ -235,8 +235,8 @@ class WCS_ATT_Admin {
 		}
 
 		if ( $add_scripts ) {
-			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-write-panels' . $suffix . '.js', $writepanel_dependencies, WCS_ATT::VERSION );
-			wp_register_style( 'wcsatt_writepanel_css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-write-panels.css', array( 'woocommerce_admin_styles' ), WCS_ATT::VERSION );
+			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-write-panels' . $suffix . '.js', $writepanel_dependencies, WCS_ATT::VERSION );
+			wp_register_style( 'wcsatt_writepanel_css', WCS_ATT()->plugin_url() . '/assets/css/wcs-att-write-panels.css', array( 'woocommerce_admin_styles' ), WCS_ATT::VERSION );
 			wp_enqueue_style( 'wcsatt_writepanel_css' );
 		}
 

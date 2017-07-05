@@ -51,12 +51,12 @@ class WCS_ATT_Display {
 	 */
 	public static function frontend_scripts() {
 
-		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcsatt-frontend.css', false, WCS_ATT::VERSION, 'all' );
+		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcs-att-frontend.css', false, WCS_ATT::VERSION, 'all' );
 		wp_enqueue_style( 'wcsatt-css' );
 
 		if ( is_cart() ) {
 
-			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
+			wp_register_script( 'wcsatt-cart', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-cart.js', array( 'jquery', 'wc-country-select', 'wc-address-i18n' ), WCS_ATT::VERSION, true );
 			wp_enqueue_script( 'wcsatt-cart' );
 
 			$params = array(
@@ -69,7 +69,7 @@ class WCS_ATT_Display {
 		}
 
 		if ( is_product() ) {
-			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcsatt-single-add-to-cart.js', array( 'jquery' ), WCS_ATT::VERSION, true );
+			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-single-add-to-cart.js', array( 'jquery' ), WCS_ATT::VERSION, true );
 			wp_enqueue_script( 'wcsatt-single-product' );
 		}
 	}

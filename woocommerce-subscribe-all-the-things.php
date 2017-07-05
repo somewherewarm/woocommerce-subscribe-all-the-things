@@ -124,16 +124,16 @@ class WCS_ATT {
 	 */
 	public function includes() {
 
-		require_once( 'includes/class-wcsatt-core-compatibility.php' );
-		require_once( 'includes/class-wcsatt-integrations.php' );
-		require_once( 'includes/class-wcsatt-scheme.php' );
-		require_once( 'includes/class-wcsatt-schemes.php' );
-		require_once( 'includes/class-wcsatt-scheme-prices.php' );
-		require_once( 'includes/class-wcsatt-product.php' );
-		require_once( 'includes/class-wcsatt-cart.php' );
-		require_once( 'includes/class-wcsatt-display.php' );
-		require_once( 'includes/class-wcsatt-display-cart.php' );
-		require_once( 'includes/class-wcsatt-order.php' );
+		require_once( 'includes/class-wcs-att-core-compatibility.php' );
+		require_once( 'includes/class-wcs-att-integrations.php' );
+		require_once( 'includes/class-wcs-att-scheme.php' );
+		require_once( 'includes/class-wcs-att-schemes.php' );
+		require_once( 'includes/class-wcs-att-scheme-prices.php' );
+		require_once( 'includes/class-wcs-att-product.php' );
+		require_once( 'includes/class-wcs-att-cart.php' );
+		require_once( 'includes/class-wcs-att-display.php' );
+		require_once( 'includes/class-wcs-att-display-cart.php' );
+		require_once( 'includes/class-wcs-att-order.php' );
 
 		// Admin includes
 		if ( is_admin() ) {
@@ -148,7 +148,7 @@ class WCS_ATT {
 	 */
 	public function admin_includes() {
 
-		require_once( 'includes/admin/class-wcsatt-admin.php' );
+		require_once( 'includes/admin/class-wcs-att-admin.php' );
 	}
 
 	/**

@@ -93,10 +93,10 @@ class WCS_ATT_Unit_Tests_Bootstrap {
 		require_once( $this->wp_plugins_dir . '/woocommerce/tests/framework/helpers/class-wc-helper-shipping.php' );
 
 		// Helpers.
-		require_once( $this->tests_dir . '/framework/helpers/class-wcsatt-test-helpers-product.php' );
+		require_once( $this->tests_dir . '/framework/helpers/class-wcs-att-test-helpers-product.php' );
 
 		// Test cases.
-		require_once( $this->tests_dir . '/framework/class-wcsatt-test-case.php' );
+		require_once( $this->tests_dir . '/framework/class-wcs-att-test-case.php' );
 	}
 
 	/**
