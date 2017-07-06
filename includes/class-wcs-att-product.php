@@ -221,7 +221,7 @@ class WCS_ATT_Product {
 					$price_html = WC_Subscriptions_Product::get_price_string( $product, $args );
 
 					if ( ( $has_variable_price || sizeof( $schemes ) > 1 ) && false === strpos( $price_html, $html_from_text ) ) {
-						$price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), $html_from_text, $price_html );
+						$price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', 'woocommerce-subscribe-all-the-things' ), $html_from_text, $price_html );
 					}
 
 				} else {
@@ -253,9 +253,9 @@ class WCS_ATT_Product {
 					if ( $price_filter_exists && apply_filters( 'wcsatt_price_html_discount_format', $use_discount_html_format, $product ) ) {
 
 						$discount          = $base_scheme->get_discount();
-						$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37; off', WCS_ATT::TEXT_DOMAIN ), $discount ) . '</span><small>';
-						$suffix_price_html = sprintf( __( 'subscribe and get %1$s%2$s', WCS_ATT::TEXT_DOMAIN ), $has_variable_discount ? __( ' up to', WCS_ATT::TEXT_DOMAIN ) : '', $discount_html );
-						$suffix            = ' <small class="wcsatt-sub-options">' . sprintf( __( '&ndash; or %s', WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
+						$discount_html     = '</small> <span class="wcsatt-sub-discount">' . sprintf( __( '%s&#37; off', 'woocommerce-subscribe-all-the-things' ), $discount ) . '</span><small>';
+						$suffix_price_html = sprintf( __( 'subscribe and get %1$s%2$s', 'woocommerce-subscribe-all-the-things' ), $has_variable_discount ? __( ' up to', 'woocommerce-subscribe-all-the-things' ) : '', $discount_html );
+						$suffix            = ' <small class="wcsatt-sub-options">' . sprintf( __( '&ndash; or %s', 'woocommerce-subscribe-all-the-things' ), $suffix_price_html ) . '</small>';
 
 					} else {
 
@@ -280,21 +280,21 @@ class WCS_ATT_Product {
 						$base_scheme_price_html = WC_Subscriptions_Product::get_price_string( $product, $price_string_args );
 
 						if ( sizeof( $schemes ) > 1 ) {
-							$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: starting at', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">starting at </span>', 'subscriptions "starting at" price string', WCS_ATT::TEXT_DOMAIN ), str_replace( $html_from_text, '', $base_scheme_price_html ) );
+							$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: starting at', 'woocommerce-subscribe-all-the-things' ), _x( '<span class="from">starting at </span>', 'subscriptions "starting at" price string', 'woocommerce-subscribe-all-the-things' ), str_replace( $html_from_text, '', $base_scheme_price_html ) );
 						} elseif ( $has_variable_price ) {
-							$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', WCS_ATT::TEXT_DOMAIN ), _x( '<span class="from">from </span>', 'subscription "from" price string', WCS_ATT::TEXT_DOMAIN ), str_replace( $html_from_text, '', $base_scheme_price_html ) );
+							$suffix_price_html = sprintf( _x( '%1$s%2$s', 'Price range: from', 'woocommerce-subscribe-all-the-things' ), _x( '<span class="from">from </span>', 'subscription "from" price string', 'woocommerce-subscribe-all-the-things' ), str_replace( $html_from_text, '', $base_scheme_price_html ) );
 						} else {
 							$suffix_price_html = $base_scheme_price_html;
 						}
 
 						if ( WCS_ATT_Scheme_Prices::price_filter_exists( $schemes ) ) {
-							$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or %s', '&ndash; subscription plans %s', sizeof( $schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
+							$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; or %s', '&ndash; subscription plans %s', sizeof( $schemes ), 'woocommerce-subscribe-all-the-things' ), $suffix_price_html ) . '</small>';
 						} else {
-							$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription plan available', '&ndash; subscription plans available', sizeof( $schemes ), WCS_ATT::TEXT_DOMAIN ), $suffix_price_html ) . '</small>';
+							$suffix = ' <small class="wcsatt-sub-options">' . sprintf( _n( '&ndash; subscription plan available', '&ndash; subscription plans available', sizeof( $schemes ), 'woocommerce-subscribe-all-the-things' ), $suffix_price_html ) . '</small>';
 						}
 					}
 
-					$price_html = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', WCS_ATT::TEXT_DOMAIN ), $price_html, $suffix );
+					$price_html = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', 'woocommerce-subscribe-all-the-things' ), $price_html, $suffix );
 				}
 			}
 		}

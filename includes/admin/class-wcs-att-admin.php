@@ -99,7 +99,7 @@ class WCS_ATT_Admin {
 
 					?></div>
 					<p class="toolbar">
-						<button type="button" class="button add_subscription_scheme"><?php _e( 'Add Option', WCS_ATT::TEXT_DOMAIN ); ?></button>
+						<button type="button" class="button add_subscription_scheme"><?php _e( 'Add Option', 'woocommerce-subscribe-all-the-things' ); ?></button>
 					</p>
 				</div>
 			</td>
@@ -119,15 +119,15 @@ class WCS_ATT_Admin {
 
 		$spliced_array = array_splice( $settings, key( $misc_section_start ), 0, array(
 			array(
-				'name' => __( 'Subscribe to Cart', WCS_ATT::TEXT_DOMAIN ),
+				'name' => __( 'Subscribe to Cart', 'woocommerce-subscribe-all-the-things' ),
 				'type' => 'title',
 				'desc' => '',
 				'id'   => 'wcsatt_subscribe_to_cart_options',
 			),
 
 			array(
-				'name' => __( 'Cart Subscription Options', WCS_ATT::TEXT_DOMAIN ),
-				'desc' => __( 'Options for purchasing cart contents on a recurring basis.', WCS_ATT::TEXT_DOMAIN ),
+				'name' => __( 'Cart Subscription Options', 'woocommerce-subscribe-all-the-things' ),
+				'desc' => __( 'Options for purchasing cart contents on a recurring basis.', 'woocommerce-subscribe-all-the-things' ),
 				'id'   => 'wcsatt_subscribe_to_cart_schemes',
 				'type' => 'subscription_schemes',
 			),
