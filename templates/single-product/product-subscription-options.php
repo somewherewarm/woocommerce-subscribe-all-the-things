@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		echo $prompt;
 	} else {
 		?><h3><?php
-			_e( 'Choose a subscription plan:', WCS_ATT::TEXT_DOMAIN );
+			_e( 'Choose a subscription plan:', 'woocommerce-subscribe-all-the-things' );
 		?></h3><?php
 	}
 

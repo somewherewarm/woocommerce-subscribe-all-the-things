@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-<h2><?php _e( 'Cart Subscription', WCS_ATT::TEXT_DOMAIN ); ?></h2>
-<p><?php _e( 'Interested in subscribing to these items?', WCS_ATT::TEXT_DOMAIN ); ?></p>
+<h2><?php _e( 'Cart Subscription', 'woocommerce-subscribe-all-the-things' ); ?></h2>
+<p><?php _e( 'Interested in subscribing to these items?', 'woocommerce-subscribe-all-the-things' ); ?></p>
 <ul class="wcsatt-options-cart">
 	<?php
 		foreach ( $options as $option_id => $option ) {

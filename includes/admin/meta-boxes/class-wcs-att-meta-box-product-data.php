@@ -56,7 +56,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 	public static function satt_product_data_tab( $tabs ) {
 
 		$tabs[ 'satt' ] = array(
-			'label'  => __( 'Subscriptions', WCS_ATT::TEXT_DOMAIN ),
+			'label'  => __( 'Subscriptions', 'woocommerce-subscribe-all-the-things' ),
 			'target' => 'wcsatt_data',
 			'class'  => array( 'cart_subscription_options', 'cart_subscriptions_tab', 'show_if_simple', 'show_if_variable', 'show_if_bundle', 'hide_if_subscription', 'hide_if_variable-subscription' )
 		);
@@ -83,24 +83,24 @@ class WCS_ATT_Meta_Box_Product_Data {
 			<div class="options_group"><?php
 
 				// Subscription Status.
-				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true, 'description' => __( 'Check this option to prevent one-time purchases of this product. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ) ) );
+				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', 'woocommerce-subscribe-all-the-things' ), 'desc_tip' => true, 'description' => __( 'Check this option to prevent one-time purchases of this product. In effect when at least one Subscription Option has been added below.', 'woocommerce-subscribe-all-the-things' ) ) );
 
 				// Default Status.
-				woocommerce_wp_select( array( 'id' => '_wcsatt_default_status', 'wrapper_class'=> 'wcsatt_default_status', 'label' => __( 'Default to', WCS_ATT::TEXT_DOMAIN ), 'description' => '', 'options' => array(
-					'one-time'     => __( 'One-time purchase', WCS_ATT::TEXT_DOMAIN ),
-					'subscription' => __( 'Subscription', WCS_ATT::TEXT_DOMAIN ),
+				woocommerce_wp_select( array( 'id' => '_wcsatt_default_status', 'wrapper_class'=> 'wcsatt_default_status', 'label' => __( 'Default to', 'woocommerce-subscribe-all-the-things' ), 'description' => '', 'options' => array(
+					'one-time'     => __( 'One-time purchase', 'woocommerce-subscribe-all-the-things' ),
+					'subscription' => __( 'Subscription', 'woocommerce-subscribe-all-the-things' ),
 				) ) );
 
 				// Subscription Prompt.
-				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', WCS_ATT::TEXT_DOMAIN ), 'description' => __( 'Custom html/text to display before the available Subscription Options. In effect when at least one Subscription Option has been added below.', WCS_ATT::TEXT_DOMAIN ), 'desc_tip' => true ) );
+				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', 'woocommerce-subscribe-all-the-things' ), 'description' => __( 'Custom html/text to display before the available Subscription Options. In effect when at least one Subscription Option has been added below.', 'woocommerce-subscribe-all-the-things' ), 'desc_tip' => true ) );
 
 			?></div>
 
 			<p class="form-field">
 				<label>
 					<?php
-						echo __( 'Subscription Options', WCS_ATT::TEXT_DOMAIN );
-						echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Add one or more subscription options for this product.', WCS_ATT::TEXT_DOMAIN ) );
+						echo __( 'Subscription Options', 'woocommerce-subscribe-all-the-things' );
+						echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Add one or more subscription options for this product.', 'woocommerce-subscribe-all-the-things' ) );
 			?></label></p>
 			<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
@@ -117,7 +117,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 			?></div>
 
 			<p class="toolbar">
-				<button type="button" class="button button-primary add_subscription_scheme"><?php _e( 'Add Option', WCS_ATT::TEXT_DOMAIN ); ?></button>
+				<button type="button" class="button button-primary add_subscription_scheme"><?php _e( 'Add Option', 'woocommerce-subscribe-all-the-things' ); ?></button>
 			</p>
 		</div><?php
 	}
@@ -164,7 +164,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 
 		// Subscription Price, Interval and Period.
 		?><p class="form-field _satt_subscription_details">
-			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', WCS_ATT::TEXT_DOMAIN ); ?></label>
+			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', 'woocommerce-subscribe-all-the-things' ); ?></label>
 			<span class="wrap">
 				<label for="_satt_subscription_period_interval" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
 				<select id="_satt_subscription_period_interval" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
@@ -179,18 +179,18 @@ class WCS_ATT_Meta_Box_Product_Data {
 				<?php } ?>
 				</select>
 			</span>
-			<?php echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Choose the subscription billing interval and period.', WCS_ATT::TEXT_DOMAIN ) ); ?>
+			<?php echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Choose the subscription billing interval and period.', 'woocommerce-subscribe-all-the-things' ) ); ?>
 		</p><?php
 
 		// Subscription Length.
 		woocommerce_wp_select( array(
 			'id'          => '_satt_subscription_length',
 			'class'       => 'wc_input_subscription_length',
-			'label'       => __( 'Length', WCS_ATT::TEXT_DOMAIN ),
+			'label'       => __( 'Length', 'woocommerce-subscribe-all-the-things' ),
 			'value'       => $subscription_length,
 			'options'     => wcs_get_subscription_ranges( $subscription_period ),
 			'name'        => 'wcsatt_schemes[' . $index . '][subscription_length]',
-			'description' => __( 'Choose the subscription billing length.', WCS_ATT::TEXT_DOMAIN ),
+			'description' => __( 'Choose the subscription billing length.', 'woocommerce-subscribe-all-the-things' ),
 			'desc_tip'    => true
 			)
 		);
@@ -224,11 +224,11 @@ class WCS_ATT_Meta_Box_Product_Data {
 			woocommerce_wp_select( array(
 				'id'      => '_subscription_pricing_method_input',
 				'class'   => 'subscription_pricing_method_input',
-				'label'   => __( 'Price', WCS_ATT::TEXT_DOMAIN ),
+				'label'   => __( 'Price', 'woocommerce-subscribe-all-the-things' ),
 				'value'   => $subscription_pricing_method,
 				'options' => array(
-						'inherit'  => __( 'Inherit from product', WCS_ATT::TEXT_DOMAIN ),
-						'override' => __( 'Override product', WCS_ATT::TEXT_DOMAIN ),
+						'inherit'  => __( 'Inherit from product', 'woocommerce-subscribe-all-the-things' ),
+						'override' => __( 'Override product', 'woocommerce-subscribe-all-the-things' ),
 					),
 				'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method]'
 				)
@@ -268,8 +268,8 @@ class WCS_ATT_Meta_Box_Product_Data {
 					'value'         => $subscription_discount,
 					'wrapper_class' => 'subscription_price_discount',
 					'class'         => 'short',
-					'label'         => __( 'Discount %', WCS_ATT::TEXT_DOMAIN ),
-					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', WCS_ATT::TEXT_DOMAIN ),
+					'label'         => __( 'Discount %', 'woocommerce-subscribe-all-the-things' ),
+					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', 'woocommerce-subscribe-all-the-things' ),
 					'desc_tip'      => true,
 					'data_type'     => 'decimal'
 				) );
@@ -282,11 +282,11 @@ class WCS_ATT_Meta_Box_Product_Data {
 			woocommerce_wp_select( array(
 				'id'      => '_subscription_pricing_method_input_variable',
 				'class'   => 'subscription_pricing_method_input',
-				'label'   => __( 'Price', WCS_ATT::TEXT_DOMAIN ),
+				'label'   => __( 'Price', 'woocommerce-subscribe-all-the-things' ),
 				'value'   => $subscription_pricing_method,
 				'options' => array(
-						'inherit'  => __( 'Inherit from chosen variation', WCS_ATT::TEXT_DOMAIN ),
-						'override' => __( 'Override all variations', WCS_ATT::TEXT_DOMAIN ),
+						'inherit'  => __( 'Inherit from chosen variation', 'woocommerce-subscribe-all-the-things' ),
+						'override' => __( 'Override all variations', 'woocommerce-subscribe-all-the-things' ),
 					),
 				'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method_variable]'
 				)
@@ -326,8 +326,8 @@ class WCS_ATT_Meta_Box_Product_Data {
 					'value'         => $subscription_discount,
 					'wrapper_class' => 'subscription_price_discount',
 					'class'         => 'short',
-					'label'         => __( 'Discount %', WCS_ATT::TEXT_DOMAIN ),
-					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the chosen variation.', WCS_ATT::TEXT_DOMAIN ),
+					'label'         => __( 'Discount %', 'woocommerce-subscribe-all-the-things' ),
+					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the chosen variation.', 'woocommerce-subscribe-all-the-things' ),
 					'desc_tip'      => true,
 					'data_type'     => 'decimal'
 				) );
@@ -399,7 +399,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 
 							if ( $discount < 0 || $discount > 100 ) {
 
-								WC_Admin_Meta_Boxes::add_error( __( 'Please enter positive subscription discount values, between 0-100.', WCS_ATT::TEXT_DOMAIN ) );
+								WC_Admin_Meta_Boxes::add_error( __( 'Please enter positive subscription discount values, between 0-100.', 'woocommerce-subscribe-all-the-things' ) );
 								$posted_scheme[ 'subscription_discount' ] = '';
 
 							} else {
