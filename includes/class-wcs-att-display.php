@@ -178,7 +178,7 @@ class WCS_ATT_Display {
 
 			ob_start();
 
-			wc_get_template( 'single-product/satt-product-options.php', array(
+			wc_get_template( 'single-product/product-subscription-options.php', array(
 				'product'        => $product,
 				'product_id'     => $product_id,
 				'options'        => $options,

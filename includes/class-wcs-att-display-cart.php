@@ -133,7 +133,7 @@ class WCS_ATT_Display_Cart {
 
 		$classes = $price_filter_exists ? array( 'overrides_exist' ) : array();
 
-		wc_get_template( 'cart/satt-cart-item-options.php', array(
+		wc_get_template( 'cart/cart-item-subscription-options.php', array(
 			'options'       => $options,
 			'cart_item_key' => $cart_item_key,
 			'classes'       => implode( ' ', $classes ),
@@ -203,7 +203,7 @@ class WCS_ATT_Display_Cart {
 				);
 			}
 
-			wc_get_template( 'cart/satt-cart-options.php', array(
+			wc_get_template( 'cart/cart-subscription-options.php', array(
 				'options' => $options,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
 		}
