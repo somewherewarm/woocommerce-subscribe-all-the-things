@@ -333,7 +333,7 @@ class WCS_ATT_Cart {
 			$scheme_key_to_apply = $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ];
 
 			if ( null === $scheme_key_to_apply ) {
-				if ( WCS_ATT_Product::has_subscriptions( $cart_item[ 'data' ] ) ) {
+				if ( WCS_ATT_Product::has_subscription_schemes( $cart_item[ 'data' ] ) ) {
 					$scheme_key_to_apply = WCS_ATT_Product::get_default_subscription_scheme( $cart_item[ 'data' ] );
 				}
 			}

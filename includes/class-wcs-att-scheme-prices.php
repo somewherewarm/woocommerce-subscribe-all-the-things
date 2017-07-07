@@ -246,7 +246,7 @@ class WCS_ATT_Scheme_Prices {
 	 */
 	public static function filter_get_price_html( $price_html, $product ) {
 
-		if ( WCS_ATT_Product::has_subscriptions( $product ) ) {
+		if ( WCS_ATT_Product::has_subscription_schemes( $product ) ) {
 			$price_html = WCS_ATT_Product::get_price_html( $product, '', array( 'price' => $price_html ) );
 		}
 
