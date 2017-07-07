@@ -56,7 +56,7 @@ class WCS_ATT_Product {
 	 * @param  WC_Product  $product  Product object to check.
 	 * @return boolean               Result of check.
 	 */
-	public static function has_subscriptions( $product ) {
+	public static function has_subscription_schemes( $product ) {
 		return sizeof( self::get_subscription_schemes( $product ) ) > 0;
 	}
 
@@ -68,7 +68,7 @@ class WCS_ATT_Product {
 	 */
 	public static function has_forced_subscription( $product ) {
 
-		if ( '' === ( $forced = self::get_product_property( $product, 'has_forced_subscription' ) ) && self::has_subscriptions( $product ) ) {
+		if ( '' === ( $forced = self::get_product_property( $product, 'has_forced_subscription' ) ) && self::has_subscription_schemes( $product ) ) {
 
 			$forced = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_force_subscription', true );
 
@@ -641,7 +641,7 @@ class WCS_ATT_Product {
 			$default_scheme     = null;
 			$default_scheme_key = false;
 
-			if ( self::has_subscriptions( $product ) ) {
+			if ( self::has_subscription_schemes( $product ) ) {
 
 				$schemes = self::get_subscription_schemes( $product );
 

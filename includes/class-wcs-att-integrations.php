@@ -582,7 +582,7 @@ class WCS_ATT_Integrations {
 		if ( $component_option ) {
 
 			// Set the default scheme when one-time purchases are disabled and no scheme is set on the object.
-			if ( WCS_ATT_Product::has_subscriptions( $composite ) && WCS_ATT_Product::has_forced_subscription( $composite ) && ! WCS_ATT_Product::get_subscription_scheme( $composite ) ) {
+			if ( WCS_ATT_Product::has_subscription_schemes( $composite ) && WCS_ATT_Product::has_forced_subscription( $composite ) && ! WCS_ATT_Product::get_subscription_scheme( $composite ) ) {
 				$base_scheme = WCS_ATT_Scheme_Prices::get_base_scheme( $composite );
 				// WCS_ATT_Product::set_subscription_scheme( $composite, $base_scheme );
 			}
