@@ -20,7 +20,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WCS_ATT_Cart {
 
+	/**
+	 * Flag to ensure hooks can be added only once.
+	 * @var bool
+	 */
+	private static $added_hooks = false;
+
+	/**
+	 * Initialize.
+	 */
 	public static function init() {
+		self::add_hooks();
+	}
+
+	/**
+	 * Hook-in.
+	 */
+	private static function add_hooks() {
+
+		if ( self::$added_hooks ) {
+			return;
+		}
+
+		self::$added_hooks = true;
 
 		// Add scheme data to cart items that can be pruchased on a recurring basis.
 		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 10, 3 );
@@ -48,7 +70,7 @@ class WCS_ATT_Cart {
 	*/
 
 	/**
-	 * Returns all subscription schemes associated with a cart item - @see 'WCS_ATT_Product::get_subscription_schemes'.
+	 * Returns all subscription schemes associated with a cart item - @see 'WCS_ATT_Product_Schemes::get_subscription_schemes'.
 	 *
 	 * @since  2.0.0
 	 *
@@ -57,7 +79,7 @@ class WCS_ATT_Cart {
 	 * @return array
 	 */
 	public static function get_subscription_schemes( $cart_item, $context = 'any' ) {
-		return apply_filters( 'wcsatt_cart_item_subscription_schemes', WCS_ATT_Product::get_subscription_schemes( $cart_item[ 'data' ], $context ), $cart_item, $context );
+		return apply_filters( 'wcsatt_cart_item_subscription_schemes', WCS_ATT_Product_Schemes::get_subscription_schemes( $cart_item[ 'data' ], $context ), $cart_item, $context );
 	}
 
 	/**
@@ -111,7 +133,7 @@ class WCS_ATT_Cart {
 			}
 
 			// Has subscription schemes defined at product level?
-			if ( $product_level_schemes = WCS_ATT_Product::get_subscription_schemes( $cart_item[ 'data' ], 'product' ) ) {
+			if ( $product_level_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $cart_item[ 'data' ], 'product' ) ) {
 				return false;
 			}
 
@@ -149,7 +171,7 @@ class WCS_ATT_Cart {
 	}
 
 	/**
-	 * Equivalent of 'WC_Cart::get_product_price' that utilizes 'WCS_ATT_Product::get_price' instead of 'WC_Product::get_price'.
+	 * Equivalent of 'WC_Cart::get_product_price' that utilizes 'WCS_ATT_Product_Prices::get_price' instead of 'WC_Product::get_price'.
 	 *
 	 * @since  2.0.0
 	 *
@@ -162,9 +184,9 @@ class WCS_ATT_Cart {
 		$product = $cart_item[ 'data' ];
 
 		if ( 'excl' === get_option( 'woocommerce_tax_display_cart' ) ) {
-			$product_price = WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product::get_price( $product, $scheme_key ) ) );
+			$product_price = WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 		} else {
-			$product_price = WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product::get_price( $product, $scheme_key ) ) );
+			$product_price = WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 		}
 
 		return apply_filters( 'wcsatt_cart_product_price', wc_price( $product_price ), $cart_item );
@@ -222,7 +244,7 @@ class WCS_ATT_Cart {
 
 	/**
 	 * Applies a saved subscription key to a cart item.
-	 * @see 'WCS_ATT_Product::set_subscription_scheme'.
+	 * @see 'WCS_ATT_Product_Schemes::set_subscription_scheme'.
 	 *
 	 * @since  2.0.0
 	 *
@@ -234,7 +256,7 @@ class WCS_ATT_Cart {
 		if ( self::is_supported_product_type( $cart_item ) ) {
 			$scheme_key = self::get_subscription_scheme( $cart_item );
 			if ( null !== $scheme_key ) {
-				WCS_ATT_Product::set_subscription_scheme( $cart_item[ 'data' ], $scheme_key );
+				WCS_ATT_Product_Schemes::set_subscription_scheme( $cart_item[ 'data' ], $scheme_key );
 			}
 		}
 
@@ -261,7 +283,7 @@ class WCS_ATT_Cart {
 
 				// If subscription schemes are available at cart-level, set them on the product object.
 				if ( ! empty( $cart_level_schemes ) ) {
-					WCS_ATT_Product::set_subscription_schemes( $cart_item[ 'data' ], $cart_level_schemes );
+					WCS_ATT_Product_Schemes::set_subscription_schemes( $cart_item[ 'data' ], $cart_level_schemes );
 				}
 
 				// Initialize subscription scheme data.
@@ -287,8 +309,8 @@ class WCS_ATT_Cart {
 						}
 					}
 
-					WCS_ATT_Product::set_subscription_schemes( $cart_item[ 'data' ], $schemes );
-					WCS_ATT_Product::set_forced_subscription( $cart_item[ 'data' ], true );
+					WCS_ATT_Product_Schemes::set_subscription_schemes( $cart_item[ 'data' ], $schemes );
+					WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $cart_item[ 'data' ], true );
 				}
 			}
 		}
@@ -333,8 +355,8 @@ class WCS_ATT_Cart {
 			$scheme_key_to_apply = $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ];
 
 			if ( null === $scheme_key_to_apply ) {
-				if ( WCS_ATT_Product::has_subscription_schemes( $cart_item[ 'data' ] ) ) {
-					$scheme_key_to_apply = WCS_ATT_Product::get_default_subscription_scheme( $cart_item[ 'data' ] );
+				if ( WCS_ATT_Product_Schemes::has_subscription_schemes( $cart_item[ 'data' ] ) ) {
+					$scheme_key_to_apply = WCS_ATT_Product_Schemes::get_default_subscription_scheme( $cart_item[ 'data' ] );
 				}
 			}
 		}
@@ -476,20 +498,20 @@ class WCS_ATT_Cart {
 	 * @return string
 	 */
 	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product::get_{regular_/sale_}price()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product_Price::get_{regular_/sale_}price()' );
 
 		$prices = array();
 
 		if ( empty( $active_subscription_scheme ) ) {
-			$active_subscription_scheme_key = WCS_ATT_Product::get_subscription_scheme( self::get_subscription_scheme( $cart_item ) );
+			$active_subscription_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( self::get_subscription_scheme( $cart_item ) );
 		} else {
 			$active_subscription_scheme_key = $active_subscription_scheme->get_key();
 		}
 
 		$prices = array(
-			'regular_price' => WCS_ATT_Product::get_regular_price( $product, $active_subscription_scheme_key ),
-			'sale_price'    => WCS_ATT_Product::get_sale_price( $product, $active_subscription_scheme_key ),
-			'price'         => WCS_ATT_Product::get_price( $product, $active_subscription_scheme_key )
+			'regular_price' => WCS_ATT_Product_Prices::get_regular_price( $product, $active_subscription_scheme_key ),
+			'sale_price'    => WCS_ATT_Product_Prices::get_sale_price( $product, $active_subscription_scheme_key ),
+			'price'         => WCS_ATT_Product_Prices::get_price( $product, $active_subscription_scheme_key )
 		);
 
 		return $prices;
