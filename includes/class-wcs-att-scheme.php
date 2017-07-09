@@ -207,6 +207,65 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		return 'override' === $this->get_pricing_mode() ? $this->data[ 'sale_price' ] : null;
 	}
 
+	/**
+	 * Returns modified prices based on subscription scheme settings.
+	 *
+	 * @param  array  $raw_prices
+	 * @return string
+	 */
+	public function get_prices( $raw_prices ) {
+
+		$prices = $raw_prices;
+
+		if ( 'override' === $this->get_pricing_mode() ) {
+
+			$prices[ 'regular_price' ] = $this->get_regular_price();
+			$prices[ 'sale_price' ]    = $this->get_sale_price();
+
+			$prices[ 'price' ] = '' !== $prices[ 'sale_price' ] && $prices[ 'sale_price' ] < $prices[ 'regular_price' ] ? $prices[ 'sale_price' ] : $prices[ 'regular_price' ];
+
+		} elseif ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 && $raw_prices[ 'price' ] > 0 ) {
+
+			$prices[ 'regular_price' ] = empty( $prices[ 'regular_price' ] ) ? $prices[ 'price' ] : $prices[ 'regular_price' ];
+			$prices[ 'price' ]         = $this->get_discounted_price( $raw_prices );
+
+			if ( $prices[ 'price' ] < $prices[ 'regular_price' ] ) {
+				$prices[ 'sale_price' ] = $prices[ 'price' ] ;
+			}
+		}
+
+		return apply_filters( 'wcsatt_subscription_scheme_prices', $prices, $this );
+	}
+
+	/**
+	 * Get price after discount.
+	 *
+	 * @param  array  $raw_prices
+	 * @param  string $discount
+	 * @return mixed
+	 */
+	protected function get_discounted_price( $raw_prices ) {
+
+		$price    = $raw_prices[ 'price' ];
+		$discount = $this->get_discount();
+
+		if ( $price === '' ) {
+			return $price;
+		}
+
+		if ( apply_filters( 'wcsatt_discount_from_regular', false ) ) {
+			$regular_price = empty( $raw_prices[ 'regular_price' ] ) ? $raw_prices[ 'price' ] : $raw_prices[ 'regular_price' ];
+		} else {
+			$regular_price = $price;
+		}
+
+		if ( ! empty( $discount ) ) {
+			$price = empty( $regular_price ) ? $regular_price : round( ( double ) $regular_price * ( 100 - $discount ) / 100, wc_get_price_decimals() );
+		}
+
+		return $price;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Other Getters.
