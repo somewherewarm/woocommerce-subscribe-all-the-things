@@ -20,7 +20,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WCS_ATT_Order {
 
+	/**
+	 * Flag to ensure hooks can be added only once.
+	 * @var bool
+	 */
+	private static $added_hooks = false;
+
+	/**
+	 * Initialization.
+	 */
 	public static function init() {
+		self::add_hooks();
+	}
+
+	/**
+	 * Hook-in.
+	 */
+	private static function add_hooks() {
+
+		if ( self::$added_hooks ) {
+			return;
+		}
+
+		self::$added_hooks = true;
 
 		// Restore subscription data when creating a cart item using an order item as reference.
 		add_filter( 'woocommerce_order_again_cart_item_data', array( __CLASS__, 'restore_cart_item_from_order_item' ), 10, 3 );
@@ -108,7 +130,7 @@ class WCS_ATT_Order {
 	 */
 	public static function restore_product_from_order_item( $product, $order_item ) {
 		if ( null !== ( $scheme_key = self::get_subscription_scheme( $order_item ) ) ) {
-			WCS_ATT_Product::set_subscription_scheme( $product, $scheme_key );
+			WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key );
 		}
 		return $product;
 	}

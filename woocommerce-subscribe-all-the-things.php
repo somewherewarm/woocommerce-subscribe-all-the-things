@@ -127,15 +127,15 @@ class WCS_ATT {
 		require_once( 'includes/class-wcs-att-core-compatibility.php' );
 		require_once( 'includes/class-wcs-att-integrations.php' );
 		require_once( 'includes/class-wcs-att-scheme.php' );
-		require_once( 'includes/class-wcs-att-schemes.php' );
-		require_once( 'includes/class-wcs-att-scheme-prices.php' );
 		require_once( 'includes/class-wcs-att-product.php' );
 		require_once( 'includes/class-wcs-att-cart.php' );
 		require_once( 'includes/class-wcs-att-display.php' );
-		require_once( 'includes/class-wcs-att-display-cart.php' );
 		require_once( 'includes/class-wcs-att-order.php' );
 
-		// Admin includes
+		// Legacy stuff.
+		require_once( 'includes/legacy/class-wcs-att-schemes.php' );
+
+		// Admin includes.
 		if ( is_admin() ) {
 			$this->admin_includes();
 		}
