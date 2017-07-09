@@ -21,9 +21,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Display_Cart {
 
 	/**
-	 * Hook-in point.
+	 * Flag to ensure hooks can be added only once.
+	 * @var bool
+	 */
+	private static $added_hooks = false;
+
+	/**
+	 * Initialize.
 	 */
 	public static function init() {
+		self::add_hooks();
+	}
+
+	/**
+	 * Hook-in.
+	 */
+	private static function add_hooks() {
+
+		if ( self::$added_hooks ) {
+			return;
+		}
+
+		self::$added_hooks = true;
 
 		// Display a "Subscribe to Cart" section in the cart.
 		add_action( 'woocommerce_before_cart_totals', array( __CLASS__, 'show_subscribe_to_cart_prompt' ) );
@@ -63,9 +82,9 @@ class WCS_ATT_Display_Cart {
 			return $price;
 		}
 
-		$active_subscription_scheme_key = WCS_ATT_Product::get_subscription_scheme( $product );
-		$force_subscription             = WCS_ATT_Product::has_forced_subscription( $product );
-		$price_filter_exists            = WCS_ATT_Scheme_Prices::price_filter_exists( $subscription_schemes );
+		$active_subscription_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
+		$force_subscription             = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
+		$price_filter_exists            = WCS_ATT_Product_Schemes::price_filter_exists( $subscription_schemes );
 		$options                        = array();
 
 		// Non-recurring (one-time) option.
@@ -100,7 +119,7 @@ class WCS_ATT_Display_Cart {
 				if ( $active_subscription_scheme_key === $subscription_scheme_key ) {
 					$description = $price;
 				} else {
-					$description = WCS_ATT_Product::get_price_string( $product, array(
+					$description = WCS_ATT_Product_Prices::get_price_string( $product, array(
 						'scheme_key' => $subscription_scheme_key,
 						'price'      => WCS_ATT_Cart::get_product_price( $cart_item, $subscription_scheme_key )
 					) );
@@ -108,7 +127,7 @@ class WCS_ATT_Display_Cart {
 
 			} else {
 
-				$description = WCS_ATT_Product::get_price_string( $product, array(
+				$description = WCS_ATT_Product_Prices::get_price_string( $product, array(
 					'scheme_key'         => $subscription_scheme_key,
 					'subscription_price' => false,
 					'price'              => ''
@@ -186,16 +205,16 @@ class WCS_ATT_Display_Cart {
 			$dummy_product = new WC_Product( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? 0 : 1 );
 
 			// Set the cart-level schemes on it.
-			WCS_ATT_Product::set_subscription_schemes( $dummy_product, $subscription_schemes );
+			WCS_ATT_Product_Schemes::set_subscription_schemes( $dummy_product, $subscription_schemes );
 
 			// Generate option descriptions.
 			foreach ( $subscription_schemes as $subscription_scheme ) {
 
 				$subscription_scheme_key = $subscription_scheme->get_key();
 
-				WCS_ATT_Product::set_subscription_scheme( $dummy_product, $subscription_scheme_key );
+				WCS_ATT_Product_Schemes::set_subscription_scheme( $dummy_product, $subscription_scheme_key );
 
-				$sub_suffix = WCS_ATT_Product::get_price_string( $dummy_product, array( 'price' => '', 'subscription_price' => false ) );
+				$sub_suffix = WCS_ATT_Product_Prices::get_price_string( $dummy_product, array( 'price' => '', 'subscription_price' => false ) );
 
 				$options[ $subscription_scheme_key ] = array(
 					'description' => sprintf( __( 'Yes, %s.', 'cart subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_suffix ),

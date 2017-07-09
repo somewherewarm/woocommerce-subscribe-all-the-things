@@ -87,7 +87,6 @@ class WCS_ATT {
 		add_action( 'init', array( $this, 'init_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'activate' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_meta_links' ), 10, 4 );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
 
 	public function plugin_url() {
@@ -127,15 +126,15 @@ class WCS_ATT {
 		require_once( 'includes/class-wcs-att-core-compatibility.php' );
 		require_once( 'includes/class-wcs-att-integrations.php' );
 		require_once( 'includes/class-wcs-att-scheme.php' );
-		require_once( 'includes/class-wcs-att-schemes.php' );
-		require_once( 'includes/class-wcs-att-scheme-prices.php' );
 		require_once( 'includes/class-wcs-att-product.php' );
 		require_once( 'includes/class-wcs-att-cart.php' );
 		require_once( 'includes/class-wcs-att-display.php' );
-		require_once( 'includes/class-wcs-att-display-cart.php' );
 		require_once( 'includes/class-wcs-att-order.php' );
 
-		// Admin includes
+		// Legacy stuff.
+		require_once( 'includes/legacy/class-wcs-att-schemes.php' );
+
+		// Admin includes.
 		if ( is_admin() ) {
 			$this->admin_includes();
 		}
@@ -197,16 +196,6 @@ class WCS_ATT {
 		} elseif ( version_compare( $version, self::VERSION, '<' ) ) {
 			update_option( 'wcsatt_version', self::VERSION );
 		}
-	}
-
-	/**
-	 * Deactivate extension.
-	 *
-	 * @return void
-	 */
-	public function deactivate() {
-
-		delete_option( 'wcsatt_version' );
 	}
 
 	/**

@@ -13,25 +13,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Loading and filtering of subscription scheme settings.
+ * Deprecated subscription schemes API.
  *
  * @class    WCS_ATT_Schemes
  * @version  2.0.0
  */
 class WCS_ATT_Schemes {
 
+	/**
+	 * Initialize.
+	 */
+	public static function init() {
+		require_once( 'class-wcs-att-scheme-prices.php' );
+	}
+
 	/*
 	|--------------------------------------------------------------------------
-	| Helpers (legacy)
+	| Deprecated
 	|--------------------------------------------------------------------------
 	*/
 
 	/**
-	 * Returns a subscription scheme by id. Legacy.
+	 * Returns a subscription scheme by id (key since v2.0). Deprecated.
+	 *
+	 * @deprecated 2.0.0
 	 *
 	 * @return array
 	 */
 	public static function get_subscription_scheme_by_id( $id, $schemes ) {
+
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product_Schemes::get_subscription_scheme()' );
 
 		$found_scheme = false;
 
@@ -43,22 +54,6 @@ class WCS_ATT_Schemes {
 		}
 
 		return $found_scheme;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Deprecated
-	|--------------------------------------------------------------------------
-	*/
-
-	/**
-	 * Returns the active cart-level subscription scheme id, or false if none is set.
-	 *
-	 * @return string
-	 */
-	public static function get_cart_subscription_scheme() {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::get_cart_subscription_scheme()' );
-		return WCS_ATT_Cart::get_cart_subscription_scheme();
 	}
 
 	/**
@@ -97,7 +92,7 @@ class WCS_ATT_Schemes {
 	 * @return array
 	 */
 	public static function get_cart_item_subscription_schemes( $cart_item ) {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product::get_product_subscription_schemes()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::get_subscription_schemes()' );
 		return WCS_ATT_Cart::get_subscription_schemes( $cart_item, 'product' );
 	}
 
@@ -109,8 +104,8 @@ class WCS_ATT_Schemes {
 	 * @return string
 	 */
 	public static function get_active_cart_subscription_scheme_id() {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Schemes::apply_subscription_scheme()' );
-		return self::get_cart_subscription_scheme();
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::get_cart_subscription_scheme()' );
+		return WCS_ATT_Cart::get_cart_subscription_scheme();
 	}
 
 	/**
@@ -133,9 +128,9 @@ class WCS_ATT_Schemes {
 	 * @return array
 	 */
 	public static function get_active_subscription_scheme( $cart_item ) {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::get_subscription_scheme() and WCS_ATT_Product::get_subscription_scheme()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::get_subscription_scheme() and WCS_ATT_Product_Schemes::get_subscription_scheme()' );
 		$active_scheme_key = WCS_ATT_Cart::get_subscription_scheme( $cart_item );
-		return WCS_ATT_Product::get_subscription_scheme( $cart_item[ 'product' ], $active_scheme_key, 'object' );
+		return WCS_ATT_Product_Scheme::get_subscription_scheme( $cart_item[ 'product' ], $active_scheme_key, 'object' );
 	}
 
 	/**
@@ -160,7 +155,9 @@ class WCS_ATT_Schemes {
 	 * @return array
 	 */
 	public static function get_product_subscription_schemes( $product ) {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Scheme_Prices::get_scheme_prices()' );
-		return WCS_ATT_Product::get_subscription_schemes( $product );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product_Schemes::get_subscription_schemes()' );
+		return WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
 	}
 }
+
+WCS_ATT_Schemes::init();
