@@ -87,7 +87,6 @@ class WCS_ATT {
 		add_action( 'init', array( $this, 'init_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'activate' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_meta_links' ), 10, 4 );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
 
 	public function plugin_url() {
@@ -197,16 +196,6 @@ class WCS_ATT {
 		} elseif ( version_compare( $version, self::VERSION, '<' ) ) {
 			update_option( 'wcsatt_version', self::VERSION );
 		}
-	}
-
-	/**
-	 * Deactivate extension.
-	 *
-	 * @return void
-	 */
-	public function deactivate() {
-
-		delete_option( 'wcsatt_version' );
 	}
 
 	/**
