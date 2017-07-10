@@ -89,16 +89,6 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	}
 
 	/**
-	 *
-	 * Returns a unique scheme identifier. For now it just returns the key. Later it could be a CRUD object identifier.
-	 *
-	 * @return string  A unique identifier.
-	 */
-	public function get_id() {
-		return $this->key;
-	}
-
-	/**
 	 * Returns a string representation of the scheme details.
 	 *
 	 * @return string  A string representation of the entire scheme.
