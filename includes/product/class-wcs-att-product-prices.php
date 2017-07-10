@@ -102,9 +102,7 @@ class WCS_ATT_Product_Prices {
 
 		if ( null === $price_html ) {
 			// No infinite loops, thank you.
-			WCS_ATT_Product_Price_Filters::remove( 'price_html' );
-			$price_html = $product->get_price_html();
-			WCS_ATT_Product_Price_Filters::add( 'price_html' );
+			$price_html = self::get_price_html_unfiltered( $product );
 
 			if ( empty( $price_html ) ) {
 				return $price_html;
@@ -131,9 +129,7 @@ class WCS_ATT_Product_Prices {
 
 				if ( $switched_scheme ) {
 					// No infinite loops, thank you.
-					WCS_ATT_Product_Price_Filters::remove( 'price_html' );
-					$price_html = $product->get_price_html();
-					WCS_ATT_Product_Price_Filters::add( 'price_html' );
+					$price_html = self::get_price_html_unfiltered( $product );
 				}
 
 				$args[ 'price' ] = $price_html;
@@ -165,9 +161,7 @@ class WCS_ATT_Product_Prices {
 				if ( WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product ) ) {
 
 					// No infinite loops, thank you.
-					WCS_ATT_Product_Price_Filters::remove( 'price_html' );
-					$price_html = $product->get_price_html();
-					WCS_ATT_Product_Price_Filters::add( 'price_html' );
+					$price_html = self::get_price_html_unfiltered( $product );
 
 					$args[ 'price' ] = $price_html;
 
@@ -215,9 +209,7 @@ class WCS_ATT_Product_Prices {
 					} else {
 
 						// No infinite loops, thank you.
-						WCS_ATT_Product_Price_Filters::remove( 'price_html' );
-						$base_scheme_price_html = $product->get_price_html();
-						WCS_ATT_Product_Price_Filters::add( 'price_html' );
+						$base_scheme_price_html = self::get_price_html_unfiltered( $product );
 
 						$args[ 'price' ] = $base_scheme_price_html;
 
@@ -258,6 +250,21 @@ class WCS_ATT_Product_Prices {
 		if ( $switched_scheme ) {
 			WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $active_scheme_key );
 		}
+
+		return $price_html;
+	}
+
+	/**
+	 * Unfiltered alias of 'WC_Product::get_price_html'.
+	 *
+	 * @param  WC_Product  $product  Product object.
+	 * @return string
+	 */
+	public static function get_price_html_unfiltered( $product ) {
+
+		WCS_ATT_Product_Price_Filters::remove( 'price_html' );
+		$price_html = $product->get_price_html();
+		WCS_ATT_Product_Price_Filters::add( 'price_html' );
 
 		return $price_html;
 	}
