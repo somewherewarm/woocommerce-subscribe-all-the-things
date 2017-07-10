@@ -31,7 +31,7 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
 
-				bundle.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html_o: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
+				bundle.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
 		};
 
@@ -98,7 +98,7 @@
 						if ( bundle.passes_validation() ) {
 							$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
 						} else {
-							$scheme_price.html( scheme.price_html_o );
+							$scheme_price.html( scheme.price_html );
 						}
 
 						$scheme_price.trigger( 'wcsatt-updated-bundle-price', [ scheme_price_html, scheme, bundle, self ] );
@@ -142,7 +142,7 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
 
-				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html_o: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
+				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
 		};
 
@@ -222,7 +222,7 @@
 					if ( 'pass' === composite.api.get_composite_validation_status() ) {
 						$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
 					} else {
-						$scheme_price.html( scheme.price_html_o );
+						$scheme_price.html( scheme.price_html );
 					}
 
 					$scheme_price.trigger( 'wcsatt-updated-composite-price', [ scheme_price_html, scheme, composite, self ] );
