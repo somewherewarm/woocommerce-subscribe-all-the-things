@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		foreach ( $options as $option ) {
 			?><li class="<?php echo $option[ 'value' ] !== '0' ? 'subscription-option' : 'one-time-option'; ?>">
 				<label>
-					<input type="radio" name="convert_to_sub_<?php echo $product_id; ?>" data-custom_data="<?php echo esc_attr( json_encode( $option[ 'data' ] ) ); ?>" value="<?php echo esc_attr( $option[ 'value' ] ); ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+					<input type="radio" name="convert_to_sub_<?php echo absint( $product_id ); ?>" data-custom_data="<?php echo esc_attr( json_encode( $option[ 'data' ] ) ); ?>" value="<?php echo esc_attr( $option[ 'value' ] ); ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 					<?php echo $option[ 'description' ]; ?>
 				</label>
 			</li><?php

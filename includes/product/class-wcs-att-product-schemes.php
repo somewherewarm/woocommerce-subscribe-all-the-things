@@ -48,7 +48,7 @@ class WCS_ATT_Product_Schemes {
 
 			$forced = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_force_subscription', true );
 
-			// Attempt to get opion from parent if undefined on variation.
+			// Attempt to get meta from parent if undefined on variation.
 			if ( '' === $forced && $product->is_type( 'variation' ) ) {
 
 				if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {

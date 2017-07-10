@@ -89,16 +89,6 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	}
 
 	/**
-	 *
-	 * Returns a unique scheme identifier. For now it just returns the key. Later it could be a CRUD object identifier.
-	 *
-	 * @return string  A unique identifier.
-	 */
-	public function get_id() {
-		return $this->key;
-	}
-
-	/**
 	 * Returns a string representation of the scheme details.
 	 *
 	 * @return string  A string representation of the entire scheme.
@@ -222,7 +212,11 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			$prices[ 'regular_price' ] = $this->get_regular_price();
 			$prices[ 'sale_price' ]    = $this->get_sale_price();
 
-			$prices[ 'price' ] = '' !== $prices[ 'sale_price' ] && $prices[ 'sale_price' ] < $prices[ 'regular_price' ] ? $prices[ 'sale_price' ] : $prices[ 'regular_price' ];
+			if ( '' !== $prices[ 'sale_price' ] && $prices[ 'sale_price' ] < $prices[ 'regular_price' ] ) {
+				$prices[ 'price' ] = $prices[ 'sale_price' ];
+			} else {
+				$prices[ 'price' ] = $prices[ 'regular_price' ];
+			}
 
 		} elseif ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 && $raw_prices[ 'price' ] > 0 ) {
 
@@ -264,70 +258,6 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		}
 
 		return $price;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Other Getters.
-	|--------------------------------------------------------------------------
-	*/
-
-	/**
-	 * Returns the date on which the subscription scheme will expire,
-	 * based on the subscription's length and calculated from either the $from_date if specified, or the current date/time.
-	 *
-	 * @param  mixed  $from_date  A MySQL formatted date/time string from which to calculate the expiration date, or empty (default), which will use today's date/time.
-	 */
-	public function get_expiration_date( $from_date = '' ) {
-
-		$subscription_length = $this->get_length();
-
-		if ( $subscription_length > 0 ) {
-
-			if ( empty( $from_date ) ) {
-				$from_date = gmdate( 'Y-m-d H:i:s' );
-			}
-
-			if ( $this->get_trial_length() > 0 ) {
-				$from_date = $this->get_trial_expiration_date( $from_date );
-			}
-
-			$expiration_date = gmdate( 'Y-m-d H:i:s', wcs_add_time( $subscription_length, $this->get_period(), wcs_date_to_time( $from_date ) ) );
-
-		} else {
-
-			$expiration_date = 0;
-
-		}
-
-		return $expiration_date;
-	}
-
-	/**
-	 * Returns the date on which the subscription scheme trial will expire,
-	 * based on the subscription's length and calculated from either the $from_date if specified, or the current date/time.
-	 *
-	 * @param  mixed  $from_date  A MySQL formatted date/time string from which to calculate the trial expiration date, or empty (default), which will use today's date/time.
-	 */
-	public function get_trial_expiration_date( $from_date = '' ) {
-
-		$trial_length = $this->get_trial_length();
-
-		if ( $trial_length > 0 ) {
-
-			if ( empty( $from_date ) ) {
-				$from_date = gmdate( 'Y-m-d H:i:s' );
-			}
-
-			$trial_expiration_date = gmdate( 'Y-m-d H:i:s', wcs_add_time( $trial_length, $this->get_trial_period(), wcs_date_to_time( $from_date ) ) );
-
-		} else {
-
-			$trial_expiration_date = 0;
-
-		}
-
-		return $trial_expiration_date;
 	}
 
 	/*

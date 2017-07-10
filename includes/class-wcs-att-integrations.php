@@ -559,24 +559,26 @@ class WCS_ATT_Integrations {
 		// Callable since PB 5.2.4.
 		if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
 
+			$having = array(
+				'price',
+				'regular_price'
+			);
+
+			$what = array(
+				'min',
+				'max'
+			);
+
 			if ( $bundled_product = $bundled_item->get_product() ) {
 				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
 			}
 
-			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
-			}
-
-			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
-			}
-
-			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
-			}
-
-			if ( $bundled_product = $bundled_item->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			foreach ( $having as $price ) {
+				foreach ( $what as $min_or_max ) {
+					if ( $bundled_product = $bundled_item->get_product( array( 'having' => $price, 'what' => $min_or_max ) ) ) {
+						self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+					}
+				}
 			}
 		}
 	}
@@ -624,24 +626,26 @@ class WCS_ATT_Integrations {
 
 		if ( $component_option ) {
 
+			$having = array(
+				'price',
+				'regular_price'
+			);
+
+			$what = array(
+				'min',
+				'max'
+			);
+
 			if ( $product = $component_option->get_product() ) {
 				self::set_bundled_product_subscription_schemes( $product, $composite );
 			}
 
-			if ( $product = $component_option->get_product( array( 'having' => 'price', 'what' => 'min' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'price', 'what' => 'max' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'regular_price', 'what' => 'min' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
-			}
-
-			if ( $product = $component_option->get_product( array( 'having' => 'regular_price', 'what' => 'max' ) ) ) {
-				self::set_bundled_product_subscription_schemes( $product, $composite );
+			foreach ( $having as $price ) {
+				foreach ( $what as $min_or_max ) {
+					if ( $product = $component_option->get_product( array( 'having' => $price, 'what' => $min_or_max ) ) ) {
+						self::set_bundled_product_subscription_schemes( $product, $composite );
+					}
+				}
 			}
 		}
 
