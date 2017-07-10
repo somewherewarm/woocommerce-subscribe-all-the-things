@@ -128,7 +128,7 @@ class WCS_ATT_Cart {
 		foreach ( WC()->cart->cart_contents as $cart_item ) {
 
 			// Unsupported product type?
-			if ( ! WCS_ATT_Cart::is_supported_product_type( $cart_item ) ) {
+			if ( ! self::is_supported_product_type( $cart_item ) ) {
 				return false;
 			}
 
@@ -138,7 +138,7 @@ class WCS_ATT_Cart {
 			}
 
 			// Is a legacy subscription product?
-			if ( WCS_ATT_Product::is_legacy_subscription( $cart_item[ 'data' ] ) ) {
+			if ( WCS_ATT_Product::is_subscription_product_type( $cart_item[ 'data' ] ) ) {
 				return false;
 			}
 		}
@@ -526,15 +526,8 @@ class WCS_ATT_Cart {
 	 * @return boolean
 	 */
 	public static function is_convertible_to_sub( $arg ) {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::is_supported_product_type() and WCS_ATT_Product::is_legacy_subscription()' );
-
-		if ( is_array( $arg ) && isset( $arg[ 'product_id' ] ) ) {
-			$product_id = $arg[ 'product_id' ];
-		} else {
-			$product_id = absint( $arg );
-		}
-
-		return WC_Subscriptions_Product::is_subscription( $product_id ) ? false : true;
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Cart::is_supported_product_type() and WCS_ATT_Product::is_subscription_product_type()' );
+		return self::is_supported_product_type() && ! WCS_ATT_Product::is_subscription_product_type();
 	}
 }
 

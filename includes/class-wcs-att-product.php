@@ -77,7 +77,7 @@ class WCS_ATT_Product {
 	 * @param  WC_Product  $product  Product object to check.
 	 * @return boolean               Result of check.
 	 */
-	public static function is_legacy_subscription( $product ) {
+	public static function is_subscription_product_type( $product ) {
 		return $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) );
 	}
 
