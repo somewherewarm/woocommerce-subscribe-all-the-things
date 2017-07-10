@@ -50,7 +50,7 @@ class WCS_ATT_Test_Helpers_Product {
 					'subscription_length'          => 5
 				),
 
-				1=> array(
+				1 => array(
 					'subscription_period_interval' => 2,
 					'subscription_period'          => 'month',
 					'subscription_length'          => 10
