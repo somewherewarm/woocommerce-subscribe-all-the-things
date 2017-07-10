@@ -222,7 +222,11 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			$prices[ 'regular_price' ] = $this->get_regular_price();
 			$prices[ 'sale_price' ]    = $this->get_sale_price();
 
-			$prices[ 'price' ] = '' !== $prices[ 'sale_price' ] && $prices[ 'sale_price' ] < $prices[ 'regular_price' ] ? $prices[ 'sale_price' ] : $prices[ 'regular_price' ];
+			if ( '' !== $prices[ 'sale_price' ] && $prices[ 'sale_price' ] < $prices[ 'regular_price' ] ) {
+				$prices[ 'price' ] = $prices[ 'sale_price' ];
+			} else {
+				$prices[ 'price' ] = $prices[ 'regular_price' ];
+			}
 
 		} elseif ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 && $raw_prices[ 'price' ] > 0 ) {
 
