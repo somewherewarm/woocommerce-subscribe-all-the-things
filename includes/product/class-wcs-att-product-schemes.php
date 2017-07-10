@@ -44,7 +44,7 @@ class WCS_ATT_Product_Schemes {
 	 */
 	public static function has_forced_subscription_scheme( $product ) {
 
-		if ( '' === ( $forced = WCS_ATT_Product::get_product_property( $product, 'has_forced_subscription' ) ) && self::has_subscription_schemes( $product ) ) {
+		if ( '' === ( $forced = WCS_ATT_Product::get_runtime_meta( $product, 'has_forced_subscription' ) ) && self::has_subscription_schemes( $product ) ) {
 
 			$forced = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_force_subscription', true );
 
@@ -59,7 +59,7 @@ class WCS_ATT_Product_Schemes {
 				}
 			}
 
-			WCS_ATT_Product::set_product_property( $product, 'has_forced_subscription', $forced );
+			WCS_ATT_Product::set_runtime_meta( $product, 'has_forced_subscription', $forced );
 		}
 
 		return 'yes' === $forced;
@@ -91,7 +91,7 @@ class WCS_ATT_Product_Schemes {
 	 */
 	public static function get_subscription_schemes( $product, $context = 'any' ) {
 
-		$schemes = WCS_ATT_Product::get_product_property( $product, 'subscription_schemes' );
+		$schemes = WCS_ATT_Product::get_runtime_meta( $product, 'subscription_schemes' );
 
 		// If not explicitly set on object, initialize with schemes defined at product-level.
 		if ( '' === $schemes ) {
@@ -128,7 +128,7 @@ class WCS_ATT_Product_Schemes {
 
 				$schemes = apply_filters( 'wcsatt_product_subscription_schemes', $schemes, $product );
 
-				WCS_ATT_Product::set_product_property( $product, 'subscription_schemes', $schemes );
+				WCS_ATT_Product::set_runtime_meta( $product, 'subscription_schemes', $schemes );
 			}
 		}
 
@@ -162,7 +162,7 @@ class WCS_ATT_Product_Schemes {
 	 */
 	public static function get_subscription_scheme( $product, $return = 'key', $scheme_key = '' ) {
 
-		$active_key   = WCS_ATT_Product::get_product_property( $product, 'active_subscription_scheme_key' );
+		$active_key   = WCS_ATT_Product::get_runtime_meta( $product, 'active_subscription_scheme_key' );
 		$search_key   = '' === $scheme_key ? $active_key : $scheme_key;
 		$schemes      = self::get_subscription_schemes( $product );
 		$found_scheme = null;
@@ -213,7 +213,7 @@ class WCS_ATT_Product_Schemes {
 	 */
 	public static function get_default_subscription_scheme( $product, $return = 'key' ) {
 
-		if ( '' === ( $default_scheme_key = WCS_ATT_Product::get_product_property( $product, 'default_subscription_scheme_key' ) ) ) {
+		if ( '' === ( $default_scheme_key = WCS_ATT_Product::get_runtime_meta( $product, 'default_subscription_scheme_key' ) ) ) {
 
 			$default_scheme     = null;
 			$default_scheme_key = false;
@@ -310,7 +310,7 @@ class WCS_ATT_Product_Schemes {
 	 * @return array
 	 */
 	public static function set_subscription_schemes( $product, $schemes ) {
-		WCS_ATT_Product::set_product_property( $product, 'subscription_schemes', $schemes );
+		WCS_ATT_Product::set_runtime_meta( $product, 'subscription_schemes', $schemes );
 	}
 
 	/**
@@ -335,30 +335,31 @@ class WCS_ATT_Product_Schemes {
 			$scheme_to_set = $schemes[ $key ];
 
 			// Set subscription scheme key.
-			WCS_ATT_Product::set_product_property( $product, 'active_subscription_scheme_key', $key );
+			WCS_ATT_Product::set_runtime_meta( $product, 'active_subscription_scheme_key', $key );
 
 			/*
-			 * Set subscription scheme details.
+			 * Set subscription scheme details. Required for WCS compatibility.
+			 * Later on, it might be better to grab these from the active 'WCS_ATT_Scheme' object instead.
 			 *
-			 * Note that prices are not set directly on object:
+			 * Note that prices are not set directly on objects:
 			 * The price strings of many product types depend on more than the values returned by the abstract class price getters.
 			 * If we are going to apply filters anyway, there's no need to permanently set raw prices here.
 			 */
-			WCS_ATT_Product::set_product_property( $product, 'subscription_period', $scheme_to_set[ 'subscription_period' ] );
-			WCS_ATT_Product::set_product_property( $product, 'subscription_period_interval', $scheme_to_set[ 'subscription_period_interval' ] );
-			WCS_ATT_Product::set_product_property( $product, 'subscription_length', $scheme_to_set[ 'subscription_length' ] );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period', $scheme_to_set[ 'subscription_period' ] );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period_interval', $scheme_to_set[ 'subscription_period_interval' ] );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_length', $scheme_to_set[ 'subscription_length' ] );
 
 			$scheme_set = true;
 
 		} elseif ( empty( $key ) ) {
 
 			// Reset subscription scheme key.
-			WCS_ATT_Product::set_product_property( $product, 'active_subscription_scheme_key', false === $key ? false : null );
+			WCS_ATT_Product::set_runtime_meta( $product, 'active_subscription_scheme_key', false === $key ? false : null );
 
-			// Reset subscription scheme details.
-			WCS_ATT_Product::set_product_property( $product, 'subscription_period', null );
-			WCS_ATT_Product::set_product_property( $product, 'subscription_period_interval', null );
-			WCS_ATT_Product::set_product_property( $product, 'subscription_length', null );
+			// Reset subscription scheme details. Required for WCS compatibility.
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period', null );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period_interval', null );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_length', null );
 
 			$scheme_set = true;
 		}
@@ -382,7 +383,7 @@ class WCS_ATT_Product_Schemes {
 	 * @param  boolean     $is_forced_subscription  Value.
 	 */
 	public static function set_forced_subscription_scheme( $product, $is_forced_subscription ) {
-		WCS_ATT_Product::set_product_property( $product, 'has_forced_subscription', $is_forced_subscription ? 'yes' : 'no' );
+		WCS_ATT_Product::set_runtime_meta( $product, 'has_forced_subscription', $is_forced_subscription ? 'yes' : 'no' );
 	}
 
 	/*

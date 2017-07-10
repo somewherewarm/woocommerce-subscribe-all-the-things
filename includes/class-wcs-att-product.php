@@ -27,6 +27,19 @@ class WCS_ATT_Product {
 	private static $added_hooks = false;
 
 	/**
+	 * DB meta expected by WCS that needs to be added by SATT at runtime.
+	 * @var array
+	 */
+	private static $subscription_product_type_meta_keys = array(
+		'subscription_period',
+		'subscription_period_interval',
+		'subscription_length',
+		'subscription_trial_period',
+		'subscription_trial_length',
+		'subscription_sign_up_fee'
+	);
+
+	/**
 	 * Include Product API price and scheme components and add hooks.
 	 */
 	public static function init() {
@@ -52,7 +65,7 @@ class WCS_ATT_Product {
 		add_filter( 'woocommerce_is_subscription', array( __CLASS__, 'filter_is_subscription' ), 10, 3 );
 
 		// Delete object meta in use by the application layer.
-		add_action( 'woocommerce_before_product_object_save', array( __CLASS__, 'delete_reserved_meta' ) );
+		add_action( 'woocommerce_before_product_object_save', array( __CLASS__, 'delete_runtime_meta' ) );
 	}
 
 	/*
@@ -110,13 +123,24 @@ class WCS_ATT_Product {
 
 	/**
 	 * Delete object meta in use by the application layer.
+	 * Note that the subscription state of a product object:
+	 *
+	 * 1. Cannot be persisted in the DB.
+	 * 2. Is lost when the object is saved.
+	 *
+	 * This is intended behavior.
 	 *
 	 * @param  WC_Product  $product
 	 */
-	public static function delete_reserved_meta( $product ) {
-		$reserved_meta_keys = array( 'has_forced_subscription', 'subscription_schemes', 'active_subscription_scheme_key', 'default_subscription_scheme_key' );
-		foreach ( $reserved_meta_keys as $reserved_meta_key ) {
-			$product->delete_meta_data( '_' . $reserved_meta_key );
+	public static function delete_runtime_meta( $product ) {
+
+		$product->delete_meta_data( '_satt_data' );
+
+		// Don't delete any subscription product-type meta :)
+		if ( ! self::is_subscription_product_type( $product ) ) {
+			foreach ( self::$subscription_product_type_meta_keys as $runtime_meta_key ) {
+				$product->delete_meta_data( '_' . $runtime_meta_key );
+			}
 		}
 	}
 
@@ -129,16 +153,36 @@ class WCS_ATT_Product {
 	/**
 	 * Property getter (compatibility wrapper).
 	 *
-	 * @param  WC_Product  $product   Product object.
-	 * @param  string      $property  Property name.
+	 * @param  WC_Product  $product  Product object.
+	 * @param  string      $key      Runtime meta key name.
 	 * @return mixed
 	 */
-	public static function get_product_property( $product, $property ) {
+	public static function get_runtime_meta( $product, $key ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			$value = $product->get_meta( '_' . $property, true );
+
+			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
+
+				$value = $product->get_meta( '_' . $key, true );
+
+			} else {
+
+				$data = $product->get_meta( '_satt_data', true );
+
+				if ( is_array( $data ) && isset( $data[ $key ] ) ) {
+					$value = $data[ $key ];
+				} else {
+					$value = '';
+				}
+			}
+
 		} else {
-			$value = isset( $product->$property ) ? $product->$property : '';
+
+			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
+				$value = isset( $product->$key ) ? $product->$key : '';
+			} else {
+				$value = isset( $product->satt_data ) && is_array( $product->satt_data ) && isset( $product->satt_data[ $key ] ) ? $product->satt_data[ $key ] : '';
+			}
 		}
 
 		return $value;
@@ -148,16 +192,45 @@ class WCS_ATT_Product {
 	 * Property setter (compatibility wrapper).
 	 *
 	 * @param  WC_Product  $product  Product object.
-	 * @param  string      $name     Property name.
+	 * @param  string      $key      Runtime meta key name.
 	 * @param  string      $value    Property value.
 	 * @return mixed
 	 */
-	public static function set_product_property( $product, $name, $value ) {
+	public static function set_runtime_meta( $product, $key, $value ) {
 
 		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			$product->add_meta_data( '_' . $name, $value, true );
+
+			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
+
+				$product->add_meta_data( '_' . $key, $value, true );
+
+			} else {
+
+				$data = $product->get_meta( '_satt_data', true );
+
+				if ( empty( $data ) ) {
+					$data = array();
+				}
+
+				$data[ $key ] = $value;
+
+				$product->add_meta_data( '_satt_data', $data, true );
+			}
+
 		} else {
-			$product->$name = $value;
+
+			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
+
+				$product->$key = $value;
+
+			} else {
+
+				if ( empty( $product->satt_data ) ) {
+					$product->satt_data = array();
+				}
+
+				$product->satt_data[ $key ] = $value;
+			}
 		}
 	}
 }
