@@ -486,7 +486,7 @@ class WCS_ATT_Cart {
 	 * @return string
 	 */
 	public static function get_active_subscription_scheme_prices( $cart_item, $active_subscription_scheme = array() ) {
-		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product_Price::get_{regular_/sale_}price()' );
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Product_Prices::get_{regular_/sale_}price()' );
 
 		$prices = array();
 
