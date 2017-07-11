@@ -258,16 +258,21 @@ class WCS_ATT_Product_Prices {
 	}
 
 	/**
-	 * Returns the price per subscription period.
+	 * Returns the recurring vanilla/regular/sale price.
 	 *
 	 * @param  WC_Product  $product     Product object.
 	 * @param  string      $scheme_key  Optional key to get the price of a specific scheme.
 	 * @param  string      $context     Function call context.
+	 * @param  string      $price_type  Price to get. Values: '', 'regular', or 'sale'.
 	 * @return mixed                    The price charged charged per subscription period.
 	 */
-	public static function get_price( $product, $scheme_key = '', $context = 'view' ) {
+	protected static function get_product_price( $product, $scheme_key = '', $context = 'view', $price_type = '' ) {
 
-		// In 'view' context, switch the active scheme if needed - and call 'WC_Product::get_price'.
+		$price_type = $price_type && in_array( $price_type, array( 'regular', 'sale' ) ) ? $price_type : '';
+		$price_prop = $price_type ? $price_type . '_price' : 'price';
+		$price_fn   = 'get_' . $price_prop;
+
+		// In 'view' context, switch the active scheme if needed - and call 'WC_Product::get_{price_prop}'.
 		if ( 'view' === $context ) {
 
 			$active_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
@@ -277,7 +282,7 @@ class WCS_ATT_Product_Prices {
 			$scheme_switch_required = $scheme_key !== $active_scheme_key;
 			$switched_scheme        = $scheme_switch_required ? WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key ) : false;
 
-			$price = $product->get_price();
+			$price = $product->$price_fn();
 
 			// Switch back to the initially active scheme, if switched.
 			if ( $switched_scheme ) {
@@ -288,20 +293,20 @@ class WCS_ATT_Product_Prices {
 		} else {
 
 			$subscription_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
-			$price               = WCS_ATT_Core_Compatibility::get_prop( $product, 'price' );
+			$price               = WCS_ATT_Core_Compatibility::get_prop( $product, $price_prop );
 
 			if ( ! empty( $subscription_scheme ) ) {
 
 				if ( $subscription_scheme->has_price_filter() && apply_filters( 'wcsatt_price_filters_allowed', true, $product ) ) {
 
 					$prices_array = array(
-						'price'         => $price,
-						'sale_price'    => WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' ),
-						'regular_price' => WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' )
+						'price'         => 'price'         === $price_prop ? $price : WCS_ATT_Core_Compatibility::get_prop( $product, 'price' ),
+						'sale_price'    => 'sale_price'    === $price_prop ? $price : WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' ),
+						'regular_price' => 'regular_price' === $price_prop ? $price : WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' ),
 					);
 
 					$overridden_prices = $subscription_scheme->get_prices( $prices_array);
-					$price             = $overridden_prices[ 'price' ];
+					$price             = $overridden_prices[ $price_prop ];
 				}
 			}
 		}
@@ -310,7 +315,19 @@ class WCS_ATT_Product_Prices {
 	}
 
 	/**
-	 * Returns the regular price per subscription period.
+	 * Returns the recurring price.
+	 *
+	 * @param  WC_Product  $product     Product object.
+	 * @param  string      $scheme_key  Optional key to get the price of a specific scheme.
+	 * @param  string      $context     Function call context.
+	 * @return mixed                    The price charged per subscription period.
+	 */
+	public static function get_price( $product, $scheme_key = '', $context = 'view' ) {
+		return self::get_product_price( $product, $scheme_key, $context );
+	}
+
+	/**
+	 * Returns the recurring regular price.
 	 *
 	 * @param  WC_Product  $product     Product object.
 	 * @param  string      $scheme_key  Optional key to get the regular price of a specific scheme.
@@ -318,51 +335,11 @@ class WCS_ATT_Product_Prices {
 	 * @return mixed                    The regular price charged per subscription period.
 	 */
 	public static function get_regular_price( $product, $scheme_key = '', $context = 'view' ) {
-
-		// In 'view' context, switch the active scheme if needed - and call 'WC_Product::get_regular_price'.
-		if ( 'view' === $context ) {
-
-			$active_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
-			$scheme_key        = '' === $scheme_key ? $active_scheme_key : $scheme_key;
-
-			// Attempt to switch scheme when requesting the price html of a scheme other than the active one.
-			$scheme_switch_required = $scheme_key !== $active_scheme_key;
-			$switched_scheme        = $scheme_switch_required ? WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key ) : false;
-
-			$regular_price = $product->get_regular_price();
-
-			// Switch back to the initially active scheme, if switched.
-			if ( $switched_scheme ) {
-				WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $active_scheme_key );
-			}
-
-		// In 'edit' context, just grab the raw price from the scheme data + product props.
-		} else {
-
-			$subscription_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
-			$regular_price       = WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' );
-
-			if ( ! empty( $subscription_scheme ) ) {
-
-				if ( $subscription_scheme->has_price_filter() && apply_filters( 'wcsatt_price_filters_allowed', true, $product ) ) {
-
-					$prices_array = array(
-						'price'         => WCS_ATT_Core_Compatibility::get_prop( $product, 'price' ),
-						'sale_price'    => WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' ),
-						'regular_price' => $regular_price
-					);
-
-					$overridden_prices = $subscription_scheme->get_prices( $prices_array);
-					$regular_price     = $overridden_prices[ 'regular_price' ];
-				}
-			}
-		}
-
-		return $regular_price;
+		return self::get_product_price( $product, $scheme_key, $context, 'regular' );
 	}
 
 	/**
-	 * Returns the sale price per subscription period.
+	 * Returns the recurring sale price.
 	 *
 	 * @param  WC_Product  $product     Product object.
 	 * @param  string      $scheme_key  Optional key to get the price of a specific scheme.
@@ -370,47 +347,7 @@ class WCS_ATT_Product_Prices {
 	 * @return mixed                    The sale price charged per subscription period.
 	 */
 	public static function get_sale_price( $product, $scheme_key = '', $context = 'view' ) {
-
-		// In 'view' context, switch the active scheme if needed - and call 'WC_Product::get_sale_price'.
-		if ( 'view' === $context ) {
-
-			$active_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
-			$scheme_key        = '' === $scheme_key ? $active_scheme_key : $scheme_key;
-
-			// Attempt to switch scheme when requesting the price html of a scheme other than the active one.
-			$scheme_switch_required = $scheme_key !== $active_scheme_key;
-			$switched_scheme        = $scheme_switch_required ? WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key ) : false;
-
-			$sale_price = $product->get_sale_price();
-
-			// Switch back to the initially active scheme, if switched.
-			if ( $switched_scheme ) {
-				WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $active_scheme_key );
-			}
-
-		// In 'edit' context, just grab the raw price from the scheme data + product props.
-		} else {
-
-			$subscription_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
-			$sale_price          = WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' );
-
-			if ( ! empty( $subscription_scheme ) ) {
-
-				if ( $subscription_scheme->has_price_filter() && apply_filters( 'wcsatt_price_filters_allowed', true, $product ) ) {
-
-					$prices_array = array(
-						'price'         => WCS_ATT_Core_Compatibility::get_prop( $product, 'price' ),
-						'sale_price'    => $sale_price,
-						'regular_price' => WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' )
-					);
-
-					$overridden_prices = $subscription_scheme->get_prices( $prices_array);
-					$sale_price        = $overridden_prices[ 'sale_price' ];
-				}
-			}
-		}
-
-		return $sale_price;
+		return self::get_product_price( $product, $scheme_key, $context, 'sale' );
 	}
 }
 
