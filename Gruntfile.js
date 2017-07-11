@@ -13,7 +13,30 @@ module.exports = function( grunt ) {
 		// JavaScript linting with JSHint.
 		jshint: {
 			options: {
-				jshintrc: '.jshintrc'
+				'force': true,
+				'boss': true,
+				'curly': true,
+				'eqeqeq': false,
+				'eqnull': true,
+				'es3': false,
+				'expr': false,
+				'immed': true,
+				'noarg': true,
+				'onevar': true,
+				'quotmark': 'single',
+				'trailing': true,
+				'undef': true,
+				'unused': true,
+				'sub': false,
+				'browser': true,
+				'maxerr': 1000,
+				globals: {
+					'jQuery': false,
+					'$': false,
+					'woocommerce_admin_meta_boxes': true,
+					'woocommerce_writepanel_params': false,
+					'wc_enhanced_select_params': false
+				}
 			},
 			all: [
 				'Gruntfile.js',
@@ -77,7 +100,7 @@ module.exports = function( grunt ) {
 		// Check textdomain errors.
 		checktextdomain: {
 			options:{
-				text_domain: 'woocommerce-subscribe-all-the-things',
+				text_domain: [ 'woocommerce', 'woocommerce-subscriptions', 'woocommerce-subscribe-all-the-things' ],
 				keywords: [
 					'__:1,2d',
 					'_e:1,2d',
@@ -104,8 +127,41 @@ module.exports = function( grunt ) {
 				],
 				expand: true
 			}
+		},
+		rtlcss: {
+			options: {
+				config: {
+					swapLeftRightInUrl: false,
+					swapLtrRtlInUrl: false,
+					autoRename: false,
+					preserveDirectives: true
+				},
+				properties : [
+					{
+						name: 'swap-fontawesome-left-right-angles',
+						expr: /content/im,
+						action: function( prop, value ) {
+							if ( value === '"\\f105"' ) { // fontawesome-angle-left
+								value = '"\\f104"';
+							}
+							if ( value === '"\\f178"' ) { // fontawesome-long-arrow-right
+								value = '"\\f177"';
+							}
+							return { prop: prop, value: value };
+						}
+					}
+				]
+			},
+			main: {
+				expand: true,
+				ext: '-rtl.css',
+				src: [
+					'wcs-att-frontend.css',
+					'wcs-att-write-panels.css'
+				]
+			}
 		}
-	});
+	} );
 
 	// Load NPM tasks to be used here
 	grunt.loadNpmTasks( 'grunt-contrib-jshint' );
@@ -113,14 +169,17 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
 	grunt.loadNpmTasks( 'grunt-wp-i18n' );
 	grunt.loadNpmTasks( 'grunt-checktextdomain' );
+	grunt.loadNpmTasks( 'grunt-rtlcss' );
 
 	// Register tasks
-	grunt.registerTask( 'default', [
-		'uglify'
-	]);
-
 	grunt.registerTask( 'dev', [
-		'default',
+		'checktextdomain',
+		'uglify',
+		'rtlcss'
+	] );
+
+	grunt.registerTask( 'default', [
+		'dev',
 		'makepot'
-	]);
+	] );
 };
