@@ -21,12 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Display_Cart {
 
 	/**
-	 * Flag to ensure hooks can be added only once.
-	 * @var bool
-	 */
-	private static $added_hooks = false;
-
-	/**
 	 * Initialize.
 	 */
 	public static function init() {
@@ -37,12 +31,6 @@ class WCS_ATT_Display_Cart {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
-
-		if ( self::$added_hooks ) {
-			return;
-		}
-
-		self::$added_hooks = true;
 
 		// Display a "Subscribe to Cart" section in the cart.
 		add_action( 'woocommerce_before_cart_totals', array( __CLASS__, 'show_subscribe_to_cart_prompt' ) );

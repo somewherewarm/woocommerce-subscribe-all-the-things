@@ -21,12 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Product {
 
 	/**
-	 * Flag to ensure hooks can be added only once.
-	 * @var bool
-	 */
-	private static $added_hooks = false;
-
-	/**
 	 * DB meta expected by WCS that needs to be added by SATT at runtime.
 	 * @var array
 	 */
@@ -54,12 +48,6 @@ class WCS_ATT_Product {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
-
-		if ( self::$added_hooks ) {
-			return;
-		}
-
-		self::$added_hooks = true;
 
 		// Allow WCS to recognize any product as a subscription.
 		add_filter( 'woocommerce_is_subscription', array( __CLASS__, 'filter_is_subscription' ), 10, 3 );

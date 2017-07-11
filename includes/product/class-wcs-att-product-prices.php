@@ -21,12 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Product_Prices {
 
 	/**
-	 * Flag to ensure hooks can be added only once.
-	 * @var bool
-	 */
-	private static $added_hooks = false;
-
-	/**
 	 * Initialize.
 	 */
 	public static function init() {
@@ -42,12 +36,6 @@ class WCS_ATT_Product_Prices {
 	 * @return void
 	 */
 	private static function add_hooks() {
-
-		if ( self::$added_hooks ) {
-			return;
-		}
-
-		self::$added_hooks = true;
 
 		WCS_ATT_Product_Price_Filters::add();
 	}

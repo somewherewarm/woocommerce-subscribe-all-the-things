@@ -20,12 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WCS_ATT_Integrations {
 
-	/**
-	 * Flag to ensure hooks can be added only once.
-	 * @var bool
-	 */
-	private static $added_hooks = false;
-
 	public static $bundle_types        = array();
 	public static $container_key_names = array();
 	public static $child_key_names     = array();
@@ -70,12 +64,6 @@ class WCS_ATT_Integrations {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
-
-		if ( self::$added_hooks ) {
-			return;
-		}
-
-		self::$added_hooks = true;
 
 		/*
 		 * All types.

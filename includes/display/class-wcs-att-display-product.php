@@ -21,12 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Display_Product {
 
 	/**
-	 * Flag to ensure hooks can be added only once.
-	 * @var bool
-	 */
-	private static $added_hooks = false;
-
-	/**
 	 * Initialization.
 	 */
 	public static function init() {
@@ -37,12 +31,6 @@ class WCS_ATT_Display_Product {
 	 * Single-product display hooks.
 	 */
 	private static function add_hooks() {
-
-		if ( self::$added_hooks ) {
-			return;
-		}
-
-		self::$added_hooks = true;
 
 		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'show_subscription_options' ), 100 );

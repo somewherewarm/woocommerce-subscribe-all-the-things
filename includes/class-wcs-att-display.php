@@ -21,12 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Display {
 
 	/**
-	 * Flag to ensure hooks can be added only once.
-	 * @var bool
-	 */
-	private static $added_hooks = false;
-
-	/**
 	 * Initialization.
 	 */
 	public static function init() {
@@ -43,12 +37,6 @@ class WCS_ATT_Display {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
-
-		if ( self::$added_hooks ) {
-			return;
-		}
-
-		self::$added_hooks = true;
 
 		// Enqueue scripts and styles.
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'frontend_scripts' ) );

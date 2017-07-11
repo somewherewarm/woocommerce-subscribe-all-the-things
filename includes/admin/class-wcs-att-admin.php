@@ -20,6 +20,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WCS_ATT_Admin {
 
+	/**
+	 * Add hooks.
+	 */
 	public static function init() {
 
 		/*
