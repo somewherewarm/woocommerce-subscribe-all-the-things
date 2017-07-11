@@ -1,39 +1,41 @@
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle {
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme .handle span {
 	display: block;
-	float:left;
-	cursor: move;
+	float: left;
 	color: #888;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle {
+	cursor: move;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove {
+	cursor: pointer;
 }
 
 .wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle:hover {
 	color: #333;
 }
 
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle:before {
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove:hover {
+	color: #f00;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme .handle span:before {
 	font-family: WooCommerce;
-	content: '\e032';
 	font-weight: normal;
 	font-size: 14px;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle:before {
+	content: '\e032';
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove:before {
+	content: '\e013';
 }
 
 .wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove {
 	margin-left: 1em;
-}
-
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove a {
-	color: #888;
-	text-decoration: none;
-}
-
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove a:hover {
-	color: #f00;
-}
-
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove a:before {
-	font-family: WooCommerce;
-	content: '\e013';
-	font-weight: normal;
-	font-size: 14px;
 }
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
@@ -92,13 +94,12 @@
 #wcsatt_data .subscription_scheme .handle {
 	float: right;
 	padding: 1em 0;
-	margin-right: -90px;
+	margin-right: -9999em;
 	width: 65px;
-	display: none;
 }
 
 #wcsatt_data .subscription_scheme:hover .handle {
-	display: block;
+	margin-right: -90px;
 }
 
 #wcsatt_data .subscription_scheme_data {

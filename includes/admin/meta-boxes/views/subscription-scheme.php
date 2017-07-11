@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?><div class="subscription_scheme wc-metabox open" rel="<?php echo isset( $scheme_data[ 'position' ] ) ? $scheme_data[ 'position' ] : ''; ?>">
 	<div class="handle">
-		<span class="scheme-handle"></span>
-		<span class="scheme-remove"><a href="#" class="remove_row remove"></a></span>
+		<span class="scheme-handle" aria-label="<?php _e( "Drag to sort", "woocommerce-subscribe-all-the-things" ); ?>"></span>
+		<span class="scheme-remove" aria-label="<?php _e( "Remove", "woocommerce-subscribe-all-the-things" ); ?>"></span>
 	</div>
 	<div class="data subscription_scheme_data"><?php
 

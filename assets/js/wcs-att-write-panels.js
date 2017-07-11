@@ -139,7 +139,7 @@ jQuery( function($) {
 	} );
 
 	// Remove.
-	$wcsatt_data_tab.on( 'click', 'a.remove_row', function() {
+	$wcsatt_data_tab.on( 'click', 'span.scheme-remove', function() {
 
 		var $parent = $( this ).closest( '.subscription_scheme' );
 
