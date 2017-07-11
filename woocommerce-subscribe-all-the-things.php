@@ -66,7 +66,7 @@ class WCS_ATT {
 	 * @since 1.0.0
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Foul!' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, __( 'Foul!', 'woocommerce-subscribe-all-the-things' ), '1.0.0' );
 	}
 
 	/**
@@ -75,7 +75,7 @@ class WCS_ATT {
 	 * @since 1.0.0
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Foul!' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, __( 'Foul!', 'woocommerce-subscribe-all-the-things' ), '1.0.0' );
 	}
 
 	/**
@@ -221,7 +221,7 @@ class WCS_ATT {
 		if ( $file == plugin_basename( __FILE__ ) ) {
 			$author1 = '<a href="' . $data[ 'AuthorURI' ] . '">' . $data[ 'Author' ] . '</a>';
 			$author2 = '<a href="http://somewherewarm.gr/">SomewhereWarm</a>';
-			$links[ 1 ] = sprintf( __( 'By %s' ), sprintf( __( '%s and %s' ), $author1, $author2 ) );
+			$links[ 1 ] = sprintf( __( 'By %s', 'woocommerce-subscribe-all-the-things' ), sprintf( __( '%s and %s', 'woocommerce-subscribe-all-the-things' ), $author1, $author2 ) );
 		}
 
 		return $links;

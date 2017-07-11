@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.0.0-alpha\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2017-07-09 10:26:19+00:00\n"
+"POT-Creation-Date: 2017-07-11 11:28:48+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,179 +14,179 @@ msgstr ""
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Generator: grunt-wp-i18n 0.5.4\n"
 
-#: includes/admin/class-wcs-att-admin.php:102
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:120
+#: includes/admin/class-wcs-att-admin.php:112
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:127
 msgid "Add Option"
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:122
+#: includes/admin/class-wcs-att-admin.php:132
 msgid "Subscribe to Cart"
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:129
+#: includes/admin/class-wcs-att-admin.php:139
 msgid "Cart Subscription Options"
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:130
+#: includes/admin/class-wcs-att-admin.php:140
 msgid "Options for purchasing cart contents on a recurring basis."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:59
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:66
 msgid "Subscriptions"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:86
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:93
 msgid "Force subscription"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:86
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:93
 msgid ""
 "Check this option to prevent one-time purchases of this product. In effect "
 "when at least one Subscription Option has been added below."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:89
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:96
 msgid "Default to"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:90
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:97
 msgid "One-time purchase"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:91
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:98
 msgid "Subscription"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:95
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:102
 msgid "Subscription prompt"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:95
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:102
 msgid ""
 "Custom html/text to display before the available Subscription Options. In "
 "effect when at least one Subscription Option has been added below."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:102
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:109
 msgid "Subscription Options"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:103
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:110
 msgid "Add one or more subscription options for this product."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:167
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:174
 msgid "Interval"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:169
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:176
 msgid "Subscription interval"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:175
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:182
 msgid "Subscription period"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:182
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:189
 msgid "Choose the subscription billing interval and period."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:189
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:196
 msgid "Length"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:193
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:200
 msgid "Choose the subscription billing length."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:227
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:285
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:234
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:292
 msgid "Price"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:230
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:237
 msgid "Inherit from product"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:231
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:238
 msgid "Override product"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:246
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:304
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:253
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:311
 msgid "Regular Price"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:257
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:315
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:264
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:322
 msgid "Sale Price"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:271
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:329
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:278
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:336
 msgid "Discount %"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:272
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:279
 msgid "Discount applied on the <strong>Regular Price</strong> of the product."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:288
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:295
 msgid "Inherit from chosen variation"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:289
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:296
 msgid "Override all variations"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:330
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:337
 msgid ""
 "Discount applied on the <strong>Regular Price</strong> of the chosen "
 "variation."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:402
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:409
 msgid "Please enter positive subscription discount values, between 0-100."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:102
+#: includes/admin/meta-boxes/views/subscription-scheme.php:15
+msgid "Drag to sort"
+msgstr ""
+
+#: includes/admin/meta-boxes/views/subscription-scheme.php:16
+msgid "Remove"
+msgstr ""
+
+#: includes/display/class-wcs-att-display-cart.php:90
 msgid "only now"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:220
-msgid "Yes, %s."
-msgstr ""
-
-#: includes/display/class-wcs-att-display-product.php:93
+#: includes/display/class-wcs-att-display-product.php:81
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:115
-msgid "%s"
-msgstr ""
-
-#: includes/display/class-wcs-att-display-product.php:195
+#: includes/display/class-wcs-att-display-product.php:183
 msgid "Sign Up Now"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:211
+#: includes/product/class-wcs-att-product-prices.php:193
 msgid "%s&#37; off"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:212
+#: includes/product/class-wcs-att-product-prices.php:194
 msgid "subscribe and get %1$s%2$s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:212
+#: includes/product/class-wcs-att-product-prices.php:194
 msgid " up to"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:213
-#: includes/product/class-wcs-att-product-prices.php:246
+#: includes/product/class-wcs-att-product-prices.php:195
+#: includes/product/class-wcs-att-product-prices.php:226
 msgid "&ndash; or %s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:248
+#: includes/product/class-wcs-att-product-prices.php:228
 msgid "&ndash; subscription plan available"
 msgid_plural "&ndash; subscription plans available"
 msgstr[0] ""
@@ -252,38 +252,48 @@ msgstr ""
 msgid "http://prospress.com/"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:200
+#: includes/display/class-wcs-att-display-cart.php:188
 msgctxt "cart subscription selection - negative response"
 msgid "No thanks."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:92
+#: includes/display/class-wcs-att-display-cart.php:208
+msgctxt "cart subscription selection - positive response"
+msgid "Yes, %s."
+msgstr ""
+
+#: includes/display/class-wcs-att-display-product.php:80
 msgctxt "product subscription selection - negative response"
 msgid "None"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:177
-#: includes/product/class-wcs-att-product-prices.php:240
+#: includes/display/class-wcs-att-display-product.php:103
+msgctxt "product subscription selection - positive response"
+msgid "%s"
+msgstr ""
+
+#: includes/product/class-wcs-att-product-prices.php:159
+#: includes/product/class-wcs-att-product-prices.php:220
 msgctxt "Price range: from"
 msgid "%1$s%2$s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:238
+#: includes/product/class-wcs-att-product-prices.php:218
 msgctxt "Price range: starting at"
 msgid "%1$s%2$s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:238
+#: includes/product/class-wcs-att-product-prices.php:218
 msgctxt "subscriptions \"starting at\" price string"
 msgid "<span class=\"from\">starting at </span>"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:240
+#: includes/product/class-wcs-att-product-prices.php:220
 msgctxt "subscription \"from\" price string"
 msgid "<span class=\"from\">from </span>"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:252
+#: includes/product/class-wcs-att-product-prices.php:232
 msgctxt "price html sub options suffix"
 msgid "%1$s%2$s"
 msgstr ""
