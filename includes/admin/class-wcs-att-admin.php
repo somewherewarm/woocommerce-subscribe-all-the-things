@@ -245,15 +245,16 @@ class WCS_ATT_Admin {
 		}
 
 		if ( $add_scripts ) {
-			wp_register_script( 'wcsatt_writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-write-panels' . $suffix . '.js', $writepanel_dependencies, WCS_ATT::VERSION );
-			wp_register_style( 'wcsatt_writepanel_css', WCS_ATT()->plugin_url() . '/assets/css/wcs-att-write-panels.css', array( 'woocommerce_admin_styles' ), WCS_ATT::VERSION );
-			wp_enqueue_style( 'wcsatt_writepanel_css' );
+			wp_register_script( 'wcsatt-writepanel', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-write-panels' . $suffix . '.js', $writepanel_dependencies, WCS_ATT::VERSION );
+			wp_register_style( 'wcsatt-writepanel-css', WCS_ATT()->plugin_url() . '/assets/css/wcs-att-write-panels.css', array( 'woocommerce_admin_styles' ), WCS_ATT::VERSION );
+			wp_style_add_data( 'wcsatt-writepanel-css', 'rtl', 'replace' );
+			wp_enqueue_style( 'wcsatt-writepanel-css' );
 		}
 
 		// WooCommerce admin pages.
 		if ( in_array( $screen_id, array( 'product', 'woocommerce_page_wc-settings' ) ) ) {
 
-			wp_enqueue_script( 'wcsatt_writepanel' );
+			wp_enqueue_script( 'wcsatt-writepanel' );
 
 			$params = array(
 				'add_subscription_scheme_nonce' => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
@@ -263,7 +264,7 @@ class WCS_ATT_Admin {
 				'wc_plugin_url'                 => WC()->plugin_url()
 			);
 
-			wp_localize_script( 'wcsatt_writepanel', 'wcsatt_admin_params', $params );
+			wp_localize_script( 'wcsatt-writepanel', 'wcsatt_admin_params', $params );
 		}
 	}
 }

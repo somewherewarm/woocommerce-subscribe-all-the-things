@@ -56,6 +56,7 @@ class WCS_ATT_Display {
 	public static function frontend_scripts() {
 
 		wp_register_style( 'wcsatt-css', WCS_ATT()->plugin_url() . '/assets/css/wcs-att-frontend.css', false, WCS_ATT::VERSION, 'all' );
+		wp_style_add_data( 'wcsatt-css', 'rtl', 'replace' );
 		wp_enqueue_style( 'wcsatt-css' );
 
 		if ( is_cart() ) {

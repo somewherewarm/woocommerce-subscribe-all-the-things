@@ -156,8 +156,8 @@ module.exports = function( grunt ) {
 				expand: true,
 				ext: '-rtl.css',
 				src: [
-					'wcs-att-frontend.css',
-					'wcs-att-write-panels.css'
+					'assets/css/wcs-att-frontend.css',
+					'assets/css/wcs-att-write-panels.css'
 				]
 			}
 		}

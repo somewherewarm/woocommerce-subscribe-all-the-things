@@ -1,0 +1,24 @@
+ul.wcsatt-options li, ul.wcsatt-options-cart li, ul.wcsatt-options-product li {
+	list-style: none;
+}
+
+ul.wcsatt-options {
+	margin: 10px 0 0;
+	min-width: 120px;
+}
+
+ul.wcsatt-options.overrides_exist {
+	margin: 0 0 0;
+}
+
+ul.wcsatt-options-cart {
+	margin: 0 0 2em 0;
+}
+
+ul.wcsatt-options-product {
+	margin: 0 5px 2em 0;
+}
+
+.single-product div.product .single_variation ul.wcsatt-options-product .price {
+	display: inline;
+}
