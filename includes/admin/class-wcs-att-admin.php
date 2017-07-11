@@ -21,9 +21,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Admin {
 
 	/**
-	 * Add hooks.
+	 * Initialize.
 	 */
 	public static function init() {
+		self::add_hooks();
+	}
+
+	/**
+	 * Add hooks.
+	 */
+	private static function add_hooks() {
 
 		/*
 		 * Single-Product settings.

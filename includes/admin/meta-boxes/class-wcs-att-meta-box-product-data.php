@@ -20,9 +20,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Meta_Box_Product_Data {
 
 	/**
-	 * Hook-in point.
+	 * Initialize.
 	 */
 	public static function init() {
+		self::add_hooks();
+	}
+
+	/**
+	 * Add hooks.
+	 */
+	private static function add_hooks() {
 
 		// Create the SATT Subscriptions tab.
 		add_action( 'woocommerce_product_data_tabs', array( __CLASS__, 'satt_product_data_tab' ) );
