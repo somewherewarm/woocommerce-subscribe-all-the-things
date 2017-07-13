@@ -31,16 +31,63 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 	}
 
 	/**
+	 * @covers WCS_ATT_Product_Schemes::has_forced_subscription_scheme
+	 *
+	 * @since 2.0.0
+	 */
+	public function test_has_forced_subscription_scheme() {
+
+		$product_one_time = WCS_ATT_Test_Helpers_Product::create_simple_satt_product();
+
+		$this->assertEquals( false, WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product_one_time ) );
+
+		$product_sub = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( array( 'force_subscription' => true ) );
+
+		$this->assertEquals( true, WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product_sub ) );
+
+		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product_one_time );
+		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product_sub );
+	}
+
+	/**
 	 * @covers WCS_ATT_Product_Schemes::get_subscription_scheme
 	 *
 	 * @since 2.0.0
 	 */
 	public function test_get_subscription_scheme() {
 
-		$product                        = WCS_ATT_Test_Helpers_Product::create_simple_satt_product();
-		$active_subscription_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product();
 
-		$this->assertEquals( null, $active_subscription_scheme_key );
+		// Nothing set.
+		$this->assertSame( null, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+
+		// Test one-time option.
+		WCS_ATT_Product::set_runtime_meta( $product, 'active_subscription_scheme_key', false );
+		$this->assertSame( false, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+
+		// Test a valid option.
+		WCS_ATT_Product::set_runtime_meta( $product, 'active_subscription_scheme_key', '1_month_5' );
+		$this->assertEquals( '1_month_5', WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+
+		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product );
+	}
+
+	/**
+	 * @covers WCS_ATT_Product_Schemes::get_subscription_scheme
+	 *
+	 * @since 2.0.0
+	 */
+	public function test_get_subscription_scheme_invalid() {
+
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( array( 'force_subscription' => true ) );
+
+		// Test an invalid option.
+		WCS_ATT_Product::set_runtime_meta( $product, 'active_subscription_scheme_key', 'xxx' );
+		$this->assertSame( null, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+
+		// Test another invalid option.
+		WCS_ATT_Product::set_runtime_meta( $product, 'active_subscription_scheme_key', false );
+		$this->assertSame( null, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
 
 		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product );
 	}
@@ -95,13 +142,41 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 		$result = WCS_ATT_Product_Schemes::set_subscription_scheme( $product, false );
 
 		$this->assertTrue( $result );
-		$this->assertEquals( false, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+		$this->assertSame( false, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
 
 		// Finally, resetting the object to an undefined subscription state should also work.
 		$result = WCS_ATT_Product_Schemes::set_subscription_scheme( $product, null );
 
 		$this->assertTrue( $result );
-		$this->assertEquals( null, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+		$this->assertSame( null, WCS_ATT_Product_Schemes::get_subscription_scheme( $product ) );
+
+		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product );
+	}
+
+	/**
+	 * @covers WCS_ATT_Product_Schemes::get_default_subscription_scheme
+	 *
+	 * @since 2.0.0
+	 */
+	public function test_get_default_subscription_scheme() {
+
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product();
+
+		$this->assertEquals( false, WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ) );
+
+		// Now prevent one-time purchases.
+		WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $product, true );
+
+		$this->assertEquals( '1_month_5', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ) );
+
+		// Delete the first scheme and update the object.
+		$schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+
+		array_shift( $schemes );
+
+		WCS_ATT_Product_Schemes::set_subscription_schemes( $product, $schemes );
+
+		$this->assertEquals( '2_month_10', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ) );
 
 		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product );
 	}
