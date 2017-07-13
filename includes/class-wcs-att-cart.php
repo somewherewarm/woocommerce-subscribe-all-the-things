@@ -132,6 +132,11 @@ class WCS_ATT_Cart {
 			if ( WCS_ATT_Product::is_subscription_product_type( $cart_item[ 'data' ] ) ) {
 				return false;
 			}
+
+			// Renewing/Resubscribing?
+			if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
+				return false;
+			}
 		}
 
 		return $cart_level_schemes;
