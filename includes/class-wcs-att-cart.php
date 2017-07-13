@@ -330,7 +330,7 @@ class WCS_ATT_Cart {
 							if ( $scheme_key === $applied_scheme ) {
 
 								// Prevent scheme discounts from being applied again when renewing or resubscribing.
-								if ( isset( $cart->cart_contents[ $cart_item_key ][ 'subscription_renewal' ] ) || isset( $cart->cart_contents[ $cart_item_key ][ 'subscription_resubscribe' ] ) ) {
+								if ( isset( $cart->cart_contents[ $cart_item_key ][ 'subscription_resubscribe' ] ) ) {
 									$scheme->set_pricing_mode( 'inherit' );
 									$scheme->set_discount( '' );
 								}
