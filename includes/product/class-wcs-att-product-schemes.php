@@ -155,6 +155,8 @@ class WCS_ATT_Product_Schemes {
 	 *
 	 * Optionally pass a specific key to get the associated scheme, if valid.
 	 *
+	 * Note that the return value is always validated against 'get_subscription_schemes' and 'has_forced_subscription'.
+	 *
 	 * @param  WC_Product                        $product     Product object.
 	 * @param  string                            $return      What to return - 'object' or 'key'. Optional.
 	 * @param  string                            $scheme_key  Optional key to get a specific scheme.
@@ -182,9 +184,14 @@ class WCS_ATT_Product_Schemes {
 				// Return the active scheme key if it points to a valid scheme...
 				if ( ! empty( $active_key ) ) {
 					$return_value = is_null( $found_scheme ) ? null : $active_key;
-				// Return false if the product is set to be sold in a non-recurring manner, or null otherwise.
+				/*
+				 * Return:
+				 *
+				 * - 'false' if the product is set to be sold in a non-recurring manner, or
+				 * - 'null' otherwise.
+				 */
 				} else {
-					$return_value = false === $active_key ? false : null;
+					$return_value = false === $active_key && false === self::has_forced_subscription_scheme( $product ) ? false : null;
 				}
 			}
 
@@ -196,8 +203,14 @@ class WCS_ATT_Product_Schemes {
 				$return_value = $found_scheme;
 			// Looking for the active scheme?
 			} else {
-				// Return false if the product is set to be sold in a non-recurring manner, the active scheme if found, or null otherwise.
-				$return_value = false === $active_key ? false : $found_scheme;
+				/*
+				 * Return:
+				 *
+				 * - 'false' if the product is set to be sold in a non-recurring manner,
+				 * - the active scheme if it exists, or
+				 * - 'null' otherwise.
+				 */
+				$return_value = false === $active_key && false === self::has_forced_subscription_scheme( $product ) ? false : $found_scheme;
 			}
 		}
 
@@ -311,6 +324,8 @@ class WCS_ATT_Product_Schemes {
 	 */
 	public static function set_subscription_schemes( $product, $schemes ) {
 		WCS_ATT_Product::set_runtime_meta( $product, 'subscription_schemes', $schemes );
+		// Reset the cached default scheme value as it depends on the 'subscription_schemes' runtime meta.
+		WCS_ATT_Product::set_runtime_meta( $product, 'default_subscription_scheme_key', null );
 	}
 
 	/**
@@ -319,6 +334,8 @@ class WCS_ATT_Product_Schemes {
 	 * - string  to activate a subscription scheme (valid key required);
 	 * - false   to indicate that the product is sold in a non-recurring manner; or
 	 * - null    to indicate that the susbcription state of the product is undefined.
+	 *
+	 * Note that the scheme set on the object may become invalid if 'set_subscription_schemes' or 'set_forced_subscription_scheme' are modified.
 	 *
 	 * @param  WC_Product  $product  Product object.
 	 * @param  string      $key      Identifier of subscription scheme to activate on object.
@@ -384,6 +401,8 @@ class WCS_ATT_Product_Schemes {
 	 */
 	public static function set_forced_subscription_scheme( $product, $is_forced_subscription ) {
 		WCS_ATT_Product::set_runtime_meta( $product, 'has_forced_subscription', $is_forced_subscription ? 'yes' : 'no' );
+		// Reset the cached default scheme value as it depends on the 'has_forced_subscription' runtime meta.
+		WCS_ATT_Product::set_runtime_meta( $product, 'default_subscription_scheme_key', null );
 	}
 
 	/*
