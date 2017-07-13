@@ -27,7 +27,7 @@ class WCS_ATT_Product_Prices_Tests extends WCS_ATT_Test_Case {
 	 */
 	public function test_get_price() {
 
-		$scheme_settings = array(
+		$scheme_data = array(
 
 			0 => array(
 				'subscription_period_interval' => 1,
@@ -53,7 +53,7 @@ class WCS_ATT_Product_Prices_Tests extends WCS_ATT_Test_Case {
 			)
 		);
 
-		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( $scheme_settings );
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( array( 'scheme_data' => $scheme_data ) );
 
 		// Product price with undefined subscription state.
 		$this->assertEquals( 10, $product->get_price() );
@@ -112,7 +112,7 @@ class WCS_ATT_Product_Prices_Tests extends WCS_ATT_Test_Case {
 	 */
 	public function test_get_price_html() {
 
-		$scheme_settings = array(
+		$scheme_data = array(
 
 			0 => array(
 				'subscription_period_interval' => 1,
@@ -138,7 +138,7 @@ class WCS_ATT_Product_Prices_Tests extends WCS_ATT_Test_Case {
 			)
 		);
 
-		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( $scheme_settings );
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( array( 'scheme_data' => $scheme_data ) );
 
 		// Product price html with defined subscription state.
 		WCS_ATT_Product_Schemes::set_subscription_scheme( $product, '1_month_3' );

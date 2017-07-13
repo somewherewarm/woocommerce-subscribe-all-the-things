@@ -52,7 +52,7 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 	 */
 	public function test_get_base_subscription_scheme() {
 
-		$scheme_settings = array(
+		$scheme_data = array(
 
 			0 => array(
 				'subscription_period_interval' => 1,
@@ -69,7 +69,7 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 			)
 		);
 
-		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( $scheme_settings );
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( array( 'scheme_data' => $scheme_data ) );
 
 		$base_scheme = WCS_ATT_Product_Schemes::get_base_subscription_scheme( $product );
 
@@ -113,7 +113,7 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 	 */
 	public function test_price_filter_exists() {
 
-		$scheme_settings = array(
+		$scheme_data = array(
 
 			0 => array(
 				'subscription_period_interval' => 1,
@@ -130,7 +130,7 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 			)
 		);
 
-		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( $scheme_settings );
+		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product( array( 'scheme_data' => $scheme_data ) );
 
 		$this->assertTrue( true, WCS_ATT_Product_Schemes::price_filter_exists( WCS_ATT_Product_Schemes::get_subscription_schemes( $product ) ) );
 	}
