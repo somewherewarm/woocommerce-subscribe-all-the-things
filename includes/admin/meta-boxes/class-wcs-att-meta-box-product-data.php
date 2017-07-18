@@ -107,7 +107,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 				<label>
 					<?php
 						echo __( 'Subscription Options', 'woocommerce-subscribe-all-the-things' );
-						echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Add one or more subscription options for this product.', 'woocommerce-subscribe-all-the-things' ) );
+						echo wc_help_tip( __( 'Add one or more subscription options for this product.', 'woocommerce-subscribe-all-the-things' ) );
 			?></label></p>
 			<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
@@ -186,7 +186,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 				<?php } ?>
 				</select>
 			</span>
-			<?php echo WCS_ATT_Core_Compatibility::wc_help_tip( __( 'Choose the subscription billing interval and period.', 'woocommerce-subscribe-all-the-things' ) ); ?>
+			<?php echo wc_help_tip( __( 'Choose the subscription billing interval and period.', 'woocommerce-subscribe-all-the-things' ) ); ?>
 		</p><?php
 
 		// Subscription Length.

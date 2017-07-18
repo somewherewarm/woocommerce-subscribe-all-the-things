@@ -115,30 +115,6 @@ class WCS_ATT_Core_Compatibility {
 
 	/*
 	|--------------------------------------------------------------------------
-	| Wrapper functions for backwards compatibility.
-	|--------------------------------------------------------------------------
-	*/
-
-
-
-	/**
-	 * Display a WooCommerce help tip.
-	 *
-	 * @since  1.0.4
-	 *
-	 * @param  string $tip
-	 * @return string
-	 */
-	public static function wc_help_tip( $tip ) {
-		if ( self::is_wc_version_gte_2_5() ) {
-			return wc_help_tip( $tip );
-		} else {
-			return '<img class="help_tip woocommerce-help-tip" data-tip="' . $tip . '" src="' . WC()->plugin_url() . '/assets/images/help.png" />';
-		}
-	}
-
-	/*
-	|--------------------------------------------------------------------------
 	| Deprecated.
 	|--------------------------------------------------------------------------
 	*/
