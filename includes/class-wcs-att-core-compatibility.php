@@ -49,56 +49,6 @@ class WCS_ATT_Core_Compatibility {
 	}
 
 	/**
-	 * Returns true if the installed version of WooCommerce is 2.7 or greater.
-	 *
-	 * @since  1.1.2
-	 * @return boolean
-	 */
-	public static function is_wc_version_gte_2_7() {
-		return self::is_wc_version_gte( '2.7' );
-	}
-
-	/**
-	 * Returns true if the installed version of WooCommerce is 2.6 or greater.
-	 *
-	 * @since  1.0.4
-	 * @return boolean
-	 */
-	public static function is_wc_version_gte_2_6() {
-		return self::is_wc_version_gte( '2.6' );
-	}
-
-	/**
-	 * Returns true if the installed version of WooCommerce is 2.5 or greater.
-	 *
-	 * @since  1.0.4
-	 * @return boolean
-	 */
-	public static function is_wc_version_gte_2_5() {
-		return self::is_wc_version_gte( '2.5' );
-	}
-
-	/**
-	 * Returns true if the installed version of WooCommerce is 2.4 or greater.
-	 *
-	 * @since  1.0.0
-	 * @return boolean
-	 */
-	public static function is_wc_version_gte_2_4() {
-		return self::is_wc_version_gte( '2.4' );
-	}
-
-	/**
-	 * Returns true if the installed version of WooCommerce is 2.3 or greater.
-	 *
-	 * @since  1.0.0
-	 * @return boolean
-	 */
-	public static function is_wc_version_gte_2_3() {
-		return self::is_wc_version_gte( '2.3' );
-	}
-
-	/**
 	 * Returns true if the installed version of WooCommerce is greater than or equal to $version.
 	 *
 	 * @since  2.0.0
@@ -340,5 +290,66 @@ class WCS_ATT_Core_Compatibility {
 		} else {
 			return '<img class="help_tip woocommerce-help-tip" data-tip="' . $tip . '" src="' . WC()->plugin_url() . '/assets/images/help.png" />';
 		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated.
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Returns true if the installed version of WooCommerce is 2.7 or greater.
+	 *
+	 * @since  1.1.2
+	 * @return boolean
+	 */
+	public static function is_wc_version_gte_2_7() {
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Core_Compatibility::is_wc_version_gte()' );
+		return self::is_wc_version_gte( '2.7' );
+	}
+
+	/**
+	 * Returns true if the installed version of WooCommerce is 2.6 or greater.
+	 *
+	 * @since  1.0.4
+	 * @return boolean
+	 */
+	public static function is_wc_version_gte_2_6() {
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Core_Compatibility::is_wc_version_gte()' );
+		return self::is_wc_version_gte( '2.6' );
+	}
+
+	/**
+	 * Returns true if the installed version of WooCommerce is 2.5 or greater.
+	 *
+	 * @since  1.0.4
+	 * @return boolean
+	 */
+	public static function is_wc_version_gte_2_5() {
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Core_Compatibility::is_wc_version_gte()' );
+		return self::is_wc_version_gte( '2.5' );
+	}
+
+	/**
+	 * Returns true if the installed version of WooCommerce is 2.4 or greater.
+	 *
+	 * @since  1.0.0
+	 * @return boolean
+	 */
+	public static function is_wc_version_gte_2_4() {
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Core_Compatibility::is_wc_version_gte()' );
+		return self::is_wc_version_gte( '2.4' );
+	}
+
+	/**
+	 * Returns true if the installed version of WooCommerce is 2.3 or greater.
+	 *
+	 * @since  1.0.0
+	 * @return boolean
+	 */
+	public static function is_wc_version_gte_2_3() {
+		_deprecated_function( __METHOD__ . '()', '2.0.0', 'WCS_ATT_Core_Compatibility::is_wc_version_gte()' );
+		return self::is_wc_version_gte( '2.3' );
 	}
 }
