@@ -38,21 +38,12 @@ class WCS_ATT_Product_Price_Filters {
 
 		if ( in_array( $context, array( 'price', '' ) ) ) {
 
-			if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-
-				add_filter( 'woocommerce_product_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
-				add_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
-				add_filter( 'woocommerce_product_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
-				add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
-				add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
-				add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
-
-			} else {
-
-				add_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
-				add_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
-				add_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
-			}
+			add_filter( 'woocommerce_product_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
+			add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
 
 			add_filter( 'woocommerce_get_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash' ), 0, 2 );
 			add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_variation_prices' ), 0, 2 );
@@ -87,21 +78,12 @@ class WCS_ATT_Product_Price_Filters {
 
 		if ( in_array( $context, array( 'price', '' ) ) ) {
 
-			if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-
-				remove_filter( 'woocommerce_product_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
-				remove_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
-				remove_filter( 'woocommerce_product_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
-				remove_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
-				remove_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
-				remove_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
-
-			} else {
-
-				remove_filter( 'woocommerce_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
-				remove_filter( 'woocommerce_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
-				remove_filter( 'woocommerce_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
-			}
+			remove_filter( 'woocommerce_product_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'filter_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'filter_sale_price' ), 0, 2 );
+			remove_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'filter_regular_price' ), 0, 2 );
 
 			remove_filter( 'woocommerce_get_variation_prices_hash', array( __CLASS__, 'filter_variation_prices_hash' ), 0, 2 );
 			remove_filter( 'woocommerce_variation_prices', array( __CLASS__, 'filter_variation_prices' ), 0, 2 );

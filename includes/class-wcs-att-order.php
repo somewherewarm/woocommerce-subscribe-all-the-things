@@ -36,19 +36,10 @@ class WCS_ATT_Order {
 		add_filter( 'woocommerce_order_again_cart_item_data', array( __CLASS__, 'restore_cart_item_from_order_item' ), 10, 3 );
 
 		// Restore the subscription state of a product instantiated using an order item as reference.
-		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			add_filter( 'woocommerce_order_item_product', array( __CLASS__, 'restore_product_from_order_item' ), 10, 2 );
-		} else {
-			// Using this under WC 3.0 may result in serious performance issues.
-			add_filter( 'woocommerce_get_product_from_item', array( __CLASS__, 'restore_product_from_order_item' ), 10, 2 );
-		}
+		add_filter( 'woocommerce_order_item_product', array( __CLASS__, 'restore_product_from_order_item' ), 10, 2 );
 
 		// Save subscription scheme in subscription item meta so it can be re-applied later.
-		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			add_action( 'woocommerce_checkout_create_order_line_item', array( __CLASS__, 'save_subscription_scheme_meta' ), 10, 3 );
-		} else {
-			add_action( 'woocommerce_add_order_item_meta', array( __CLASS__, 'save_subscription_scheme_meta_legacy' ), 10, 2 );
-		}
+		add_action( 'woocommerce_checkout_create_order_line_item', array( __CLASS__, 'save_subscription_scheme_meta' ), 10, 3 );
 	}
 
 	/*
@@ -65,23 +56,13 @@ class WCS_ATT_Order {
 	 */
 	public static function get_subscription_scheme( $order_item ) {
 		$scheme_key = null;
-		// Because who trusts WC 3.0 for back-compat?
-		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-			if ( $order_item->meta_exists( '_wcsatt_scheme' ) ) {
-				$scheme_key = $order_item->get_meta( '_wcsatt_scheme', true );
-				$scheme_key = 0 === absint( $scheme_key ) ? false : strval( $scheme_key );
-			// Backwards compatibility with v1.
-			} elseif ( $order_item->meta_exists( '_wcsatt_scheme_id' ) ) {
-				$scheme_key = $order_item->get_meta( '_wcsatt_scheme_id', true );
-				$scheme_key = 0 === absint( $scheme_key ) ? false : strval( $scheme_key );
-			}
-		} else {
-			if ( isset( $order_item[ 'wcsatt_scheme' ] ) ) {
-				$scheme_key = 0 === absint( $order_item[ 'wcsatt_scheme' ] ) ? false : strval( $order_item[ 'wcsatt_scheme' ] );
-			// Backwards compatibility with v1.
-			} elseif ( isset( $order_item[ 'wcsatt_scheme_id' ] ) ) {
-				$scheme_key = 0 === absint( $order_item[ 'wcsatt_scheme_id' ] ) ? false : strval( $order_item[ 'wcsatt_scheme_id' ] );
-			}
+		if ( $order_item->meta_exists( '_wcsatt_scheme' ) ) {
+			$scheme_key = $order_item->get_meta( '_wcsatt_scheme', true );
+			$scheme_key = 0 === absint( $scheme_key ) ? false : strval( $scheme_key );
+		// Backwards compatibility with v1.
+		} elseif ( $order_item->meta_exists( '_wcsatt_scheme_id' ) ) {
+			$scheme_key = $order_item->get_meta( '_wcsatt_scheme_id', true );
+			$scheme_key = 0 === absint( $scheme_key ) ? false : strval( $scheme_key );
 		}
 		return $scheme_key;
 	}

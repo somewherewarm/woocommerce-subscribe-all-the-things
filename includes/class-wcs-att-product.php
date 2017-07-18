@@ -147,29 +147,18 @@ class WCS_ATT_Product {
 	 */
 	public static function get_runtime_meta( $product, $key ) {
 
-		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
+		if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
 
-			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
-
-				$value = $product->get_meta( '_' . $key, true );
-
-			} else {
-
-				$data = $product->get_meta( '_satt_data', true );
-
-				if ( is_array( $data ) && isset( $data[ $key ] ) ) {
-					$value = $data[ $key ];
-				} else {
-					$value = '';
-				}
-			}
+			$value = $product->get_meta( '_' . $key, true );
 
 		} else {
 
-			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
-				$value = isset( $product->$key ) ? $product->$key : '';
+			$data = $product->get_meta( '_satt_data', true );
+
+			if ( is_array( $data ) && isset( $data[ $key ] ) ) {
+				$value = $data[ $key ];
 			} else {
-				$value = isset( $product->satt_data ) && is_array( $product->satt_data ) && isset( $product->satt_data[ $key ] ) ? $product->satt_data[ $key ] : '';
+				$value = '';
 			}
 		}
 
@@ -186,39 +175,21 @@ class WCS_ATT_Product {
 	 */
 	public static function set_runtime_meta( $product, $key, $value ) {
 
-		if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
+		if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
 
-			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
-
-				$product->add_meta_data( '_' . $key, $value, true );
-
-			} else {
-
-				$data = $product->get_meta( '_satt_data', true );
-
-				if ( empty( $data ) ) {
-					$data = array();
-				}
-
-				$data[ $key ] = $value;
-
-				$product->add_meta_data( '_satt_data', $data, true );
-			}
+			$product->add_meta_data( '_' . $key, $value, true );
 
 		} else {
 
-			if ( in_array( $key, self::$subscription_product_type_meta_keys ) ) {
+			$data = $product->get_meta( '_satt_data', true );
 
-				$product->$key = $value;
-
-			} else {
-
-				if ( empty( $product->satt_data ) ) {
-					$product->satt_data = array();
-				}
-
-				$product->satt_data[ $key ] = $value;
+			if ( empty( $data ) ) {
+				$data = array();
 			}
+
+			$data[ $key ] = $value;
+
+			$product->add_meta_data( '_satt_data', $data, true );
 		}
 	}
 }
