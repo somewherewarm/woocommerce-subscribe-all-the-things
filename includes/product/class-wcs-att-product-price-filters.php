@@ -187,8 +187,8 @@ class WCS_ATT_Product_Price_Filters {
 		}
 
 		if ( $variation_data_update_needed ) {
-			$variation_data[ 'display_price' ]         = WCS_ATT_Core_Compatibility::wc_get_price_to_display( $variation );
-			$variation_data[ 'display_regular_price' ] = WCS_ATT_Core_Compatibility::wc_get_price_to_display( $variation, array( 'price' => $variation->get_regular_price() ) );
+			$variation_data[ 'display_price' ]         = wc_get_price_to_display( $variation );
+			$variation_data[ 'display_regular_price' ] = wc_get_price_to_display( $variation, array( 'price' => $variation->get_regular_price() ) );
 			$variation_data[ 'price_html' ]            = $variation_data[ 'price_html' ] ? '<span class="price">' . $variation->get_price_html() . '</span>' : '';
 		}
 
