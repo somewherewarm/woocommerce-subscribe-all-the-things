@@ -95,9 +95,10 @@ class WCS_ATT_Cart {
 	 *
 	 * @since  2.0.0
 	 *
+	 * @param  string         $context  Function call context. Values: 'cart' or 'display'.
 	 * @return array|boolean
 	 */
-	public static function get_cart_subscription_schemes() {
+	public static function get_cart_subscription_schemes( $context = 'cart' ) {
 
 		$cart_level_schemes     = array();
 		$cart_level_scheme_meta = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
@@ -133,9 +134,11 @@ class WCS_ATT_Cart {
 				return false;
 			}
 
-			// Renewing/Resubscribing?
-			if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
-				return false;
+			// When getting cart subscription schemes for display, do not return anything when renewing/resubscribing.
+			if ( 'display' === $context ) {
+				if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
+					return false;
+				}
 			}
 		}
 
@@ -363,8 +366,11 @@ class WCS_ATT_Cart {
 
 		$cart_level_schemes = self::get_subscription_schemes( $cart_item, 'cart' );
 
-		// Currently a cart item can only have product-level or cart-level schemes, not both - @see 'WCS_ATT_Cart::get_cart_subscription_schemes'.
-		if ( ! empty( $cart_level_schemes ) ) {
+		/*
+		 * Currently a cart item can only have product-level or cart-level schemes, not both - @see 'WCS_ATT_Cart::get_cart_subscription_schemes'.
+		 * Note that if there are no cart-level schemes on display, we shouldn't apply any cart-level scheme in the background.
+		 */
+		if ( ! empty( $cart_level_schemes ) && self::get_cart_subscription_schemes( 'display' ) ) {
 
 			// Read active cart scheme from session.
 			$scheme_key_to_apply = self::get_cart_subscription_scheme();

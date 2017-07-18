@@ -179,7 +179,7 @@ class WCS_ATT_Display_Cart {
 	public static function show_subscribe_to_cart_prompt() {
 
 		// Show cart/order level options only if all cart items share a common cart/order level subscription scheme.
-		if ( $subscription_schemes = WCS_ATT_Cart::get_cart_subscription_schemes() ) {
+		if ( $subscription_schemes = WCS_ATT_Cart::get_cart_subscription_schemes( 'display' ) ) {
 
 			$active_scheme_key = WCS_ATT_Cart::get_cart_subscription_scheme();
 			$options           = array();
