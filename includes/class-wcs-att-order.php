@@ -145,7 +145,9 @@ class WCS_ATT_Order {
 		$applied_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ] );
 
 		if ( $scheme_key !== $applied_scheme_key ) {
-			WCS_ATT()->log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".' ), $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_key, true ), var_export( $applied_scheme_key, true ), 'notice' );
+			$log_message = sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".', $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_key, true ), var_export( $applied_scheme_key, true ) );
+			WCS_ATT()->log( $log_message, 'notice' );
+
 		}
 	}
 
