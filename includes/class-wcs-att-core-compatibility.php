@@ -104,29 +104,6 @@ class WCS_ATT_Core_Compatibility {
 	*/
 
 	/**
-	 * Back-compat wrapper for setting CRUD object props directly.
-	 *
-	 * @since  2.0.0
-	 *
-	 * @param  object  $obj
-	 * @param  string  $name
-	 * @param  mixed   $value
-	 * @return void
-	 */
-	public static function set_prop( $obj, $name, $value ) {
-		if ( self::is_wc_version_gte_2_7() ) {
-			$set_fn = 'set_' . $name;
-			if ( is_callable( array( $obj, $set_fn ) ) ) {
-				$obj->$set_fn( $value );
-			} else {
-				$obj->$name = $value;
-			}
-		} else {
-			$obj->$name = $value;
-		}
-	}
-
-	/**
 	 * Back-compat wrapper for 'wc_get_price_including_tax'.
 	 *
 	 * @since  2.0.0
