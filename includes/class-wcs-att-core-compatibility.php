@@ -85,22 +85,6 @@ class WCS_ATT_Core_Compatibility {
 	*/
 
 	/**
-	 * Back-compat wrapper for 'get_parent_id'.
-	 *
-	 * @since  2.0.0
-	 *
-	 * @param  WC_Product  $product
-	 * @return mixed
-	 */
-	public static function get_parent_id( $product ) {
-		if ( self::is_wc_version_gte_2_7() ) {
-			return $product->get_parent_id();
-		} else {
-			return $product->is_type( 'variation' ) ? absint( $product->id ) : 0;
-		}
-	}
-
-	/**
 	 * Back-compat wrapper for 'get_id'.
 	 *
 	 * @since  2.0.0
