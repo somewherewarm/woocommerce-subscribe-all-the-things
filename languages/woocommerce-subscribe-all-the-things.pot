@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.0.0-alpha\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2017-07-18 08:18:32+00:00\n"
+"POT-Creation-Date: 2017-07-18 12:22:27+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -157,21 +157,21 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:537
+#: includes/class-wcs-att-cart.php:538
 msgid "Please choose a new subscription plan."
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:543
+#: includes/class-wcs-att-cart.php:544
 msgid ""
 "The &quot;%1$s&quot; subscription that you signed up for is no longer "
 "available. %2$s"
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:555
+#: includes/class-wcs-att-cart.php:556
 msgid "Please choose a plan to proceed."
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:561
+#: includes/class-wcs-att-cart.php:562
 msgid "&quot;%1$s&quot; is only available with a subscription plan. %2$s"
 msgstr ""
 
@@ -227,23 +227,23 @@ msgstr ""
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:160
+#: woocommerce-subscribe-all-the-things.php:173
 msgid ""
 "WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
 "order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:170
+#: woocommerce-subscribe-all-the-things.php:183
 msgid ""
 "WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
 "version 2.0+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:224
+#: woocommerce-subscribe-all-the-things.php:248
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:224
+#: woocommerce-subscribe-all-the-things.php:248
 msgid "%s and %s"
 msgstr ""
 
