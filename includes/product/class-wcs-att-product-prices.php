@@ -144,7 +144,7 @@ class WCS_ATT_Product_Prices {
 					$has_variable_price = false;
 				}
 
-				$html_from_text = WCS_ATT_Core_Compatibility::get_price_html_from_text( $product );
+				$html_from_text = wc_get_price_html_from_text();
 
 				if ( WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product ) ) {
 

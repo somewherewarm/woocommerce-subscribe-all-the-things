@@ -85,23 +85,6 @@ class WCS_ATT_Core_Compatibility {
 	*/
 
 	/**
-	 * Back-compat wrapper for getting CRUD object props directly.
-	 *
-	 * @since  2.0.0
-	 *
-	 * @param  WC_Product  $product
-	 * @return string
-	 */
-	public static function get_price_html_from_text( $product ) {
-		if ( self::is_wc_version_gte_2_7() ) {
-			$value = wc_get_price_html_from_text();
-		} else {
-			$value = $product->get_price_html_from_text();
-		}
-		return $value;
-	}
-
-	/**
 	 * Back-compat wrapper for 'get_parent_id'.
 	 *
 	 * @since  2.0.0
