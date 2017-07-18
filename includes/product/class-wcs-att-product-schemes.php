@@ -265,7 +265,7 @@ class WCS_ATT_Product_Schemes {
 
 		if ( ! empty( $schemes ) ) {
 
-			$product_price       = WCS_ATT_Core_Compatibility::get_prop( $product, 'price' );
+			$product_price       = $product->get_price( 'edit' );
 			$price_filter_exists = self::price_filter_exists( $schemes );
 			$base_scheme         = current( $schemes );
 			$base_scheme_price   = $product_price;

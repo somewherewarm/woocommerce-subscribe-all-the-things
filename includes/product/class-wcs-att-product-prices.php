@@ -293,16 +293,16 @@ class WCS_ATT_Product_Prices {
 		} else {
 
 			$subscription_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
-			$price               = WCS_ATT_Core_Compatibility::get_prop( $product, $price_prop );
+			$price               = $product->$price_fn( 'edit' );
 
 			if ( ! empty( $subscription_scheme ) ) {
 
 				if ( $subscription_scheme->has_price_filter() && apply_filters( 'wcsatt_price_filters_allowed', true, $product ) ) {
 
 					$prices_array = array(
-						'price'         => 'price'         === $price_prop ? $price : WCS_ATT_Core_Compatibility::get_prop( $product, 'price' ),
-						'sale_price'    => 'sale_price'    === $price_prop ? $price : WCS_ATT_Core_Compatibility::get_prop( $product, 'sale_price' ),
-						'regular_price' => 'regular_price' === $price_prop ? $price : WCS_ATT_Core_Compatibility::get_prop( $product, 'regular_price' ),
+						'price'         => 'price'         === $price_prop ? $price : $product->get_price( 'edit' ),
+						'sale_price'    => 'sale_price'    === $price_prop ? $price : $product->get_sale_price( 'edit' ),
+						'regular_price' => 'regular_price' === $price_prop ? $price : $product->get_regular_price( 'edit' )
 					);
 
 					$overridden_prices = $subscription_scheme->get_prices( $prices_array);

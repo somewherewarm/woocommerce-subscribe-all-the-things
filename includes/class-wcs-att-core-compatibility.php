@@ -104,25 +104,6 @@ class WCS_ATT_Core_Compatibility {
 	*/
 
 	/**
-	 * Back-compat wrapper for getting CRUD object props directly.
-	 *
-	 * @since  2.0.0
-	 *
-	 * @param  object  $obj
-	 * @param  string  $name
-	 * @return mixed
-	 */
-	public static function get_prop( $obj, $name ) {
-		if ( self::is_wc_version_gte_2_7() ) {
-			$get_fn = 'get_' . $name;
-			$value = is_callable( array( $obj, $get_fn ) ) ? $obj->$get_fn( 'edit' ) : null;
-		} else {
-			$value = $obj->$name;
-		}
-		return $value;
-	}
-
-	/**
 	 * Back-compat wrapper for setting CRUD object props directly.
 	 *
 	 * @since  2.0.0
