@@ -49,6 +49,9 @@ class WCS_ATT_Cart {
 
 		// Ajax handler for saving the subscription scheme chosen at cart-level.
 		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_scheme' ) );
+
+		// Check successful application of subscription schemes.
+		add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'check_applied_subscription_schemes' ), 10 );
 	}
 
 	/*
@@ -92,9 +95,10 @@ class WCS_ATT_Cart {
 	 *
 	 * @since  2.0.0
 	 *
+	 * @param  string         $context  Function call context. Values: 'cart' or 'display'.
 	 * @return array|boolean
 	 */
-	public static function get_cart_subscription_schemes() {
+	public static function get_cart_subscription_schemes( $context = 'cart' ) {
 
 		$cart_level_schemes     = array();
 		$cart_level_scheme_meta = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
@@ -128,6 +132,13 @@ class WCS_ATT_Cart {
 			// Is a legacy subscription product?
 			if ( WCS_ATT_Product::is_subscription_product_type( $cart_item[ 'data' ] ) ) {
 				return false;
+			}
+
+			// When getting cart subscription schemes for display, do not return anything when renewing/resubscribing.
+			if ( 'display' === $context ) {
+				if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
+					return false;
+				}
 			}
 		}
 
@@ -242,9 +253,22 @@ class WCS_ATT_Cart {
 	public static function apply_subscription_scheme( $cart_item ) {
 
 		if ( self::is_supported_product_type( $cart_item ) ) {
-			$scheme_key = self::get_subscription_scheme( $cart_item );
-			if ( null !== $scheme_key ) {
-				WCS_ATT_Product_Schemes::set_subscription_scheme( $cart_item[ 'data' ], $scheme_key );
+
+			$scheme_to_apply = self::get_subscription_scheme( $cart_item );
+
+			if ( null !== $scheme_to_apply ) {
+
+				// Attempt to apply scheme.
+				WCS_ATT_Product_Schemes::set_subscription_scheme( $cart_item[ 'data' ], $scheme_to_apply );
+
+				// Grab the applied scheme.
+				$applied_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ] );
+
+				// If the scheme was not applied sucessfully, then it was probably deleted, or something fishy happened.
+				if ( $scheme_to_apply !== $applied_scheme ) {
+					// In this case, simply ensure that no scheme is set on the object and handle the mismatch later.
+					WCS_ATT_Product_Schemes::set_subscription_scheme( $cart_item[ 'data' ], null );
+				}
 			}
 		}
 
@@ -269,36 +293,63 @@ class WCS_ATT_Cart {
 
 			if ( isset( $cart_item[ 'wcsatt_data' ] ) ) {
 
-				// If subscription schemes are available at cart-level, set them on the product object.
-				if ( ! empty( $cart_level_schemes ) ) {
-					WCS_ATT_Product_Schemes::set_subscription_schemes( $cart_item[ 'data' ], $cart_level_schemes );
-				}
+				/*
+				 * If renewing a subscription, delete all scheme-releted data from the object:
+				 * WCS has already linked it with a subscription order and will even copy the right total from there.
+				 */
+				if ( isset( $cart_item[ 'subscription_renewal' ] ) ) {
 
-				// Initialize subscription scheme data.
-				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = self::get_subscription_scheme_to_apply( $cart_item );
+					WCS_ATT_Product_Schemes::set_subscription_schemes( $cart->cart_contents[ $cart_item_key ][ 'data' ], array() );
 
-				// Convert the cart item to a subscription, if needed.
-				self::apply_subscription_scheme( $cart_item );
+				} else {
 
-				// Keep a single scheme when resubscribing, renewing, or paying for a failed order.
-				if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
-
-					$schemes = array();
-
-					foreach ( self::get_subscription_schemes( $cart_item ) as $scheme_key => $scheme ) {
-						if ( $scheme_key === $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] ) {
-
-							if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
-								$scheme->set_pricing_mode( 'inherit' );
-								$scheme->set_discount( '' );
-							}
-
-							$schemes[ $scheme_key ] = $scheme;
-						}
+					// If subscription schemes are available at cart-level, set them on the product object.
+					if ( ! empty( $cart_level_schemes ) ) {
+						WCS_ATT_Product_Schemes::set_subscription_schemes( $cart_item[ 'data' ], $cart_level_schemes );
 					}
 
-					WCS_ATT_Product_Schemes::set_subscription_schemes( $cart_item[ 'data' ], $schemes );
-					WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $cart_item[ 'data' ], true );
+					// Get subscription scheme to apply.
+					$scheme_to_apply = self::get_subscription_scheme_to_apply( $cart_item );
+
+					// Update cart item.
+					$cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $scheme_to_apply;
+
+					// Convert the product object to a subscription, if needed.
+					$cart->cart_contents[ $cart_item_key ] = self::apply_subscription_scheme( $cart->cart_contents[ $cart_item_key ] );
+
+					/*
+					 * Grab the applied scheme.
+					 * Note this might not be the same as the scheme we attempted to apply earlier.
+					 * See 'WCS_ATT_Cart::apply_subscription_scheme' for details.
+					 */
+					$applied_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart->cart_contents[ $cart_item_key ][ 'data' ] );
+
+					/*
+					 * 1. Keep only the applied scheme when resubscribing, or paying for a failed order (and force it).
+					 *    If we don't do this, then multiple scheme options will show up next to the cart item.
+					 * 2. Prevent scheme discounts from being applied again when renewing or resubscribing.
+					 */
+					if ( isset( $cart->cart_contents[ $cart_item_key ][ 'subscription_initial_payment' ] ) || isset( $cart->cart_contents[ $cart_item_key ][ 'subscription_resubscribe' ] ) ) {
+
+						$schemes = array();
+
+						foreach ( self::get_subscription_schemes( $cart->cart_contents[ $cart_item_key ] ) as $scheme_key => $scheme ) {
+
+							if ( $scheme_key === $applied_scheme ) {
+
+								// Prevent scheme discounts from being applied again when renewing or resubscribing.
+								if ( isset( $cart->cart_contents[ $cart_item_key ][ 'subscription_resubscribe' ] ) ) {
+									$scheme->set_pricing_mode( 'inherit' );
+									$scheme->set_discount( '' );
+								}
+
+								$schemes[ $scheme_key ] = $scheme;
+							}
+						}
+
+						WCS_ATT_Product_Schemes::set_subscription_schemes( $cart->cart_contents[ $cart_item_key ][ 'data' ], $schemes );
+						WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $cart->cart_contents[ $cart_item_key ][ 'data' ], true );
+					}
 				}
 			}
 		}
@@ -315,8 +366,11 @@ class WCS_ATT_Cart {
 
 		$cart_level_schemes = self::get_subscription_schemes( $cart_item, 'cart' );
 
-		// Currently a cart item can only have product-level or cart-level schemes, not both - @see 'WCS_ATT_Cart::get_cart_subscription_schemes'.
-		if ( ! empty( $cart_level_schemes ) ) {
+		/*
+		 * Currently a cart item can only have product-level or cart-level schemes, not both - @see 'WCS_ATT_Cart::get_cart_subscription_schemes'.
+		 * Note that if there are no cart-level schemes on display, we shouldn't apply any cart-level scheme in the background.
+		 */
+		if ( ! empty( $cart_level_schemes ) && self::get_cart_subscription_schemes( 'display' ) ) {
 
 			// Read active cart scheme from session.
 			$scheme_key_to_apply = self::get_cart_subscription_scheme();
@@ -456,7 +510,64 @@ class WCS_ATT_Cart {
 		return $is_supported;
 	}
 
+	/**
+	 * Validates the subscription schemes applied on cart items.
+	 */
+	public static function check_applied_subscription_schemes() {
 
+		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+
+			$scheme_to_apply = self::get_subscription_scheme( $cart_item );
+			$applied_scheme  = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ] );
+
+			// Handle mismatch. Remember that when renewing we are deleting all scheme data from the object and letting WCS handle everything.
+			if ( $scheme_to_apply !== $applied_scheme && ! isset( $cart_item[ 'subscription_renewal' ] ) ) {
+
+				$available_schemes  = WCS_ATT_Product_Schemes::get_subscription_schemes( $cart_item[ 'data' ] );
+				$has_forced_schemes = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $cart_item[ 'data' ] );
+				$has_scheme_options = sizeof( $available_schemes ) > 1 || ( 1 === sizeof( $available_schemes ) && false === $has_forced_schemes );
+
+				// The product was purchased as a subscription...
+				if ( $scheme_to_apply ) {
+
+					// ...and the purchased scheme does not exist anymore...
+					if ( ! in_array( $scheme_to_apply, $available_schemes ) ) {
+
+						// If options exist, request a change.
+						if ( $has_scheme_options ) {
+							$prompt = __( 'Please choose a new subscription plan.', 'woocommerce-subscribe-all-the-things' );
+						// If not, show a blocking notice. Later on, we can add a button here to provide an opportunity to the user to resolve the problem.
+						} else {
+							$prompt = '';
+						}
+
+						wc_add_notice( sprintf( __( 'The &quot;%1$s&quot; subscription that you signed up for is no longer available. %2$s', 'woocommerce-subscribe-all-the-things' ), $cart_item[ 'data' ]->get_name(), $prompt ), 'error' );
+
+					// ...or a dev misbehaved and deserves some bad karma.
+					} else {
+						error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".', $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) ) );
+					}
+
+				// ... or the product wasn't purchased as a subscription although it should...
+				} elseif ( false === $scheme_to_apply && $has_forced_schemes ) {
+
+					// If multiple options exist, request a change.
+					if ( $has_scheme_options ) {
+						$prompt = __( 'Please choose a plan to proceed.', 'woocommerce-subscribe-all-the-things' );
+					// If not, show a blocking notice. Later on, we can add a button here to provide an opportunity to the user to resolve the problem.
+					} else {
+						$prompt = '';
+					}
+
+					wc_add_notice( sprintf( __( '&quot;%1$s&quot; is only available with a subscription plan. %2$s', 'woocommerce-subscribe-all-the-things' ), $cart_item[ 'data' ]->get_name(), $prompt ), 'error' );
+
+				// ...or a dev did something very fishy (perhaps it was you).
+				} else {
+					error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".', $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) ) );
+				}
+			}
+		}
+	}
 
 	/*
 	|--------------------------------------------------------------------------

@@ -89,14 +89,27 @@ class WCS_ATT {
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_meta_links' ), 10, 4 );
 	}
 
+	/**
+	 * The plugin URL.
+	 *
+	 * @return string
+	 */
 	public function plugin_url() {
 		return plugins_url( basename( plugin_dir_path(__FILE__) ), basename( __FILE__ ) );
 	}
 
+	/**
+	 * The plugin path.
+	 *
+	 * @return string
+	 */
 	public function plugin_path() {
 		return untrailingslashit( plugin_dir_path( __FILE__ ) );
 	}
 
+	/**
+	 * Bootstrap.
+	 */
 	public function plugins_loaded() {
 
 		global $woocommerce;
@@ -205,8 +218,19 @@ class WCS_ATT {
 	 * @return array
 	 */
 	public function get_supported_product_types() {
-
 		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
+	}
+
+	/**
+	 * Log important stuff.
+	 *
+	 * @param  string  $message
+	 * @param  string  $level
+	 * @return void
+	 */
+	public function log( $message, $level ) {
+		$logger = wc_get_logger();
+		$logger->log( $level, $message, array( 'source' => 'wcs_att' ) );
 	}
 
 	/**
