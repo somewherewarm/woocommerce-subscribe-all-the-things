@@ -97,16 +97,10 @@ class WCS_ATT_Core_Compatibility {
 		return $parent_id ? $parent_id : $product->get_id();
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| Wrapper functions for backwards compatibility.
-	|--------------------------------------------------------------------------
-	*/
-
 	/**
-	 * Back-compat wrapper for 'WC_Product_Factory::get_product_type'.
+	 * Wrapper for 'WC_Product_Factory::get_product_type'.
 	 *
-	 * @since  3.9.0
+	 * @since  2.0.0
 	 *
 	 * @param  mixed  $product_id
 	 * @return mixed
@@ -114,15 +108,18 @@ class WCS_ATT_Core_Compatibility {
 	public static function get_product_type( $product_id ) {
 		$product_type = false;
 		if ( $product_id ) {
-			if ( self::is_wc_version_gte_2_7() ) {
-				$product_type = WC_Product_Factory::get_product_type( $product_id );
-			} else {
-				$terms        = get_the_terms( $product_id, 'product_type' );
-				$product_type = ! empty( $terms ) && isset( current( $terms )->name ) ? sanitize_title( current( $terms )->name ) : 'simple';
-			}
+			$product_type = WC_Product_Factory::get_product_type( $product_id );
 		}
 		return $product_type;
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Wrapper functions for backwards compatibility.
+	|--------------------------------------------------------------------------
+	*/
+
+
 
 	/**
 	 * Display a WooCommerce help tip.
