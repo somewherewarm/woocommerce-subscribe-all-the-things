@@ -545,7 +545,7 @@ class WCS_ATT_Cart {
 
 					// ...or a dev misbehaved and deserves some bad karma.
 					} else {
-						error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".' ), $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) );
+						error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".', $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) ) );
 					}
 
 				// ... or the product wasn't purchased as a subscription although it should...
@@ -563,7 +563,7 @@ class WCS_ATT_Cart {
 
 				// ...or a dev did something very fishy (perhaps it was you).
 				} else {
-					error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".' ), $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) );
+					error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".', $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) ) );
 				}
 			}
 		}
