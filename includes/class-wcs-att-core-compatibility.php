@@ -104,48 +104,6 @@ class WCS_ATT_Core_Compatibility {
 	*/
 
 	/**
-	 * Back-compat wrapper for 'wc_get_price_including_tax'.
-	 *
-	 * @since  2.0.0
-	 *
-	 * @param  WC_Product  $product
-	 * @param  array       $args
-	 * @return mixed
-	 */
-	public static function wc_get_price_including_tax( $product, $args ) {
-		if ( self::is_wc_version_gte_2_7() ) {
-			return wc_get_price_including_tax( $product, $args );
-		} else {
-
-			$qty   = isset( $args[ 'qty' ] ) ? $args[ 'qty' ] : 1;
-			$price = isset( $args[ 'price' ] ) ? $args[ 'price' ] : '';
-
-			return $product->get_price_including_tax( $qty, $price );
-		}
-	}
-
-	/**
-	 * Back-compat wrapper for 'wc_get_price_excluding_tax'.
-	 *
-	 * @since  2.0.0
-	 *
-	 * @param  WC_Product  $product
-	 * @param  array       $args
-	 * @return mixed
-	 */
-	public static function wc_get_price_excluding_tax( $product, $args ) {
-		if ( self::is_wc_version_gte_2_7() ) {
-			return wc_get_price_excluding_tax( $product, $args );
-		} else {
-
-			$qty   = isset( $args[ 'qty' ] ) ? $args[ 'qty' ] : 1;
-			$price = isset( $args[ 'price' ] ) ? $args[ 'price' ] : '';
-
-			return $product->get_price_excluding_tax( $qty, $price );
-		}
-	}
-
-	/**
 	 * Back-compat wrapper for 'wc_get_price_to_display'.
 	 *
 	 * @param  WC_Product  $product

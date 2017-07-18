@@ -183,9 +183,9 @@ class WCS_ATT_Cart {
 		$product = $cart_item[ 'data' ];
 
 		if ( 'excl' === get_option( 'woocommerce_tax_display_cart' ) ) {
-			$product_price = WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+			$product_price = wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 		} else {
-			$product_price = WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+			$product_price = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 		}
 
 		return apply_filters( 'wcsatt_cart_product_price', wc_price( $product_price ), $cart_item );
