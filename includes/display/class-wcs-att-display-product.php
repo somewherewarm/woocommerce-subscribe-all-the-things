@@ -147,7 +147,7 @@ class WCS_ATT_Display_Product {
 	public static function add_subscription_options_to_variation_data( $variation_data, $variable_product, $variation_product ) {
 		global $product;
 
-		if ( is_a( $product, 'WC_Product' ) && WCS_ATT_Core_Compatibility::get_id( $variable_product ) === WCS_ATT_Core_Compatibility::get_id( $product ) && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
+		if ( is_a( $product, 'WC_Product' ) && $variable_product->get_id() === $product->get_id() && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
 			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product ) ) {
 				$variation_data[ 'price_html' ] = $subscription_options_content;
 			}
