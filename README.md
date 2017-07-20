@@ -18,8 +18,8 @@ In addition to adding subscription options to individual products, Subscribe All
 
 In order to use the extension, you will need:
 
-* WooCommerce Subscriptions v2.0 or newer.
-* WooCommerce 2.3 or newer.
+* WooCommerce Subscriptions v2.1 or newer.
+* WooCommerce 3.0 or newer.
 * A sense of adventure.
 
 **Note:** We do not recommend using Subscribe All the Things on live sites. While we do our best to add new features, squash bugs, and keep the plugin up-to-date, **commercial use of the plugin is strongly discouraged**: Support inquiries may not be answered in a timely manner and critical issues may not be resolved promptly, as all development/support time is currently being donated.
