@@ -33,6 +33,9 @@ class WCS_ATT {
 	/* Required WC version. */
 	const REQ_WC_VERSION = '3.0.0';
 
+	/* Required WC version. */
+	const REQ_WCS_VERSION = '2.1.0';
+
 	/* Text domain. */
 	const TEXT_DOMAIN = 'woocommerce-subscribe-all-the-things';
 
@@ -114,13 +117,13 @@ class WCS_ATT {
 
 		global $woocommerce;
 
-		// Subs 2.0+ check.
-		if ( ! function_exists( 'wcs_is_subscription' ) ) {
+		// Subs 2.1+ check.
+		if ( ! class_exists( 'WC_Subscriptions' ) || version_compare( WC_Subscriptions::$version, self::REQ_WCS_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wcs_admin_notice' ) );
 			return false;
 		}
 
-		// WC version check.
+		// WC 3.0+ check.
 		if ( version_compare( $woocommerce->version, self::REQ_WC_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wc_admin_notice' ) );
 			return false;
@@ -180,7 +183,7 @@ class WCS_ATT {
 	 */
 	public function wcs_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version 2.0+.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version %s+.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WCS_VERSION ) . '</p></div>';
 	}
 
 	/**
