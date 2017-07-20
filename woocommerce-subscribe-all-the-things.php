@@ -11,7 +11,7 @@
 * Domain Path: /languages/
 *
 * Requires at least: 4.1
-* Tested up to: 4.7
+* Tested up to: 4.8
 *
 * Copyright: © 2009-2017 Prospress, Inc.
 * License: GNU General Public License v3.0
@@ -31,7 +31,7 @@ class WCS_ATT {
 	const VERSION = '2.0.0-alpha';
 
 	/* Required WC version. */
-	const REQ_WC_VERSION = '2.3.0';
+	const REQ_WC_VERSION = '3.0.0';
 
 	/* Text domain. */
 	const TEXT_DOMAIN = 'woocommerce-subscribe-all-the-things';
