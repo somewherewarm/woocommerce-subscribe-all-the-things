@@ -39,9 +39,7 @@ jQuery( function( $ ) {
 				$response_table.find( 'input[name="_wp_http_referer"]' ).val( cart_referrer );
 			}
 
-			if ( 'yes' === wcsatt_cart_params.is_wc_version_gte_2_6 ) {
-				$response_table.find( 'input[name="update_cart"]' ).prop( 'disabled', true );
-			}
+			$response_table.find( 'input[name="update_cart"]' ).prop( 'disabled', true );
 
 			$cart_totals.replaceWith( $response_totals );
 			$cart_table.replaceWith( $response_table );
