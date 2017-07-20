@@ -46,17 +46,12 @@ class WCS_ATT_Product_Schemes {
 
 		if ( '' === ( $forced = WCS_ATT_Product::get_runtime_meta( $product, 'has_forced_subscription' ) ) && self::has_subscription_schemes( $product ) ) {
 
-			$forced = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_force_subscription', true );
+			$forced = $product->get_meta( '_wcsatt_force_subscription', true );
 
 			// Attempt to get meta from parent if undefined on variation.
 			if ( '' === $forced && $product->is_type( 'variation' ) ) {
-
-				if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-					$parent = wc_get_product( $product->get_parent_id() );
-					$forced = $parent ? $parent->get_meta( '_wcsatt_force_subscription', true ) : '';
-				} else {
-					$forced = get_post_meta( WCS_ATT_Core_Compatibility::get_parent_id( $product ), '_wcsatt_force_subscription', true );
-				}
+				$parent = wc_get_product( $product->get_parent_id() );
+				$forced = $parent ? $parent->get_meta( '_wcsatt_force_subscription', true ) : '';
 			}
 
 			WCS_ATT_Product::set_runtime_meta( $product, 'has_forced_subscription', $forced );
@@ -101,17 +96,12 @@ class WCS_ATT_Product_Schemes {
 
 			if ( in_array( $product->get_type(), $supported_types ) ) {
 
-				$product_schemes_meta = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_schemes', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_schemes', true );
+				$product_schemes_meta = $product->get_meta( '_wcsatt_schemes', true );
 
 				// Attempt to get schemes from parent if undefined on variation.
 				if ( '' === $product_schemes_meta && $product->is_type( 'variation' ) ) {
-
-					if ( WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ) {
-						$parent          = wc_get_product( $product->get_parent_id() );
-						$product_schemes_meta = $parent ? $parent->get_meta( '_wcsatt_schemes', true ) : array();
-					} else {
-						$product_schemes_meta = get_post_meta( WCS_ATT_Core_Compatibility::get_parent_id( $product ), '_wcsatt_schemes', true );
-					}
+					$parent               = wc_get_product( $product->get_parent_id() );
+					$product_schemes_meta = $parent ? $parent->get_meta( '_wcsatt_schemes', true ) : array();
 				}
 
 				if ( ! empty( $product_schemes_meta ) ) {
@@ -242,7 +232,7 @@ class WCS_ATT_Product_Schemes {
 
 				} else {
 
-					$default_status = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_default_status', true ) : get_post_meta( WCS_ATT_Core_Compatibility::get_id( $product ), '_wcsatt_default_status', true );
+					$default_status = $product->get_meta( '_wcsatt_default_status', true );
 
 					if ( 'subscription' === $default_status ) {
 
@@ -275,7 +265,7 @@ class WCS_ATT_Product_Schemes {
 
 		if ( ! empty( $schemes ) ) {
 
-			$product_price       = WCS_ATT_Core_Compatibility::get_prop( $product, 'price' );
+			$product_price       = $product->get_price( 'edit' );
 			$price_filter_exists = self::price_filter_exists( $schemes );
 			$base_scheme         = current( $schemes );
 			$base_scheme_price   = $product_price;

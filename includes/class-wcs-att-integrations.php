@@ -441,9 +441,9 @@ class WCS_ATT_Integrations {
 					$price_key = false === $scheme_key ? '0' : $scheme_key;
 
 					if ( 'excl' === $tax_display_cart ) {
-						$bundle_price[ $price_key ] = WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+						$bundle_price[ $price_key ] = wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 					} else {
-						$bundle_price[ $price_key ] = WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+						$bundle_price[ $price_key ] = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 					}
 
 					foreach ( WC()->cart->cart_contents as $child_key => $child_item ) {
@@ -455,9 +455,9 @@ class WCS_ATT_Integrations {
 							$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
 
 							if ( 'excl' === $tax_display_cart ) {
-								$bundle_price[ $price_key ] += WCS_ATT_Core_Compatibility::wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+								$bundle_price[ $price_key ] += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
 							} else {
-								$bundle_price[ $price_key ] += WCS_ATT_Core_Compatibility::wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+								$bundle_price[ $price_key ] += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
 							}
 						}
 					}

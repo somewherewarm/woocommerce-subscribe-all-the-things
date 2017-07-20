@@ -107,7 +107,7 @@ class WCS_ATT_Display_Product {
 				);
 			}
 
-			if ( $prompt = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_subscription_prompt', true ) : get_post_meta( $product_id, '_wcsatt_subscription_prompt', true ) ) {
+			if ( $prompt = $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
@@ -147,7 +147,7 @@ class WCS_ATT_Display_Product {
 	public static function add_subscription_options_to_variation_data( $variation_data, $variable_product, $variation_product ) {
 		global $product;
 
-		if ( is_a( $product, 'WC_Product' ) && WCS_ATT_Core_Compatibility::get_id( $variable_product ) === WCS_ATT_Core_Compatibility::get_id( $product ) && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
+		if ( is_a( $product, 'WC_Product' ) && $variable_product->get_id() === $product->get_id() && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
 			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product ) ) {
 				$variation_data[ 'price_html' ] = $subscription_options_content;
 			}
@@ -175,8 +175,8 @@ class WCS_ATT_Display_Product {
 
 		global $product;
 
-		$product_schemes    = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_schemes', true ) : get_post_meta( $product->id, '_wcsatt_schemes', true );
-		$force_subscription = WCS_ATT_Core_Compatibility::is_wc_version_gte_2_7() ? $product->get_meta( '_wcsatt_force_subscription', true ) : get_post_meta( $product->id, '_wcsatt_force_subscription', true );
+		$product_schemes    = $product->get_meta( '_wcsatt_schemes', true );
+		$force_subscription = $product->get_meta( '_wcsatt_force_subscription', true );
 
 		if ( in_array( $product->get_type(), WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
 			if ( 'yes' === $force_subscription ) {
