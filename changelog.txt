@@ -1,7 +1,8 @@
 *** WooCommerce Subscribe All the Things ***
 
-2017.07.05 - version 2.0.0
- * Fix - WooCommerce 3.0 compatibility.
+2017.07.20 - version 2.0.0
+ * Important - WooCommerce 2.6 support dropped! WooCommerce Subscribe All The Things requires WooCommerce 3.0+ and WooCommerce Subscriptions 2.1+.
+ * Fix - Added WooCommerce 3.0 support.
  * Dev - Introduced Product API for managing the subscription state of product objects and getting product prices and subscription parameters associated with specific subscription schemes. Important: Price filter callbacks required to implement subscription price overrides and discounts are now "always-on". Refer to the 'WCS_ATT_Product_API' class for details.
  * Dev - Introduced 'WCS_ATT_Scheme' class for getting/setting subscription scheme data.
  * Dev - Added basic set of unit tests.
