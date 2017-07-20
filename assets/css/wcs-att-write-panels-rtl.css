@@ -1,12 +1,54 @@
-.wc-metaboxes-wrapper .wc-metabox.subscription_scheme h3 span {
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme .handle span {
 	display: block;
-	float:left;
-	padding-top: 4px;
+	float: right;
+	color: #888;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle {
+	cursor: move;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove {
+	cursor: pointer;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle:hover {
+	color: #333;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove:hover {
+	color: #f00;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme .handle span:before {
+	font-family: WooCommerce;
+	font-weight: normal;
+	font-size: 14px;
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-handle:before {
+	content: '\e032';
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove:before {
+	content: '\e013';
+}
+
+.wc-metaboxes-wrapper .wc-metabox.subscription_scheme span.scheme-remove {
+	margin-right: 1em;
 }
 
 #woocommerce-product-data ul.product_data_tabs li.cart_subscriptions_tab a:before {
 	content: '\e00e';
 	font-family: WooCommerce;
+}
+
+#woocommerce-product-data #wcsatt_data .woocommerce-help-tip {
+	vertical-align: text-top;
+}
+
+#woocommerce-product-data #wcsatt_data .woocommerce-help-tip:after {
+	line-height: 16px;
 }
 
 #wcsatt_data {
@@ -16,33 +58,18 @@
 #wcsatt_data .help_tip {
 	width: 17px;
 	height: 17px;
-	margin-left: 0;
-}
-
-#wcsatt_data .wc-metabox .scheme-title:before {
-	font-family: WooCommerce;
-	content: '\e032';
-	font-weight: normal;
-	color: #888;
+	margin-right: 0;
 }
 
 #wcsatt_data .subscription_scheme .description {
 	font-style: normal;
 	display: inline;
 	clear: none;
-	margin: 0 8px 0 12px;
+	margin: 0 12px 0 8px;
 }
 
 #wcsatt_data .toolbar {
 	border-top: none;
-}
-
-#wcsatt_data .woocommerce-help-tip {
-	vertical-align: text-top;
-}
-
-#wcsatt_data .woocommerce-help-tip:after {
-	line-height: 16px;
 }
 
 #wcsatt_data .subscription_schemes {
@@ -51,46 +78,57 @@
 
 #wcsatt_data .subscription_scheme_data p.form-field {
 	margin: 0;
-	padding: 4px 20px 10px 122px !important;
+	padding: 4px 150px 8px 20px !important;
+	line-height: 26px;
+}
+
+#wcsatt_data select {
+	height: 28px;
 }
 
 #wcsatt_data .subscription_scheme {
 	border-radius: 0;
-	padding-top: 5px;
-}
-
-#wcsatt_data .subscription_scheme_data {
-	font-weight: normal;
-	padding: 0.5em 0.75em;
-}
-
-#wcsatt_data .subscription_scheme_data .wc_input_subscription_period_interval {
-	margin-right: 5px;
-}
-
-#wcsatt_data .subscription_scheme_product_data {
-	display: block;
-	float: left;
-}
-
-#wcsatt_data .subscription_scheme_data label {
-	margin: 0 0 0 -120px;
-	width: 110px;
-	float: left;
+	padding: 5px 0 0 90px;
 }
 
 #wcsatt_data .subscription_scheme .handle {
 	float: left;
+	padding: 1em 0;
+	margin-left: -9999em;
+	width: 65px;
+}
+
+#wcsatt_data .subscription_scheme:hover .handle {
+	margin-left: -90px;
+}
+
+#wcsatt_data .subscription_scheme_data {
+	font-weight: normal;
+	padding: 8px 12px;
+}
+
+#wcsatt_data .subscription_scheme_data .wc_input_subscription_period_interval {
+	margin-left: 5px;
+}
+
+#wcsatt_data .subscription_scheme_product_data {
+	display: block;
+	float: right;
+}
+
+#wcsatt_data .subscription_scheme_data label {
+	margin: 0 -138px 0 0;
+	width: 118px;
+	float: right;
 }
 
 #wcsatt_data .subscription_scheme .btn {
-	float: right;
+	float: left;
 	padding: 0.75em 1em;
 }
 
 #wcsatt_data .subscription_scheme .data {
-	float: left;
-	max-width: 60%
+	float: right;
 }
 
 #wcsatt_data .subscription_scheme:after, #wcsatt_data .subscription_scheme_product_data:after, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_override, #wcsatt_data .subscription_scheme_product_data .subscription_pricing_method_inherit {
@@ -108,13 +146,17 @@
  * Admin settings
  */
 
-.forminp #wcsatt_data .woocommerce-help-tip {
-	vertical-align: middle;
-}
-
 .forminp #wcsatt_data .wrap {
 	padding: 0;
 	margin: 0;
+}
+
+.forminp #wcsatt_data select {
+	float: right;
+}
+
+.forminp #wcsatt_data .woocommerce-help-tip {
+	margin-top: 0;
 }
 
 .forminp #wcsatt_data {
@@ -122,7 +164,7 @@
 }
 
 .forminp #wcsatt_data .toolbar {
-	padding-left: 0px !important;
+	padding-right: 0px !important;
 }
 
 .forminp #wcsatt_data .wc-metabox {

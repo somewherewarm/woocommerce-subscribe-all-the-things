@@ -3,7 +3,7 @@
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
 * Description: Experimental extension for linking WooCommerce Subscriptions with simple products, variable products and product types created by WooCommerce extensions, such as Composite Products and Product Bundles.
-* Version: 1.1.2
+* Version: 2.0.0-alpha
 * Author: Prospress Inc.
 * Author URI: http://prospress.com/
 *
@@ -11,9 +11,9 @@
 * Domain Path: /languages/
 *
 * Requires at least: 4.1
-* Tested up to: 4.6
+* Tested up to: 4.8
 *
-* Copyright: © 2009-2015 Prospress, Inc.
+* Copyright: © 2009-2017 Prospress, Inc.
 * License: GNU General Public License v3.0
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
@@ -28,10 +28,13 @@ if ( ! class_exists( 'WCS_ATT' ) ) :
 class WCS_ATT {
 
 	/* Plugin version. */
-	const VERSION = '1.1.2';
+	const VERSION = '2.0.0-alpha';
 
 	/* Required WC version. */
-	const REQ_WC_VERSION = '2.3.0';
+	const REQ_WC_VERSION = '3.0.0';
+
+	/* Required WC version. */
+	const REQ_WCS_VERSION = '2.1.0';
 
 	/* Text domain. */
 	const TEXT_DOMAIN = 'woocommerce-subscribe-all-the-things';
@@ -66,7 +69,7 @@ class WCS_ATT {
 	 * @since 1.0.0
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Foul!' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, __( 'Foul!', 'woocommerce-subscribe-all-the-things' ), '1.0.0' );
 	}
 
 	/**
@@ -75,7 +78,7 @@ class WCS_ATT {
 	 * @since 1.0.0
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Foul!' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, __( 'Foul!', 'woocommerce-subscribe-all-the-things' ), '1.0.0' );
 	}
 
 	/**
@@ -87,45 +90,70 @@ class WCS_ATT {
 		add_action( 'init', array( $this, 'init_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'activate' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_meta_links' ), 10, 4 );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 	}
 
+	/**
+	 * The plugin URL.
+	 *
+	 * @return string
+	 */
 	public function plugin_url() {
 		return plugins_url( basename( plugin_dir_path(__FILE__) ), basename( __FILE__ ) );
 	}
 
+	/**
+	 * The plugin path.
+	 *
+	 * @return string
+	 */
 	public function plugin_path() {
 		return untrailingslashit( plugin_dir_path( __FILE__ ) );
 	}
 
+	/**
+	 * Bootstrap.
+	 */
 	public function plugins_loaded() {
 
 		global $woocommerce;
 
-		// Subs 2 check
-		if ( ! function_exists( 'wcs_is_subscription' ) ) {
+		// Subs 2.1+ check.
+		if ( ! class_exists( 'WC_Subscriptions' ) || version_compare( WC_Subscriptions::$version, self::REQ_WCS_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wcs_admin_notice' ) );
 			return false;
 		}
 
-		// WC 2 check
+		// WC 3.0+ check.
 		if ( version_compare( $woocommerce->version, self::REQ_WC_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wc_admin_notice' ) );
 			return false;
 		}
 
-		require_once( 'includes/class-wcsatt-core-compatibility.php' );
-		require_once( 'includes/class-wcsatt-integrations.php' );
-		require_once( 'includes/class-wcsatt-schemes.php' );
-		require_once( 'includes/class-wcsatt-scheme-prices.php' );
-		require_once( 'includes/class-wcsatt-cart.php' );
-		require_once( 'includes/class-wcsatt-display.php' );
+		$this->includes();
+	}
 
-		// Admin includes
+	/**
+	 * Load plugin files.
+	 *
+	 * @return void
+	 */
+	public function includes() {
+
+		require_once( 'includes/class-wcs-att-core-compatibility.php' );
+		require_once( 'includes/class-wcs-att-integrations.php' );
+		require_once( 'includes/class-wcs-att-scheme.php' );
+		require_once( 'includes/class-wcs-att-product.php' );
+		require_once( 'includes/class-wcs-att-cart.php' );
+		require_once( 'includes/class-wcs-att-display.php' );
+		require_once( 'includes/class-wcs-att-order.php' );
+
+		// Legacy stuff.
+		require_once( 'includes/legacy/class-wcs-att-schemes.php' );
+
+		// Admin includes.
 		if ( is_admin() ) {
 			$this->admin_includes();
 		}
-
 	}
 
 	/**
@@ -135,7 +163,7 @@ class WCS_ATT {
 	 */
 	public function admin_includes() {
 
-		require_once( 'includes/admin/class-wcsatt-admin.php' );
+		require_once( 'includes/admin/class-wcs-att-admin.php' );
 	}
 
 	/**
@@ -145,7 +173,7 @@ class WCS_ATT {
 	 */
 	public function wc_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -155,7 +183,7 @@ class WCS_ATT {
 	 */
 	public function wcs_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version 2.0+.', self::TEXT_DOMAIN ), self::REQ_WC_VERSION ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version %s+.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WCS_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -187,24 +215,25 @@ class WCS_ATT {
 	}
 
 	/**
-	 * Deactivate extension.
-	 *
-	 * @return void
-	 */
-	public function deactivate() {
-
-		delete_option( 'wcsatt_version' );
-	}
-
-	/**
 	 * Product types supported by the plugin.
 	 * You can dynamically attach subscriptions to these product types
 	 *
 	 * @return array
 	 */
 	public function get_supported_product_types() {
-
 		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
+	}
+
+	/**
+	 * Log important stuff.
+	 *
+	 * @param  string  $message
+	 * @param  string  $level
+	 * @return void
+	 */
+	public function log( $message, $level ) {
+		$logger = wc_get_logger();
+		$logger->log( $level, $message, array( 'source' => 'wcs_att' ) );
 	}
 
 	/**
@@ -218,8 +247,8 @@ class WCS_ATT {
 
 		if ( $file == plugin_basename( __FILE__ ) ) {
 			$author1 = '<a href="' . $data[ 'AuthorURI' ] . '">' . $data[ 'Author' ] . '</a>';
-			$author2 = '<a href="http://somewherewarm.net/">SomewhereWarm</a>';
-			$links[ 1 ] = sprintf( __( 'By %s' ), sprintf( __( '%s and %s' ), $author1, $author2 ) );
+			$author2 = '<a href="http://somewherewarm.gr/">SomewhereWarm</a>';
+			$links[ 1 ] = sprintf( __( 'By %s', 'woocommerce-subscribe-all-the-things' ), sprintf( __( '%s and %s', 'woocommerce-subscribe-all-the-things' ), $author1, $author2 ) );
 		}
 
 		return $links;

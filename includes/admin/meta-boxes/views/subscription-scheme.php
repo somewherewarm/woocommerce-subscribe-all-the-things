@@ -11,7 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?><div class="subscription_scheme wc-metabox open" rel="<?php echo isset( $scheme_data[ 'position' ] ) ? $scheme_data[ 'position' ] : ''; ?>">
-	<div class="handle"><h3><span class="scheme-title"></span></h3></div>
+	<div class="handle">
+		<span class="scheme-handle" aria-label="<?php _e( "Drag to sort", "woocommerce-subscribe-all-the-things" ); ?>"></span>
+		<span class="scheme-remove" aria-label="<?php _e( "Remove", "woocommerce-subscribe-all-the-things" ); ?>"></span>
+	</div>
 	<div class="data subscription_scheme_data"><?php
 
 		// Basic Subscription Scheme Options.
@@ -26,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			?></div><?php
 		}
 	?></div>
-	<div class="btn"><button type="button" class="remove_row button"><?php echo __( 'Remove', 'woocommerce' ); ?></button></div><?php
+	<?php
 
 	if ( isset( $scheme_data[ 'id' ] ) ) {
 		?><input type="hidden" name="wcsatt_schemes[<?php echo $index; ?>][id]" class="scheme_id" value="<?php echo $scheme_data[ 'id' ]; ?>" /><?php

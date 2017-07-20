@@ -139,7 +139,7 @@ jQuery( function($) {
 	} );
 
 	// Remove.
-	$wcsatt_data_tab.on( 'click', 'button.remove_row', function() {
+	$wcsatt_data_tab.on( 'click', 'span.scheme-remove', function() {
 
 		var $parent = $( this ).closest( '.subscription_scheme' );
 
@@ -148,6 +148,8 @@ jQuery( function($) {
 		subscription_schemes_row_indexes();
 
 		$wcsatt_data_tab.trigger( 'woocommerce_subscription_schemes_changed' );
+
+		return false;
 	} );
 
 	// Expand.
@@ -187,6 +189,9 @@ jQuery( function($) {
 
 			// Run scripts against added markup.
 			added.wcsatt_scripts();
+
+			// Trigger 'change' event to show/hide type-dependent inputs.
+			$( 'input#_virtual' ).change();
 
 			// Trigger 'change' event to show/hide price override method options.
 			added.find( 'select.subscription_pricing_method_input' ).change();
@@ -234,7 +239,7 @@ jQuery( function($) {
 			items:                '.subscription_scheme',
 			cursor:               'move',
 			axis:                 'y',
-			handle:               'h3',
+			handle:               'span.scheme-handle',
 			scrollSensitivity:    40,
 			forcePlaceholderSize: true,
 			helper:               'clone',

@@ -31,7 +31,7 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
 
-				bundle.satt_schemes.push( { el: $scheme_option, data: scheme_data } );
+				bundle.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
 		};
 
@@ -42,6 +42,7 @@
 			self.initialize_schemes();
 
 			bundle.$bundle_data.on( 'woocommerce-product-bundle-updated-totals', self.update_subscription_totals );
+			bundle.$bundle_data.on( 'woocommerce-product-bundle-validation-status-changed', self.update_subscription_totals );
 		};
 
 		// Update totals displayed in SATT options.
@@ -51,47 +52,56 @@
 
 				$.each( bundle.satt_schemes, function( index, scheme ) {
 
+					var scheme_price_html = bundle.get_price_html();
+
 					// If only a single option is present, then bundle prices are already overridden on the server side.
 					// In this case, simply grab the subscription details from the option and append them to the bundle price string.
 					if ( bundle.satt_schemes.length === 1 && bundle.$bundle_wrap.find( '.wcsatt-options-product .one-time-option' ).length === 0 ) {
 
-						var $scheme_details = scheme.el.find( '.subscription-details' );
-						bundle.$bundle_price.find( '.price' ).append( $scheme_details.clone() );
+						bundle.$bundle_price.find( '.price' ).html( $( scheme_price_html ).html() + scheme.details_html );
 
 					// If multiple options are present, then calculate the subscription price for each option that overrides default prices and update its html string.
-					} else if ( scheme.data.overrides_price === true ) {
+					} else {
 
-						var price_data = $.extend( true, {}, bundle.price_data );
+						var $scheme_price = scheme.el.find( '.subscription-price' );
 
-						if ( scheme.data.subscription_scheme.subscription_pricing_method === 'inherit' && scheme.data.subscription_scheme.subscription_discount > 0 ) {
+						if ( scheme.data.overrides_price === true ) {
 
-							$.each( bundle.bundled_items, function( index, bundled_item ) {
-								var bundled_item_id = bundled_item.bundled_item_id;
+							var price_data = $.extend( true, {}, bundle.price_data );
 
-								if ( scheme.data.discount_from_regular ) {
-									price_data.prices[ bundled_item_id ] = price_data.regular_prices[ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
-								} else {
-									price_data.prices[ bundled_item_id ] = price_data.prices[ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
-								}
-								price_data.addons_prices[ bundled_item_id ] = price_data.addons_prices[ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
-							} );
+							if ( scheme.data.subscription_scheme.pricing_mode === 'inherit' && scheme.data.subscription_scheme.discount > 0 ) {
 
-							price_data.base_price = price_data.base_price * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
+								$.each( bundle.bundled_items, function( index, bundled_item ) {
+									var bundled_item_id = bundled_item.bundled_item_id;
 
-						} else if ( scheme.data.subscription_scheme.subscription_pricing_method === 'override' ) {
-							price_data.base_regular_price = Number( scheme.data.subscription_scheme.subscription_regular_price );
-							price_data.base_price         = Number( scheme.data.subscription_scheme.subscription_price );
+									if ( scheme.data.discount_from_regular ) {
+										price_data.prices[ bundled_item_id ] = price_data.regular_prices[ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.discount / 100 );
+									} else {
+										price_data.prices[ bundled_item_id ] = price_data.prices[ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.discount / 100 );
+									}
+									price_data.addons_prices[ bundled_item_id ] = price_data.addons_prices[ bundled_item_id ] * ( 1 - scheme.data.subscription_scheme.discount / 100 );
+								} );
+
+								price_data.base_price = price_data.base_price * ( 1 - scheme.data.subscription_scheme.discount / 100 );
+
+							} else if ( scheme.data.subscription_scheme.pricing_mode === 'override' ) {
+								price_data.base_regular_price = Number( scheme.data.subscription_scheme.regular_price );
+								price_data.base_price         = Number( scheme.data.subscription_scheme.price );
+							}
+
+							price_data = bundle.calculate_subtotals( false, price_data );
+							price_data = bundle.calculate_totals( price_data );
+
+							scheme_price_html = bundle.get_price_html( price_data );
 						}
 
-						price_data = bundle.calculate_subtotals( false, price_data );
-						price_data = bundle.calculate_totals( price_data );
+						if ( bundle.passes_validation() ) {
+							$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
+						} else {
+							$scheme_price.html( scheme.price_html );
+						}
 
-						var scheme_price_html = bundle.get_price_html( price_data ),
-							$scheme_price     = scheme.el.find( '.subscription-price' );
-
-						$scheme_price.html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
-
-						$scheme_price.trigger( 'wcsatt-updated-bundle-price', [ scheme_price_html, scheme, bundle ] );
+						$scheme_price.trigger( 'wcsatt-updated-bundle-price', [ scheme_price_html, scheme, bundle, self ] );
 					}
 				} );
 			}
@@ -132,7 +142,7 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
 
-				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data } );
+				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
 		};
 
@@ -147,6 +157,7 @@
 				if ( composite.satt_schemes.length > 0 ) {
 					if ( composite.satt_schemes.length > 1 || composite.$composite_data.find( '.composite_wrap .wcsatt-options-product .one-time-option' ).length > 0 ) {
 						composite.actions.add_action( 'composite_totals_changed', self.update_subscription_totals, 101, self );
+						composite.actions.add_action( 'composite_validation_status_changed', self.update_subscription_totals, 101, self );
 					} else {
 						composite.filters.add_filter( 'composite_price_html', self.filter_price_html, 10, self );
 					}
@@ -158,9 +169,9 @@
 		// In this case, simply grab the subscription details from the option and append them to the composite price string.
 		this.filter_price_html = function( price, view, price_data ) {
 
-			var $scheme_details = composite.satt_schemes[0].el.find( '.subscription-details' );
+			var scheme_details_html = composite.satt_schemes[0].details_html;
 
-			price = $( price ).append( $scheme_details.clone() ).prop( 'outerHTML' );
+			price = $( price ).append( scheme_details_html ).prop( 'outerHTML' );
 
 			return price;
 		};
@@ -172,29 +183,32 @@
 
 				$.each( composite.satt_schemes, function( index, scheme ) {
 
+					var scheme_price_html = composite.composite_price_view.get_price_html();
+						$scheme_price     = scheme.el.find( '.subscription-price' );
+
 					// Calculate the subscription price for each option that overrides default prices and update its html string.
 					if ( scheme.data.overrides_price === true ) {
 
 						var price_data = $.extend( true, {}, composite.data_model.price_data );
 
-						if ( scheme.data.subscription_scheme.subscription_pricing_method === 'inherit' && scheme.data.subscription_scheme.subscription_discount > 0 ) {
+						if ( scheme.data.subscription_scheme.pricing_mode === 'inherit' && scheme.data.subscription_scheme.discount > 0 ) {
 
 							$.each( composite.get_components(), function( index, component ) {
 								var component_id = component.component_id;
 
 								if ( scheme.data.discount_from_regular ) {
-									price_data.prices[ component_id ] = price_data.regular_prices[ component_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
+									price_data.prices[ component_id ] = price_data.regular_prices[ component_id ] * ( 1 - scheme.data.subscription_scheme.discount / 100 );
 								} else {
-									price_data.prices[ component_id ] = price_data.prices[ component_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
+									price_data.prices[ component_id ] = price_data.prices[ component_id ] * ( 1 - scheme.data.subscription_scheme.discount / 100 );
 								}
-								price_data.addons_prices[ component_id ] = price_data.addons_prices[ component_id ] * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
+								price_data.addons_prices[ component_id ] = price_data.addons_prices[ component_id ] * ( 1 - scheme.data.subscription_scheme.discount / 100 );
 							} );
 
-							price_data.base_price = price_data.base_price * ( 1 - scheme.data.subscription_scheme.subscription_discount / 100 );
+							price_data.base_price = price_data.base_price * ( 1 - scheme.data.subscription_scheme.discount / 100 );
 
-						} else if ( scheme.data.subscription_scheme.subscription_pricing_method === 'override' ) {
-							price_data.base_regular_price = Number( scheme.data.subscription_scheme.subscription_regular_price );
-							price_data.base_price         = Number( scheme.data.subscription_scheme.subscription_price );
+						} else if ( scheme.data.subscription_scheme.pricing_mode === 'override' ) {
+							price_data.base_regular_price = Number( scheme.data.subscription_scheme.regular_price );
+							price_data.base_price         = Number( scheme.data.subscription_scheme.price );
 						}
 
 						price_data = composite.data_model.calculate_subtotals( false, price_data );
@@ -202,14 +216,17 @@
 						var totals = composite.data_model.calculate_totals( price_data );
 
 						price_data.totals = totals;
-
-						var scheme_price_html = composite.composite_price_view.get_price_html( price_data ),
-							$scheme_price     = scheme.el.find( '.subscription-price' );
-
-						$scheme_price.html( $( scheme_price_html ).html() ).find( 'span.total' ).remove();
-
-						$scheme_price.trigger( 'wcsatt-updated-composite-price', [ scheme_price_html, scheme, composite ] );
+						scheme_price_html = composite.composite_price_view.get_price_html( price_data );
 					}
+
+					if ( 'pass' === composite.api.get_composite_validation_status() ) {
+						$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
+					} else {
+						$scheme_price.html( scheme.price_html );
+					}
+
+					$scheme_price.trigger( 'wcsatt-updated-composite-price', [ scheme_price_html, scheme, composite, self ] );
+
 				} );
 			}
 		};
