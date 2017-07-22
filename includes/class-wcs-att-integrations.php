@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Compatibility with other extensions.
  *
- * @class  WCS_ATT_Integrations
- * @since  1.0.0
+ * @class    WCS_ATT_Integrations
+ * @version  2.0.0
  */
 class WCS_ATT_Integrations {
 
@@ -402,8 +402,10 @@ class WCS_ATT_Integrations {
 	public static function add_container_item_subtotal_subscription_details( $subtotal, $cart_item, $cart_item_key ) {
 
 		$child_key = self::has_bundle_type_children( $cart_item );
+		$is_mnm    = $cart_item[ 'data' ]->is_type( 'mix-and-match' );
 
-		if ( false !== $child_key && self::has_scheme_data( $cart_item ) ) {
+		// Note: MnM container subtotals originally modified by WCS are not overwritten by MnM.
+		if ( false !== $child_key && false === $is_mnm && self::has_scheme_data( $cart_item ) ) {
 			$subtotal = WCS_ATT_Product_Prices::get_price_string( $cart_item[ 'data' ], array(
 				'price' => $subtotal
 			) );
