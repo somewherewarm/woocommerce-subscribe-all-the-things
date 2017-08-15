@@ -1,47 +1,48 @@
 *** WooCommerce Subscribe All the Things ***
 
-2017.07.20 - version 2.0.0
- * Important - WooCommerce 2.6 support dropped! WooCommerce Subscribe All The Things requires WooCommerce 3.0+ and WooCommerce Subscriptions 2.1+.
- * Fix - Added WooCommerce 3.0 support.
- * Dev - Introduced Product API for managing the subscription state of product objects and getting product prices and subscription parameters associated with specific subscription schemes. Important: Price filter callbacks required to implement subscription price overrides and discounts are now "always-on". Refer to the 'WCS_ATT_Product_API' class for details.
- * Dev - Introduced 'WCS_ATT_Scheme' class for getting/setting subscription scheme data.
- * Dev - Added basic set of unit tests.
- * Tweak - Streamlined the UI of the 'Product Data > Subscriptions' tab panel.
- * Tweak - Modified file names for consistency with the WooCommerce file/class naming conventions.
+2017.08.15 - version 2.0.0
+* Important - WooCommerce 2.6 support dropped! WooCommerce Subscribe All The Things requires WooCommerce 3.0+ and WooCommerce Subscriptions 2.1+.
+* Fix - Added WooCommerce 3.0 support.
+* Dev - Introduced Product API for managing the subscription state of product objects and getting product prices and subscription parameters associated with specific subscription schemes. Important: Price filter callbacks required to implement subscription price overrides and discounts are now "always-on". Refer to the 'WCS_ATT_Product_API' class for details.
+* Dev - Introduced 'WCS_ATT_Scheme' class for getting/setting subscription scheme data.
+* Dev - Added basic set of unit tests.
+* Tweak - Streamlined the UI of the 'Product Data > Subscriptions' tab panel.
+* Tweak - Modified file names for consistency with the WooCommerce file/class naming conventions.
+* Tweak - Change the add-to-cart button text and behavior depending on the available subscription schemes.
 
 2017.01.20 - version 1.1.2
- * Fix - Template overriding issues due to incorrect 'wc_get_template' arguments.
- * Fix - Escape subscription option description html.
- * Fix - Subscription options styling issues in 'Product Data > Subscriptions' and 'Settings > Subscriptions' with WooCommerce Subscriptions 2.1+.
- * Fix - Bundled item subscription plan prices are incorrect when the plan of the bundle price is defined using the 'Override product' method.
- * Fix - Switching the active cart subscription option breaks Update Cart button functionality in WC 2.6.
+* Fix - Template overriding issues due to incorrect 'wc_get_template' arguments.
+* Fix - Escape subscription option description html.
+* Fix - Subscription options styling issues in 'Product Data > Subscriptions' and 'Settings > Subscriptions' with WooCommerce Subscriptions 2.1+.
+* Fix - Bundled item subscription plan prices are incorrect when the plan of the bundle price is defined using the 'Override product' method.
+* Fix - Switching the active cart subscription option breaks Update Cart button functionality in WC 2.6.
 
 2016.10.28 - version 1.1.1
- * Fix - Resubscribing to products that have been subscription-enabled using SATT.
- * Fix - Product Bundles v5.0.0 and Composite Products v3.7.0 support.
- * Fix - Inconsistent visibility of the One-Time Shipping option and SATT-enabled products.
+* Fix - Resubscribing to products that have been subscription-enabled using SATT.
+* Fix - Product Bundles v5.0.0 and Composite Products v3.7.0 support.
+* Fix - Inconsistent visibility of the One-Time Shipping option and SATT-enabled products.
 
 2016.06.07 - version 1.1.0
- * Important - Template files modified and re-organized under '/cart' and '/single-product' directories. Please update any overridden SATT template files in your tree.
- * Fix - Wrong/static prices in the single-product template of Bundles and Composites when Per-Item Pricing is enabled. Totals next to SATT options are now properly updated to a) reflect changes in the configuration of a Bundle/Composite and b) include price discounts/overrides associated with each option.
+* Important - Template files modified and re-organized under '/cart' and '/single-product' directories. Please update any overridden SATT template files in your tree.
+* Fix - Wrong/static prices in the single-product template of Bundles and Composites when Per-Item Pricing is enabled. Totals next to SATT options are now properly updated to a) reflect changes in the configuration of a Bundle/Composite and b) include price discounts/overrides associated with each option.
 * Fix - Bundles/Composites with a single subscription option and the "Force Subscription" option enabled now treated and presented as permanent Subscription products. Price strings of a) the products themselves and b) all contained items now include any price overrides defined in the singular subscription option. Product price strings include subscription details.
- * Tweak - In-cart subscription switching feature not available for Bundles/Composites when Per-Item Pricing is enabled.
- * Tweak - Subscription options attached to MnM type products have no effect when Per-Item Pricing is enabled. MnM products unsupported when Per-Item Pricing is active.
- * Feature - Added support for Variable products. SATT options can now be added to Variable products at product (not variation!) level.
- * Tweak - Styles and general usability of admin "Subscriptions" panel.
- * Tweak -  Refactored the 'WCS_ATT_Schemes' and added a separate 'WCS_ATT_Scheme_Prices' class in order to separate all functions associated with price overrides.
+* Tweak - In-cart subscription switching feature not available for Bundles/Composites when Per-Item Pricing is enabled.
+* Tweak - Subscription options attached to MnM type products have no effect when Per-Item Pricing is enabled. MnM products unsupported when Per-Item Pricing is active.
+* Feature - Added support for Variable products. SATT options can now be added to Variable products at product (not variation!) level.
+* Tweak - Styles and general usability of admin "Subscriptions" panel.
+* Tweak -  Refactored the 'WCS_ATT_Schemes' and added a separate 'WCS_ATT_Scheme_Prices' class in order to separate all functions associated with price overrides.
 
 2016.03.28 - version 1.0.3
- * Feature - Ability to override product prices from subscription options.
- * Feature - Subscribe to cart feature.
- * Fix - Subscriptions admin tab: Refresh subscription length options when changing subscription period.
+* Feature - Ability to override product prices from subscription options.
+* Feature - Subscribe to cart feature.
+* Fix - Subscriptions admin tab: Refresh subscription length options when changing subscription period.
 
 2015.11.27 - version 1.0.2
- * Fix - Minified scripts not in repo.
- * Fix - "Function return value in write context" error.
+* Fix - Minified scripts not in repo.
+* Fix - "Function return value in write context" error.
 
 2015.11.14 - version 1.0.1
- * Fix - WC missing notice in place of the Subs v2.0+ missing notice. Hush!
+* Fix - WC missing notice in place of the Subs v2.0+ missing notice. Hush!
 
 2015.10.24 - version 1.0.0
- * Initial version.
+* Initial version.
