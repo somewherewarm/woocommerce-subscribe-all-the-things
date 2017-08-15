@@ -35,8 +35,15 @@ class WCS_ATT_Display_Product {
 		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'show_subscription_options' ), 100 );
 
-		// Changes the "Add to Cart" button text when a product with the force subscription is set.
-		add_filter( 'woocommerce_product_single_add_to_cart_text', array( __CLASS__, 'add_to_cart_text' ), 10, 1 );
+		// Changes the single-product add-to-cart button text when a product with the force subscription is set.
+		add_filter( 'woocommerce_product_single_add_to_cart_text', array( __CLASS__, 'single_add_to_cart_text' ), 10, 2 );
+
+		// Changes the shop button text when a product has subscription options.
+		add_filter( 'woocommerce_product_add_to_cart_text', array( __CLASS__, 'add_to_cart_text' ), 10, 2 );
+
+		// Changes the shop button action when a product has subscription options.
+		add_filter( 'woocommerce_product_add_to_cart_url', array( __CLASS__, 'add_to_cart_url' ), 10, 2 );
+		add_filter( 'woocommerce_product_supports', array( __CLASS__, 'supports_ajax_add_to_cart' ), 10, 3 );
 
 		// Replace plain variation price html with subscription options template.
 		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'add_subscription_options_to_variation_data' ), 0, 3 );
@@ -167,26 +174,121 @@ class WCS_ATT_Display_Product {
 	}
 
 	/**
-	 * Override the WooCommerce "Add to Cart" button text with "Sign Up Now".
+	 * Overrides the single-product add-to-cart button text with "Sign up".
 	 *
-	 * @since 1.1.1
+	 * @since  1.1.1
+	 *
+	 * @param  string      $button_text
+	 * @param  WC_Product  $product
+	 * @return string
 	 */
-	public static function add_to_cart_text( $button_text ) {
+	public static function single_add_to_cart_text( $button_text, $product ) {
 
-		global $product;
+		if ( WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
 
-		$product_schemes    = $product->get_meta( '_wcsatt_schemes', true );
-		$force_subscription = $product->get_meta( '_wcsatt_force_subscription', true );
+			$bypass = false;
 
-		if ( in_array( $product->get_type(), WCS_ATT()->get_supported_product_types() ) && $product_schemes ) {
-			if ( 'yes' === $force_subscription ) {
-				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign Up Now', 'woocommerce-subscribe-all-the-things' ) );
+			if ( $product->is_type( 'bundle' ) && isset( $_GET[ 'update-bundle' ] ) ) {
+				$updating_cart_key = wc_clean( $_GET[ 'update-bundle' ] );
+				if ( isset( WC()->cart->cart_contents[ $updating_cart_key ] ) ) {
+					$bypass = true;
+				}
+			} elseif ( $product->is_type( 'composite' ) && isset( $_GET[ 'update-composite' ] ) ) {
+				$updating_cart_key = wc_clean( $_GET[ 'update-composite' ] );
+				if ( isset( WC()->cart->cart_contents[ $updating_cart_key ] ) ) {
+					$bypass = true;
+				}
+			}
+
+			if ( ! $bypass && WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product ) ) {
+				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign up', 'woocommerce-subscribe-all-the-things' ) );
+			}
+
+			$button_text = apply_filters( 'wcsatt_single_add_to_cart_text', $button_text, $product );
+		}
+
+		return $button_text;
+	}
+
+	/**
+	 * Changes the shop add-to-cart button text when a product has subscription options.
+	 *
+	 * @since  2.0.0
+	 *
+	 * @param  string      $button_text
+	 * @param  WC_Product  $product
+	 * @return string
+	 */
+	public static function add_to_cart_text( $button_text, $product ) {
+
+		if ( WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) && $product->is_purchasable() && $product->is_in_stock() ) {
+
+			$button_text = __( 'Select options', 'woocommerce' );
+			$bypass      = false;
+
+			if ( $product->is_type( 'bundle' ) && $product->requires_input() ) {
+				$bypass = true;
+			}
+
+			if ( ! $bypass && WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product ) ) {
+				$button_text = get_option( WC_Subscriptions_Admin::$option_prefix . '_add_to_cart_button_text', __( 'Sign up', 'woocommerce-subscribe-all-the-things' ) );
+			}
+
+			$button_text = apply_filters( 'wcsatt_add_to_cart_text', $button_text, $product );
+		}
+
+		return $button_text;
+	}
+
+	/**
+	 * Changes the shop add-to-cart button action when a product has subscription options.
+	 *
+	 * @since  2.0.0
+	 *
+	 * @param  string      $url
+	 * @param  WC_Product  $product
+	 * @return string
+	 */
+	public static function add_to_cart_url( $url, $product ) {
+
+		if ( WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) && $product->is_purchasable() && $product->is_in_stock() ) {
+
+			if ( ! WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product ) ) {
+				$url = $product->get_permalink();
+			}
+
+			$url = apply_filters( 'wcsatt_add_to_cart_url', $url, $product );
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Changes the shop add-to-cart button URL when a product has subscription options.
+	 *
+	 * @since  2.0.0
+	 *
+	 * @param  array       $supports
+	 * @param  string      $feature
+	 * @param  WC_Product  $product
+	 * @return string
+	 */
+	public static function supports_ajax_add_to_cart( $supports, $feature, $product ) {
+
+		if ( 'ajax_add_to_cart' === $feature ) {
+
+			if ( WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
+
+				if ( ! WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product ) ) {
+					$supports = false;
+				}
+
+				$supports = apply_filters( 'wcsatt_product_supports_ajax_add_to_cart', $supports, $product );
 			}
 		}
 
-		return apply_filters( 'wcsatt_add_to_cart_text', $button_text );
+		return $supports;
 	}
-
 }
 
 WCS_ATT_Display_Product::init();
