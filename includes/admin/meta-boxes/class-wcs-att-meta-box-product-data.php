@@ -469,9 +469,9 @@ class WCS_ATT_Meta_Box_Product_Data {
 
 				// Save prompt.
 				if ( false === $prompt ) {
-					$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
-				} else {
 					$product->delete_meta_data( '_wcsatt_subscription_prompt' );
+				} else {
+					$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
 				}
 
 				$product->save();
