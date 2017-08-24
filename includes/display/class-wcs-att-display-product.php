@@ -55,7 +55,7 @@ class WCS_ATT_Display_Product {
 	 * @param  WC_Product  $product
 	 * @return void
 	 */
-	public static function get_subscription_options_content( $product ) {
+	public static function get_subscription_options_content( $product, $variable_product = null ) {
 
 		$content = '';
 
@@ -114,7 +114,7 @@ class WCS_ATT_Display_Product {
 				);
 			}
 
-			if ( $prompt = $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
+			if ( $prompt = isset( $variable_product ) ? $variable_product->get_meta( '_wcsatt_subscription_prompt', true ) : $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
@@ -155,7 +155,7 @@ class WCS_ATT_Display_Product {
 		global $product;
 
 		if ( is_a( $product, 'WC_Product' ) && $variable_product->get_id() === $product->get_id() && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
-			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product ) ) {
+			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product, $variable_product ) ) {
 				$variation_data[ 'price_html' ] = $subscription_options_content;
 			}
 		}
