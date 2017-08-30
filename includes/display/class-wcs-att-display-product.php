@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Single-product template modifications.
  *
  * @class    WCS_ATT_Display_Product
- * @version  2.0.0
+ * @version  2.0.1
  */
 class WCS_ATT_Display_Product {
 
