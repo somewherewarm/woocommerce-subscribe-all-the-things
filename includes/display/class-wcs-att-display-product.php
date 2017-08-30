@@ -115,7 +115,7 @@ class WCS_ATT_Display_Product {
 				);
 			}
 
-			if ( $prompt = isset( $parent_product ) ? $parent_product->get_meta( '_wcsatt_subscription_prompt', true ) : $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
+			if ( $prompt = is_a( $parent_product, 'WC_Product' ) ? $parent_product->get_meta( '_wcsatt_subscription_prompt', true ) : $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
 				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 			}
 
