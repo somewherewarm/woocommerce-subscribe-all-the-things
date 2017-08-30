@@ -52,7 +52,8 @@ class WCS_ATT_Display_Product {
 	/**
 	 * Options for purchasing a product once or creating a subscription from it.
 	 *
-	 * @param  WC_Product  $product
+	 * @param  WC_Product       $product
+	 * @param  WC_Product|null  $parent_product
 	 * @return void
 	 */
 	public static function get_subscription_options_content( $product, $parent_product = null ) {
