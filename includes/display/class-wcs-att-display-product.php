@@ -156,7 +156,7 @@ class WCS_ATT_Display_Product {
 		global $product;
 
 		if ( is_a( $product, 'WC_Product' ) && $variable_product->get_id() === $product->get_id() && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
-			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product, $parent_product ) ) {
+			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product, $variable_product ) ) {
 				$variation_data[ 'price_html' ] = $subscription_options_content;
 			}
 		}
