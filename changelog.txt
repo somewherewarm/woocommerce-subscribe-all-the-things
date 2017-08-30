@@ -1,5 +1,8 @@
 *** WooCommerce Subscribe All the Things ***
 
+2017.08.30 - version 2.0.1
+* Fix - Custom single-product subscription scheme selection prompt not saving/displaying correctly.
+
 2017.08.15 - version 2.0.0
 * Important - WooCommerce 2.6 support dropped! WooCommerce Subscribe All The Things requires WooCommerce 3.0+ and WooCommerce Subscriptions 2.1+.
 * Fix - Added WooCommerce 3.0 support.
