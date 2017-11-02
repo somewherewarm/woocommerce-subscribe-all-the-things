@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart support.
  *
  * @class    WCS_ATT_Cart
- * @version  2.0.0
+ * @version  2.0.1
  */
 class WCS_ATT_Cart {
 
@@ -491,23 +491,21 @@ class WCS_ATT_Cart {
 	 */
 	public static function is_supported_product_type( $arg ) {
 
-		$is_supported = false;
+		$product_type = '';
 
 		if ( is_a( $arg, 'WC_Product' ) ) {
-			$is_supported = $arg->is_type( WCS_ATT()->get_supported_product_types() );
+			$product_type = $arg->get_type();
 		} elseif ( is_array( $arg ) ) {
 			if ( isset( $arg[ 'data' ] ) ) {
-				$is_supported = $arg[ 'data' ]->is_type( WCS_ATT()->get_supported_product_types() );
+				$product_type = $arg[ 'data' ]->get_type();
 			} elseif ( isset( $arg[ 'product_id' ] ) ) {
 				$product_type = WCS_ATT_Core_Compatibility::get_product_type( $arg[ 'product_id' ] );
-				$is_supported = in_array( $product_type, WCS_ATT()->get_supported_product_types() );
 			}
 		} else {
 			$product_type = WCS_ATT_Core_Compatibility::get_product_type( absint( $arg ) );
-			$is_supported = in_array( $product_type, WCS_ATT()->get_supported_product_types() );
 		}
 
-		return $is_supported;
+		return in_array( $product_type, WCS_ATT()->get_supported_product_types() );
 	}
 
 	/**
