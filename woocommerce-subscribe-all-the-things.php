@@ -216,7 +216,6 @@ class WCS_ATT {
 
 	/**
 	 * Product types supported by the plugin.
-	 * You can dynamically attach subscriptions to these product types
 	 *
 	 * @return array
 	 */
@@ -255,7 +254,8 @@ class WCS_ATT {
 	}
 }
 
-endif; // end class_exists check
+// End class_exists check.
+endif;
 
 /**
  * Returns the main instance of WCS_ATT to prevent the need to use globals.
