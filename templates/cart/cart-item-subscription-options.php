@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	foreach ( $options as $option ) {
 		?>
-			<li>
+			<li class="<?php echo $option[ 'value' ] !== '0' ? 'subscription-option' : 'one-time-option'; ?>">
 				<label>
 					<input type="radio" name="cart[<?php echo $cart_item_key; ?>][convert_to_sub]" value="<?php echo esc_attr( $option[ 'value' ] ); ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
 					<?php echo $option[ 'description' ]; ?>
