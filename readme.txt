@@ -1,12 +1,12 @@
 === WooCommerce Subscribe All the Things ===
 
-Contributors: SomewhereWarm, Prospress, franticpsyx
+Contributors: SomewhereWarm, Prospress
 Tags: woocommerce, subscriptions, subscribe, order, cart, product, convert, product type, bundle, composite, mix, match, extension
 Requires at least: 4.1
 Tested up to: 4.8
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 WC requires at least: 3.0
-WC tested up to: 3.1
+WC tested up to: 3.2
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

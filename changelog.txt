@@ -1,6 +1,6 @@
 *** WooCommerce Subscribe All the Things ***
 
-2017.08.30 - version 2.0.1
+2017.11.02 - version 2.0.1
 * Fix - Custom single-product subscription scheme selection prompt not saving/displaying correctly.
 
 2017.08.15 - version 2.0.0
