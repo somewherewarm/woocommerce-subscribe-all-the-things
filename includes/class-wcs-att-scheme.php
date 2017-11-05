@@ -176,7 +176,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 * @return mixed
 	 */
 	public function get_discount() {
-		return 'inherit' === $this->get_pricing_mode() ? $this->data[ 'discount' ] : false;
+		return 'inherit' === $this->get_pricing_mode() ? apply_filters( 'wcsatt_subscription_scheme_discount', $this->data[ 'discount' ] ) : false;
 	}
 
 	/**
