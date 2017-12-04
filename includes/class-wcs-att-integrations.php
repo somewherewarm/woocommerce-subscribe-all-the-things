@@ -95,8 +95,6 @@ class WCS_ATT_Integrations {
 	 */
 	public static function init() {
 
-		$bundle_type_exists = false;
-
 		// Bundles.
 		if ( class_exists( 'WC_Bundles' ) ) {
 			self::$bundle_types[]                      = 'bundle';
@@ -110,7 +108,6 @@ class WCS_ATT_Integrations {
 			self::$container_order_item_conditionals[] = 'wc_pb_is_bundle_container_order_item';
 			self::$child_cart_item_conditionals[]      = 'wc_pb_is_bundled_cart_item';
 			self::$child_order_item_conditionals[]     = 'wc_pb_is_bundled_order_item';
-			$bundle_type_exists                        = true;
 		}
 
 		// Composites.
@@ -126,7 +123,6 @@ class WCS_ATT_Integrations {
 			self::$container_order_item_conditionals[] = 'wc_cp_is_composite_container_order_item';
 			self::$child_cart_item_conditionals[]      = 'wc_cp_is_composited_cart_item';
 			self::$child_order_item_conditionals[]     = 'wc_cp_is_composited_order_item';
-			$bundle_type_exists                        = true;
 		}
 
 		// Mix n Match.
@@ -142,10 +138,9 @@ class WCS_ATT_Integrations {
 			self::$container_order_item_conditionals[] = 'wc_mnm_is_mnm_container_order_item';
 			self::$child_cart_item_conditionals[]      = 'wc_mnm_is_mnm_cart_item';
 			self::$child_order_item_conditionals[]     = 'wc_mnm_is_mnm_order_item';
-			$bundle_type_exists                        = true;
 		}
 
-		if ( $bundle_type_exists ) {
+		if ( ! empty( self::$bundle_types ) ) {
 			self::add_hooks();
 		}
 	}
