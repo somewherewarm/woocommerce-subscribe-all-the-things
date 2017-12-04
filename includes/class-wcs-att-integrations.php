@@ -16,13 +16,79 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Compatibility with other extensions.
  *
  * @class    WCS_ATT_Integrations
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Integrations {
 
-	public static $bundle_types        = array();
+	/**
+	 * Complex product types integrated with SATT.
+	 * @var array
+	 */
+	private static $bundle_types = array();
+
+	/**
+	 * Complex type container cart item getter function names.
+	 * @var array
+	 */
+	private static $container_cart_item_getters = array();
+
+	/**
+	 * Complex type container order item getter function names.
+	 * @var array
+	 */
+	private static $container_order_item_getters = array();
+
+	/**
+	 * Complex type container cart item getter function names.
+	 * @var array
+	 */
+	private static $child_cart_item_getters = array();
+
+	/**
+	 * Complex type container order item getter function names.
+	 * @var array
+	 */
+	private static $child_order_item_getters = array();
+
+	/**
+	 * Complex type container cart item conditional function names.
+	 * @var array
+	 */
+	private static $container_cart_item_conditionals = array();
+
+	/**
+	 * Complex type container order item conditional function names.
+	 * @var array
+	 */
+	private static $container_order_item_conditionals = array();
+
+	/**
+	 * Complex type container cart item conditional function names.
+	 * @var array
+	 */
+	private static $child_cart_item_conditionals = array();
+
+	/**
+	 * Complex type container order item conditional function names.
+	 * @var array
+	 */
+	private static $child_order_item_conditionals = array();
+
+	/**
+	 * Complex type container cart/order item key names.
+	 *
+	 * @deprecated  2.1.0
+	 * @var         array
+	 */
 	public static $container_key_names = array();
-	public static $child_key_names     = array();
+
+	/**
+	 * Complex type child cart/order item key names.
+	 *
+	 * @deprecated  2.1.0
+	 * @var         array
+	 */
+	public static $child_key_names = array();
 
 	/**
 	 * Initialize.
@@ -33,26 +99,50 @@ class WCS_ATT_Integrations {
 
 		// Bundles.
 		if ( class_exists( 'WC_Bundles' ) ) {
-			self::$bundle_types[]        = 'bundle';
-			self::$container_key_names[] = 'bundled_by';
-			self::$child_key_names[]     = 'bundled_items';
-			$bundle_type_exists          = true;
+			self::$bundle_types[]                      = 'bundle';
+			self::$container_key_names[]               = 'bundled_by';
+			self::$child_key_names[]                   = 'bundled_items';
+			self::$container_cart_item_getters[]       = 'wc_pb_get_bundled_cart_item_container';
+			self::$container_order_item_getters[]      = 'wc_pb_get_bundled_order_item_container';
+			self::$child_cart_item_getters[]           = 'wc_pb_get_bundled_cart_items';
+			self::$child_order_item_getters[]          = 'wc_pb_get_bundled_order_items';
+			self::$container_cart_item_conditionals[]  = 'wc_pb_is_bundle_container_cart_item';
+			self::$container_order_item_conditionals[] = 'wc_pb_is_bundle_container_order_item';
+			self::$child_cart_item_conditionals[]      = 'wc_pb_is_bundled_cart_item';
+			self::$child_order_item_conditionals[]     = 'wc_pb_is_bundled_order_item';
+			$bundle_type_exists                        = true;
 		}
 
 		// Composites.
 		if ( class_exists( 'WC_Composite_Products' ) ) {
-			self::$bundle_types[]        = 'composite';
-			self::$container_key_names[] = 'composite_parent';
-			self::$child_key_names[]     = 'composite_children';
-			$bundle_type_exists          = true;
+			self::$bundle_types[]                      = 'composite';
+			self::$container_key_names[]               = 'composite_parent';
+			self::$child_key_names[]                   = 'composite_children';
+			self::$container_cart_item_getters[]       = 'wc_cp_get_composited_cart_item_container';
+			self::$container_order_item_getters[]      = 'wc_cp_get_composited_order_item_container';
+			self::$child_cart_item_getters[]           = 'wc_cp_get_composited_cart_items';
+			self::$child_order_item_getters[]          = 'wc_cp_get_composited_order_items';
+			self::$container_cart_item_conditionals[]  = 'wc_cp_is_composite_container_cart_item';
+			self::$container_order_item_conditionals[] = 'wc_cp_is_composite_container_order_item';
+			self::$child_cart_item_conditionals[]      = 'wc_cp_is_composited_cart_item';
+			self::$child_order_item_conditionals[]     = 'wc_cp_is_composited_order_item';
+			$bundle_type_exists                        = true;
 		}
 
 		// Mix n Match.
 		if ( class_exists( 'WC_Mix_and_Match' ) ) {
-			self::$bundle_types[]        = 'mix-and-match';
-			self::$container_key_names[] = 'mnm_container';
-			self::$child_key_names[]     = 'mnm_contents';
-			$bundle_type_exists          = true;
+			self::$bundle_types[]                      = 'mix-and-match';
+			self::$container_key_names[]               = 'mnm_container';
+			self::$child_key_names[]                   = 'mnm_contents';
+			self::$container_cart_item_getters[]       = 'wc_mnm_get_mnm_cart_item_container';
+			self::$container_order_item_getters[]      = 'wc_mnm_get_mnm_order_item_container';
+			self::$child_cart_item_getters[]           = 'wc_mnm_get_mnm_cart_items';
+			self::$child_order_item_getters[]          = 'wc_mnm_get_mnm_order_items';
+			self::$container_cart_item_conditionals[]  = 'wc_mnm_is_mnm_container_cart_item';
+			self::$container_order_item_conditionals[] = 'wc_mnm_is_mnm_container_order_item';
+			self::$child_cart_item_conditionals[]      = 'wc_mnm_is_mnm_cart_item';
+			self::$child_order_item_conditionals[]     = 'wc_mnm_is_mnm_order_item';
+			$bundle_type_exists                        = true;
 		}
 
 		if ( $bundle_type_exists ) {
@@ -125,58 +215,205 @@ class WCS_ATT_Integrations {
 
 	/*
 	|--------------------------------------------------------------------------
-	| Helpers/API
+	| Helpers
 	|--------------------------------------------------------------------------
 	*/
-
-	/**
-	 * Checks if the passed cart item is a supported bundle type child. Returns the container item key name if yes, or false if not.
-	 *
-	 * @param  array  $cart_item
-	 * @return boolean|string
-	 */
-	public static function has_bundle_type_container( $cart_item ) {
-
-		$container_key = false;
-
-		foreach ( self::$container_key_names as $container_key_name ) {
-			if ( ! empty( $cart_item[ $container_key_name ] ) ) {
-				$container_key = $cart_item[ $container_key_name ];
-				break;
-			}
-		}
-
-		return $container_key;
-	}
-
-	/**
-	 * Checks if the passed cart item is a supported bundle type container. Returns the child item key name if yes, or false if not.
-	 *
-	 * @param  array  $cart_item
-	 * @return boolean|string
-	 */
-	public static function has_bundle_type_children( $cart_item ) {
-
-		$child_key = false;
-
-		foreach ( self::$child_key_names as $child_key_name ) {
-			if ( ! empty( $cart_item[ $child_key_name ] ) ) {
-				$child_key = $cart_item[ $child_key_name ];
-				break;
-			}
-		}
-
-		return $child_key;
-	}
 
 	/**
 	 * Checks if the passed product is of a supported bundle type. Returns the type if yes, or false if not.
 	 *
 	 * @param  WC_Product  $product
-	 * @return boolean|string
+	 * @return boolean
 	 */
 	public static function is_bundle_type_product( $product ) {
 		return $product->is_type( self::$bundle_types );
+	}
+
+	/**
+	 * Given a bundle-type child cart item, find and return its container cart item or its cart id when the $return_id arg is true.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array    $cart_item
+	 * @param  array    $cart_contents
+	 * @param  boolean  $return_id
+	 * @return mixed
+	 */
+	public static function get_bundle_type_cart_item_container( $cart_item, $cart_contents = false, $return_id = false ) {
+
+		$container = false;
+
+		foreach ( self::$container_cart_item_getters as $container_cart_item_getter ) {
+			$container = call_user_func_array( $container_cart_item_getter, array( $cart_item, $cart_contents, $return_id ) );
+			if ( ! empty( $container ) ) {
+				break;
+			}
+		}
+
+		return $container;
+	}
+
+	/**
+	 * Given a bundle-type container cart item, find and return its child cart items - or their cart ids when the $return_ids arg is true.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array    $cart_item
+	 * @param  array    $cart_contents
+	 * @param  boolean  $return_ids
+	 * @return mixed
+	 */
+	public static function get_bundle_type_cart_items( $cart_item, $cart_contents = false, $return_ids = false ) {
+
+		$children = array();
+
+		foreach ( self::$child_cart_item_getters as $child_cart_item_getter ) {
+			$children = call_user_func_array( $child_cart_item_getter, array( $cart_item, $cart_contents, $return_ids ) );
+			if ( ! empty( $children ) ) {
+				break;
+			}
+		}
+
+		return $children;
+	}
+
+	/**
+	 * True if a cart item appears to be a bundle-type container item.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array  $cart_item
+	 * @return boolean
+	 */
+	public static function is_bundle_type_container_cart_item( $cart_item ) {
+
+		$is = false;
+
+		foreach ( self::$container_cart_item_conditionals as $container_cart_item_conditional ) {
+			$is = call_user_func_array( $container_cart_item_conditional, array( $cart_item ) );
+			if ( $is ) {
+				break;
+			}
+		}
+
+		return $is;
+	}
+
+	/**
+	 * True if a cart item is part of a bundle-type product.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array  $cart_item
+	 * @param  array  $cart_contents
+	 * @return boolean
+	 */
+	public static function is_bundle_type_cart_item( $cart_item, $cart_contents = false ) {
+
+		$is = false;
+
+		foreach ( self::$child_cart_item_conditionals as $child_cart_item_conditional ) {
+			$is = call_user_func_array( $child_cart_item_conditional, array( $cart_item, $cart_contents ) );
+			if ( $is ) {
+				break;
+			}
+		}
+
+		return $is;
+	}
+
+	/**
+	 * Given a bundle-type child order item, find and return its container order item or its order item id when the $return_id arg is true.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array     $order_item
+	 * @param  WC_Order  $order
+	 * @param  boolean   $return_id
+	 * @return mixed
+	 */
+	public static function get_bundle_type_order_item_container( $order_item, $order = false, $return_id = false ) {
+
+		$container = false;
+
+		foreach ( self::$container_order_item_getters as $container_order_item_getter ) {
+			$container = call_user_func_array( $container_order_item_getter, array( $order_item, $order, $return_id ) );
+			if ( ! empty( $container ) ) {
+				break;
+			}
+		}
+
+		return $container;
+	}
+
+	/**
+	 * Given a bundle-type container order item, find and return its child order items - or their order item ids when the $return_ids arg is true.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array     $order_item
+	 * @param  WC_Order  $order
+	 * @param  boolean   $return_ids
+	 * @return mixed
+	 */
+	public static function get_bundle_type_order_items( $order_item, $order = false, $return_ids = false ) {
+
+		$children = array();
+
+		foreach ( self::$child_order_item_getters as $child_order_item_getter ) {
+			$children = call_user_func_array( $child_order_item_getter, array( $order_item, $order, $return_ids ) );
+			if ( ! empty( $children ) ) {
+				break;
+			}
+		}
+
+		return $children;
+	}
+
+	/**
+	 * True if an order item appears to be a bundle-type container item.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array     $order_item
+	 * @param  WC_Order  $order
+	 * @return boolean
+	 */
+	public static function is_bundle_type_container_order_item( $order_item, $order = false ) {
+
+		$is = false;
+
+		foreach ( self::$container_order_item_conditionals as $container_order_item_conditional ) {
+			$is = call_user_func_array( $container_order_item_conditional, array( $order_item, $order ) );
+			if ( $is ) {
+				break;
+			}
+		}
+
+		return $is;
+	}
+
+	/**
+	 * True if an order item is part of a bundle-type product.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array     $cart_item
+	 * @param  WC_Order  $order
+	 * @return boolean
+	 */
+	public static function is_bundle_type_order_item( $order_item, $order = false ) {
+
+		$is = false;
+
+		foreach ( self::$child_order_item_conditionals as $child_order_item_conditional ) {
+			$is = call_user_func_array( $child_order_item_conditional, array( $order_item, $order ) );
+			if ( $is ) {
+				break;
+			}
+		}
+
+		return $is;
 	}
 
 	/**
@@ -262,14 +499,11 @@ class WCS_ATT_Integrations {
 	 */
 	public static function hide_child_item_options( $show, $cart_item, $cart_item_key ) {
 
-		$container_key = self::has_bundle_type_container( $cart_item );
+		$container_cart_item = self::get_bundle_type_cart_item_container( $cart_item );
 
-		if ( false !== $container_key ) {
-			if ( isset( WC()->cart->cart_contents[ $container_key ] ) ) {
-				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
-				if ( self::has_scheme_data( $container_cart_item ) ) {
-					$show = false;
-				}
+		if ( false !== $container_cart_item ) {
+			if ( self::has_scheme_data( $container_cart_item ) ) {
+				$show = false;
 			}
 		}
 
@@ -286,12 +520,9 @@ class WCS_ATT_Integrations {
 	 */
 	public static function set_child_item_subscription_scheme( $scheme_key, $cart_item, $cart_level_schemes ) {
 
-		$container_key = self::has_bundle_type_container( $cart_item );
+		$container_cart_item = self::get_bundle_type_cart_item_container( $cart_item );
 
-		if ( false !== $container_key && isset( WC()->cart->cart_contents[ $container_key ] ) ) {
-
-			$container_cart_item = WC()->cart->cart_contents[ $container_key ];
-
+		if ( false !== $container_cart_item ) {
 			if ( self::has_scheme_data( $container_cart_item ) ) {
 				$scheme_key = $container_cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ];
 			}
@@ -311,12 +542,9 @@ class WCS_ATT_Integrations {
 		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
 
 			// Is it a bundled item?
-			$container_key = self::has_bundle_type_container( $cart_item );
+			$container_cart_item = self::get_bundle_type_cart_item_container( $cart_item );
 
-			if ( false !== $container_key && isset( WC()->cart->cart_contents[ $container_key ] ) ) {
-
-				$container_cart_item = WC()->cart->cart_contents[ $container_key ];
-
+			if ( false !== $container_cart_item ) {
 				if ( self::has_scheme_data( $container_cart_item ) ) {
 					self::set_bundled_product_subscription_schemes( $cart_item[ 'data' ], $container_cart_item[ 'data' ] );
 				}
@@ -377,12 +605,9 @@ class WCS_ATT_Integrations {
 	public static function set_child_item_schemes( $cart_item, $cart_item_key ) {
 
 		// Is it a bundled item?
-		$container_key = self::has_bundle_type_container( $cart_item );
+		$container_cart_item = self::get_bundle_type_cart_item_container( $cart_item );
 
-		if ( false !== $container_key && isset( WC()->cart->cart_contents[ $container_key ] ) ) {
-
-			$container_cart_item = WC()->cart->cart_contents[ $container_key ];
-
+		if ( false !== $container_cart_item ) {
 			if ( self::has_scheme_data( $container_cart_item ) ) {
 				self::set_bundled_product_subscription_schemes( $cart_item[ 'data' ], $container_cart_item[ 'data' ] );
 			}
@@ -401,11 +626,10 @@ class WCS_ATT_Integrations {
 	 */
 	public static function add_container_item_subtotal_subscription_details( $subtotal, $cart_item, $cart_item_key ) {
 
-		$child_key = self::has_bundle_type_children( $cart_item );
-		$is_mnm    = $cart_item[ 'data' ]->is_type( 'mix-and-match' );
+		$is_mnm = $cart_item[ 'data' ]->is_type( 'mix-and-match' );
 
 		// Note: MnM container subtotals originally modified by WCS are not overwritten by MnM.
-		if ( false !== $child_key && false === $is_mnm && self::has_scheme_data( $cart_item ) ) {
+		if ( self::is_bundle_type_container_cart_item( $cart_item ) && false === $is_mnm && self::has_scheme_data( $cart_item ) ) {
 			$subtotal = WCS_ATT_Product_Prices::get_price_string( $cart_item[ 'data' ], array(
 				'price' => $subtotal
 			) );
@@ -426,7 +650,9 @@ class WCS_ATT_Integrations {
 	 */
 	public static function container_item_options( $options, $subscription_schemes, $cart_item, $cart_item_key ) {
 
-		if ( self::has_bundle_type_children( $cart_item ) ) {
+		$child_items = self::get_bundle_type_cart_items( $cart_item );
+
+		if ( ! empty( $child_items ) ) {
 
 			$product                        = $cart_item[ 'data' ];
 			$price_filter_exists            = WCS_ATT_Product_Schemes::price_filter_exists( $subscription_schemes );
@@ -448,19 +674,14 @@ class WCS_ATT_Integrations {
 						$bundle_price[ $price_key ] = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
 					}
 
-					foreach ( WC()->cart->cart_contents as $child_key => $child_item ) {
+					foreach ( $child_items as $child_key => $child_item ) {
 
-						$container_key = self::has_bundle_type_container( $child_item );
+						$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
 
-						if ( $cart_item_key === $container_key ) {
-
-							$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
-
-							if ( 'excl' === $tax_display_cart ) {
-								$bundle_price[ $price_key ] += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-							} else {
-								$bundle_price[ $price_key ] += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-							}
+						if ( 'excl' === $tax_display_cart ) {
+							$bundle_price[ $price_key ] += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+						} else {
+							$bundle_price[ $price_key ] += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
 						}
 					}
 				}
@@ -656,6 +877,34 @@ class WCS_ATT_Integrations {
 		}
 
 		return $hash;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Checks if the passed cart item is a supported bundle type child. Returns the container item key name if yes, or false if not.
+	 *
+	 * @param  array  $cart_item
+	 * @return boolean|string
+	 */
+	public static function has_bundle_type_container( $cart_item ) {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Integrations::get_bundle_type_cart_item_container()' );
+		return self::get_bundle_type_cart_item_container( $cart_item, false, true );
+	}
+
+	/**
+	 * Checks if the passed cart item is a supported bundle type container. Returns the child item key name if yes, or false if not.
+	 *
+	 * @param  array  $cart_item
+	 * @return boolean|string
+	 */
+	public static function has_bundle_type_children( $cart_item ) {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Integrations::get_bundle_type_cart_items()' );
+		return self::get_bundle_type_cart_items( $cart_item, false, true );
 	}
 }
 
