@@ -215,6 +215,9 @@ class WCS_ATT_Integrations {
 
 		// Susbcription View.
 
+		// Don't count bundle-type child items and hidden bundle-type container/child items.
+		add_filter( 'wcs_can_items_be_removed', array( __CLASS__, 'can_remove_subscription_items' ), 10, 2 );
+
 		// Hide "Remove" buttons of child line items under 'My Account > Subscriptions'.
 		add_filter( 'wcs_can_item_be_removed', array( __CLASS__, 'can_remove_child_subscription_item' ), 10, 3 );
 
@@ -730,6 +733,52 @@ class WCS_ATT_Integrations {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Don't count bundle-type child items and hidden bundle-type container/child items.
+	 *
+	 * @param  boolean          $can
+	 * @param  WC_Subscription  $subscription
+	 * @return boolean
+	 */
+	public static function can_remove_subscription_items( $can, $subscription ) {
+
+		if ( $can ) {
+
+			$items    = $subscription->get_items();
+			$count    = sizeof( $items );
+			$subtract = 0;
+
+			foreach ( $items as $item ) {
+
+				if ( self::is_bundle_type_container_order_item( $item, $subscription ) ) {
+
+					$parent_item_visible = apply_filters( 'woocommerce_order_item_visible', true, $item );
+
+					if ( ! $parent_item_visible ) {
+						$subtract += 1;
+					}
+
+
+					$bundled_order_items = self::get_bundle_type_order_items( $item, $subscription );
+
+					foreach ( $bundled_order_items as $bundled_item_key => $bundled_order_item ) {
+						if ( ! $parent_item_visible ) {
+							if ( ! apply_filters( 'woocommerce_order_item_visible', true, $bundled_order_item ) ) {
+								$subtract += 1;
+							}
+						} else {
+							$subtract += 1;
+						}
+					}
+				}
+			}
+
+			$can = $count - $subtract > 1;
+		}
+
+		return $can;
 	}
 
 	/**
