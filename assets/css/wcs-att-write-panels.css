@@ -153,6 +153,7 @@
 
 .forminp #wcsatt_data select {
 	float: left;
+	width: auto;
 }
 
 .forminp #wcsatt_data .woocommerce-help-tip {
