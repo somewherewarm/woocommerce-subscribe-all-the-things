@@ -213,6 +213,10 @@ class WCS_ATT_Integrations {
 		// Modify bundle container cart item options to include child item prices.
 		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
 
+		// Susbcription View.
+
+		// Hide "Remove" buttons of child line items under 'My Account > Subscriptions'.
+		add_filter( 'wcs_can_item_be_removed', array( __CLASS__, 'can_remove_child_item' ), 10, 3 );
 	}
 
 	/*
@@ -720,6 +724,24 @@ class WCS_ATT_Integrations {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Prevent direct removal of child subscription items from 'My Account > Subscriptions'.
+	 * Does ~nothing~ to prevent removal at an application level, e.g. via a REST API call.
+	 *
+	 * @param  boolean          $can
+	 * @param  WC_Order_Item    $item
+	 * @param  WC_Subscription  $subscription
+	 * @return boolean
+	 */
+	public static function can_remove_child_item( $can, $item, $subscription ) {
+
+		if ( self::is_bundle_type_order_item( $item ) ) {
+			$can = false;
+		}
+
+		return $can;
 	}
 
 	/**
