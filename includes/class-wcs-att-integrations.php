@@ -216,7 +216,13 @@ class WCS_ATT_Integrations {
 		// Susbcription View.
 
 		// Hide "Remove" buttons of child line items under 'My Account > Subscriptions'.
-		add_filter( 'wcs_can_item_be_removed', array( __CLASS__, 'can_remove_child_item' ), 10, 3 );
+		add_filter( 'wcs_can_item_be_removed', array( __CLASS__, 'can_remove_child_subscription_item' ), 10, 3 );
+
+		// Handle parent subscription line item removals under 'My Account > Subscriptions'.
+		add_action( 'wcs_user_removed_item', array( __CLASS__, 'user_removed_parent_subscription_item' ), 10, 2 );
+
+		// Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
+		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
 	}
 
 	/*
@@ -735,13 +741,104 @@ class WCS_ATT_Integrations {
 	 * @param  WC_Subscription  $subscription
 	 * @return boolean
 	 */
-	public static function can_remove_child_item( $can, $item, $subscription ) {
+	public static function can_remove_child_subscription_item( $can, $item, $subscription ) {
 
 		if ( self::is_bundle_type_order_item( $item ) ) {
 			$can = false;
 		}
 
 		return $can;
+	}
+
+	/**
+	 * Handle parent subscription line item removals under 'My Account > Subscriptions'.
+	 *
+	 * @param  WC_Order_Item  $item
+	 * @param  WC_Order       $subscription
+	 * @return void
+	 */
+	public static function user_removed_parent_subscription_item( $item, $subscription ) {
+
+		if ( self::is_bundle_type_container_order_item( $item, $subscription ) ) {
+
+			$bundled_items     = self::get_bundle_type_order_items( $item, $subscription );
+			$bundled_item_keys = array();
+
+			if ( ! empty( $bundled_items ) ) {
+				foreach ( $bundled_items as $bundled_item ) {
+
+					$bundled_item_keys[] = $bundled_item->get_id();
+
+					$bundled_product_id = wcs_get_canonical_product_id( $bundled_item );
+
+					// Remove the line item from subscription but preserve its data in the DB.
+					wcs_update_order_item_type( $bundled_item->get_id(), 'line_item_removed', $subscription->get_id() );
+
+					WCS_Download_Handler::revoke_downloadable_file_permission( $bundled_product_id, $subscription->get_id(), $subscription->get_user_id() );
+
+					// Add order note.
+					$subscription->add_order_note( sprintf( _x( '"%1$s" (Product ID: #%2$d) removal triggered by "%3$s" via the My Account page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), wcs_get_line_item_name( $bundled_item ), $bundled_product_id, wcs_get_line_item_name( $item ) ) );
+
+					// Trigger WCS action.
+					do_action( 'wcs_user_removed_item', $bundled_item, $subscription );
+				}
+
+				// Update session data for un-doing.
+				$removed_bundled_item_ids = WC()->session->get( 'removed_bundled_subscription_items', array() );
+				$removed_bundled_item_ids[ $item->get_id() ] = $bundled_item_keys;
+				WC()->session->set( 'removed_bundled_subscription_items', $removed_bundled_item_ids );
+			}
+		}
+	}
+
+	/**
+	 * Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
+	 *
+	 * @param  WC_Order_Item  $item
+	 * @param  WC_Order       $subscription
+	 * @return void
+	 */
+	public static function user_readded_parent_subscription_item( $item, $subscription ) {
+
+		if ( self::is_bundle_type_container_order_item( $item, $subscription ) ) {
+
+			$removed_bundled_item_ids = WC()->session->get( 'removed_bundled_subscription_items', array() );
+			$removed_bundled_item_ids = isset( $removed_bundled_item_ids[ $item->get_id() ] ) ? $removed_bundled_item_ids[ $item->get_id() ] : array();
+
+			if ( ! empty( $removed_bundled_item_ids ) ) {
+
+				foreach ( $removed_bundled_item_ids as $removed_bundled_item_id ) {
+
+					// Update the line item type.
+					wcs_update_order_item_type( $removed_bundled_item_id, 'line_item', $subscription->get_id() );
+				}
+			}
+
+			$bundled_items = self::get_bundle_type_order_items( $item, $subscription );
+
+			if ( ! empty( $bundled_items ) ) {
+				foreach ( $bundled_items as $bundled_item ) {
+
+					$bundled_product    = $subscription->get_product_from_item( $bundled_item );
+					$bundled_product_id = wcs_get_canonical_product_id( $bundled_item );
+
+					if ( $bundled_product && $bundled_product->exists() && $bundled_product->is_downloadable() ) {
+
+						$downloads = wcs_get_objects_property( $bundled_product, 'downloads' );
+
+						foreach ( array_keys( $downloads ) as $download_id ) {
+							wc_downloadable_file_permission( $download_id, $bundled_product_id, $subscription, $bundled_item[ 'qty' ] );
+						}
+					}
+
+					// Add order note.
+					$subscription->add_order_note( sprintf( _x( '"%1$s" (Product ID: #%2$d) removal un-done by "%3$s" via the My Account page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), wcs_get_line_item_name( $bundled_item ), wcs_get_canonical_product_id( $bundled_item ), wcs_get_line_item_name( $item ) ) );
+
+					// Trigger WCS action.
+					do_action( 'wcs_user_readded_item', $bundled_item, $subscription );
+				}
+			}
+		}
 	}
 
 	/**
