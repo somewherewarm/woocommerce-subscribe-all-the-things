@@ -151,7 +151,7 @@ class WCS_ATT_Integrations {
 	private static function add_hooks() {
 
 		/*
-		 * All types.
+		 * All types: Application layer integration.
 		 */
 
 		// Schemes attached on bundles should not work if the bundle contains non-supported products, such as "legacy" subscription products.
@@ -168,12 +168,6 @@ class WCS_ATT_Integrations {
 
 		// Bundled cart items inherit the subscription schemes of their parent, with some modifications (first add).
 		add_filter( 'woocommerce_add_cart_item', array( __CLASS__, 'set_child_item_schemes' ), 0, 2 );
-
-		// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
-		add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'add_container_item_subtotal_subscription_details' ), 1000, 3 );
-
-		// Modify bundle container cart item options to include child item prices.
-		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
 
 		/*
 		 * Bundles.
@@ -206,6 +200,19 @@ class WCS_ATT_Integrations {
 			// Add scheme data to runtime price cache hashes.
 			add_filter( 'woocommerce_composite_prices_hash', array( __CLASS__, 'composite_prices_hash' ), 10, 2 );
 		}
+
+		/*
+		 * All types: Display/templates integration.
+		 */
+
+		// Cart.
+
+		// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
+		add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'add_container_item_subtotal_subscription_details' ), 1000, 3 );
+
+		// Modify bundle container cart item options to include child item prices.
+		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
+
 	}
 
 	/*
