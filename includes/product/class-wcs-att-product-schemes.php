@@ -57,7 +57,7 @@ class WCS_ATT_Product_Schemes {
 			WCS_ATT_Product::set_runtime_meta( $product, 'has_forced_subscription', $forced );
 		}
 
-		return 'yes' === $forced;
+		return apply_filters( 'wcsatt_force_subscription', 'yes' === $forced, $product );
 	}
 
 	/**
