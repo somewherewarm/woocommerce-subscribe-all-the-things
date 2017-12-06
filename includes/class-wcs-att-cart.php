@@ -224,7 +224,6 @@ class WCS_ATT_Cart {
 		return $cart_item;
 	}
 
-
 	/**
 	 * Load saved session data of cart items that can be pruchased on a recurring basis.
 	 *
@@ -351,6 +350,16 @@ class WCS_ATT_Cart {
 						WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $cart->cart_contents[ $cart_item_key ][ 'data' ], true );
 					}
 				}
+
+				/**
+				 * 'wcsatt_applied_cart_item_subscription_scheme' action.
+				 *
+				 * @since  2.1.0
+				 *
+				 * @param  array   $cart_item
+				 * @param  string  $cart_item_key
+				 */
+				do_action( 'wcsatt_applied_cart_item_subscription_scheme', $cart_item, $cart_item_key );
 			}
 		}
 	}
