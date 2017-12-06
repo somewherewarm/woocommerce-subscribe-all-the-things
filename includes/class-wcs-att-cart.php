@@ -32,17 +32,17 @@ class WCS_ATT_Cart {
 	 */
 	private static function add_hooks() {
 
-		// Add scheme data to cart items that can be pruchased on a recurring basis.
+		// Add scheme data to cart items that can be purchased on a recurring basis.
 		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 10, 3 );
 
-		// Load saved session data of cart items that can be pruchased on a recurring basis.
+		// Load saved session data of cart items that can be purchased on a recurring basis.
 		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'load_cart_item_data_from_session' ), 5, 2 );
 
 		// Inspect product-level/cart-level session data and apply subscription schemes to cart items as needed.
 		add_action( 'woocommerce_cart_loaded_from_session', array( __CLASS__, 'apply_subscription_schemes' ), 5 );
 
 		// Inspect product-level/cart-level session data on add-to-cart and apply subscription schemes to cart items as needed. Then, recalculate totals.
-		add_action( 'woocommerce_add_to_cart', array( __CLASS__, 'apply_subscription_schemes_on_add_to_cart' ), 1000, 6 );
+		add_action( 'woocommerce_add_to_cart', array( __CLASS__, 'apply_subscription_schemes_on_add_to_cart' ), 19, 6 );
 
 		// Update the subscription scheme saved on a cart item when chosing a new option.
 		add_filter( 'woocommerce_update_cart_action_cart_updated', array( __CLASS__, 'update_cart_item_data' ), 10 );
@@ -224,7 +224,6 @@ class WCS_ATT_Cart {
 		return $cart_item;
 	}
 
-
 	/**
 	 * Load saved session data of cart items that can be pruchased on a recurring basis.
 	 *
@@ -351,6 +350,16 @@ class WCS_ATT_Cart {
 						WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $cart->cart_contents[ $cart_item_key ][ 'data' ], true );
 					}
 				}
+
+				/**
+				 * 'wcsatt_applied_cart_item_subscription_scheme' action.
+				 *
+				 * @since  2.1.0
+				 *
+				 * @param  array   $cart_item
+				 * @param  string  $cart_item_key
+				 */
+				do_action( 'wcsatt_applied_cart_item_subscription_scheme', $cart_item, $cart_item_key );
 			}
 		}
 	}
@@ -413,10 +422,7 @@ class WCS_ATT_Cart {
 	 * @return void
 	 */
 	public static function apply_subscription_schemes_on_add_to_cart( $item_key, $product_id, $quantity, $variation_id, $variation, $item_data ) {
-
 		self::apply_subscription_schemes( WC()->cart );
-
-		WC()->cart->calculate_totals();
 	}
 
 	/**
