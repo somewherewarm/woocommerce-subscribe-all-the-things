@@ -50,7 +50,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 		add_action( 'wcsatt_subscription_scheme_product_content', array( __CLASS__, 'subscription_scheme_product_content' ), 10, 3 );
 
 		// Process and save the necessary meta.
-		add_action( 'woocommerce_process_product_meta', array( __CLASS__, 'process_product_meta' ), 15, 1 );
+		add_action( 'woocommerce_admin_process_product_object', array( __CLASS__, 'save_subscription_data' ), 10, 1 );
 	}
 
 	/**
@@ -358,16 +358,14 @@ class WCS_ATT_Meta_Box_Product_Data {
 	/**
 	 * Save subscription options.
 	 *
-	 * @param  int  $post_id
+	 * @param  WC_Product  $product
 	 * @return void
 	 */
-	public static function process_product_meta( $post_id ) {
+	public static function save_subscription_data( $product ) {
 
-		// Get type.
-		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) );
-		$supported_types = WCS_ATT()->get_supported_product_types();
+		$product_type = $product->get_type();
 
-		if ( in_array( $product_type, $supported_types ) ) {
+		if ( in_array( $product_type, WCS_ATT()->get_supported_product_types() ) ) {
 
 			$schemes = array();
 
@@ -440,11 +438,31 @@ class WCS_ATT_Meta_Box_Product_Data {
 						$posted_scheme[ 'subscription_pricing_method' ] = 'inherit';
 					}
 
-					// Construct scheme id.
-					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+					/**
+					 * Allow third parties to add custom data to schemes.
+					 *
+					 * @since  2.1.0
+					 *
+					 * @param  array       $posted_scheme
+					 * @param  WC_Product  $product
+					 */
+					$posted_scheme = apply_filters( 'wcsatt_processed_scheme_data', $posted_scheme, $product );
 
-					$schemes[ $scheme_id ]         = $posted_scheme;
-					$schemes[ $scheme_id ][ 'id' ] = $scheme_id;
+					// Construct scheme id.
+					$scheme_key = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+
+					/**
+					 * Allow third parties to filter the scheme key.
+					 *
+					 * @since  2.1.0
+					 *
+					 * @param  string      $scheme_key
+					 * @param  WC_Product  $product
+					 */
+					$scheme_key = apply_filters( 'wcsatt_processed_scheme_key', $scheme_key, $product );
+
+					$schemes[ $scheme_key ]         = $posted_scheme;
+					$schemes[ $scheme_key ][ 'id' ] = $scheme_key;
 				}
 			}
 
@@ -460,54 +478,47 @@ class WCS_ATT_Meta_Box_Product_Data {
 			// Process prompt text.
 			$prompt = ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ? wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) ) : false;
 
-			$product = wc_get_product( $post_id );
+			/*
+			 * Add/update meta.
+			 */
 
-			if ( $product ) {
+			// Save scheme options.
+			if ( ! empty( $schemes ) ) {
 
-				// Save scheme options.
-				if ( ! empty( $schemes ) ) {
-					$product->update_meta_data( '_wcsatt_schemes', $schemes );
-				} else {
-					$product->delete_meta_data( '_wcsatt_schemes' );
-				}
+				$product->update_meta_data( '_wcsatt_schemes', $schemes );
 
-				// Save one-time shipping option.
-				$product->update_meta_data( '_subscription_one_time_shipping', $one_time_shipping );
-
-				// Save default status.
-				$product->update_meta_data( '_wcsatt_default_status', $default_status );
-
-				// Save force-sub status.
-				$product->update_meta_data( '_wcsatt_force_subscription', $force_subscription );
-
-				// Set regular price as ZERO should the shop owner forget.
-				// This helps make WooCommerce think it's still available for purchase.
+				// Set regular price to zero should the shop owner forget.
 				if ( 'yes' === $force_subscription && empty( $_POST[ '_regular_price' ] ) ) {
 					$product->set_regular_price( 0 );
 					$product->set_price( 0 );
 				}
 
-				// Save prompt.
-				if ( false === $prompt ) {
-					$product->delete_meta_data( '_wcsatt_subscription_prompt' );
-				} else {
-					$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
-				}
+			} else {
+				$product->delete_meta_data( '_wcsatt_schemes' );
+			}
 
-				$product->save();
+			// Save one-time shipping option.
+			$product->update_meta_data( '_subscription_one_time_shipping', $one_time_shipping );
+
+			// Save default status.
+			$product->update_meta_data( '_wcsatt_default_status', $default_status );
+
+			// Save force-sub status.
+			$product->update_meta_data( '_wcsatt_force_subscription', $force_subscription );
+
+			// Save prompt.
+			if ( false === $prompt ) {
+				$product->delete_meta_data( '_wcsatt_subscription_prompt' );
+			} else {
+				$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
 			}
 
 		} else {
 
-			$product = wc_get_product( $post_id );
-
-			if ( $product ) {
-
-				$product->delete_meta_data( '_wcsatt_schemes' );
-				$product->delete_meta_data( '_wcsatt_force_subscription' );
-				$product->delete_meta_data( '_wcsatt_default_status' );
-				$product->delete_meta_data( '_wcsatt_subscription_prompt' );
-			}
+			$product->delete_meta_data( '_wcsatt_schemes' );
+			$product->delete_meta_data( '_wcsatt_force_subscription' );
+			$product->delete_meta_data( '_wcsatt_default_status' );
+			$product->delete_meta_data( '_wcsatt_subscription_prompt' );
 		}
 	}
 }
