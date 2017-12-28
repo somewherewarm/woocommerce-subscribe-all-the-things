@@ -163,19 +163,18 @@ class WCS_ATT_Meta_Box_Product_Data {
 			$subscription_length          = '';
 		}
 
-
 		// Subscription Price, Interval and Period.
-		?><p class="form-field _satt_subscription_details">
-			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', 'woocommerce-subscribe-all-the-things' ); ?></label>
+		?><p class="form-field _satt_subscription_details_<?php echo $index; ?>">
+			<label for="_satt_subscription_details_<?php echo $index; ?>"><?php esc_html_e( 'Interval', 'woocommerce-subscribe-all-the-things' ); ?></label>
 			<span class="wrap">
-				<label for="_satt_subscription_period_interval" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
-				<select id="_satt_subscription_period_interval" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
+				<label for="_satt_subscription_period_interval_<?php echo $index; ?>" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period_interval_<?php echo $index; ?>" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
 				<?php foreach ( wcs_get_subscription_period_interval_strings() as $value => $label ) { ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period_interval, true ) ?>><?php echo esc_html( $label ); ?></option>
 				<?php } ?>
 				</select>
-				<label for="_satt_subscription_period" class="wcs_hidden_label"><?php esc_html_e( 'Subscription period', 'woocommerce-subscriptions' ); ?></label>
-				<select id="_satt_subscription_period" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period]" class="wc_input_subscription_period last" >
+				<label for="_satt_subscription_period_<?php echo $index; ?>" class="wcs_hidden_label"><?php esc_html_e( 'Subscription period', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period_<?php echo $index; ?>" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period]" class="wc_input_subscription_period last" >
 				<?php foreach ( wcs_get_subscription_period_strings() as $value => $label ) { ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period, true ) ?>><?php echo esc_html( $label ); ?></option>
 				<?php } ?>
@@ -186,7 +185,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 
 		// Subscription Length.
 		woocommerce_wp_select( array(
-			'id'          => '_satt_subscription_length',
+			'id'          => '_satt_subscription_length_' . $index,
 			'class'       => 'wc_input_subscription_length',
 			'label'       => __( 'Length', 'woocommerce-subscribe-all-the-things' ),
 			'value'       => $subscription_length,
