@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Subscription scheme object. May extend the WC_Data class or handle CRUD in the future, if schemes are moved out of meta.
  *
- * @class  WCS_ATT_Scheme
- * @since  2.0.0
+ * @class    WCS_ATT_Scheme
+ * @version  2.1.0
  */
 class WCS_ATT_Scheme implements ArrayAccess {
 
