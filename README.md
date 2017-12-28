@@ -1,6 +1,6 @@
 # WooCommerce Subscribe All the Things
 
-WooCommerce Subscribe All the Things is an experimental mini-extension for [WooCommerce Subscriptions](http://woocommerce.com/products/woocommerce-subscriptions/) that allows you to add subscription options to non-subscription product types, such as Simple and Variable products.
+WooCommerce Subscribe All the Things is a mini-extension for [WooCommerce Subscriptions](http://woocommerce.com/products/woocommerce-subscriptions/) that allows you to add subscription options to non-subscription product types, such as Simple and Variable products.
 
 The plugin has been tested and can be used to add subscription options to [Product Bundles](http://woocommerce.com/products/product-bundles/), [Composite Products](http://woocommerce.com/products/composite-products/) and [Mix and Match Products](http://woocommerce.com/products/woocommerce-mix-and-match-products/).
 
