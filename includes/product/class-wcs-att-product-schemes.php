@@ -352,9 +352,9 @@ class WCS_ATT_Product_Schemes {
 			 * The price strings of many product types depend on more than the values returned by the abstract class price getters.
 			 * If we are going to apply filters anyway, there's no need to permanently set raw prices here.
 			 */
-			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period', $scheme_to_set[ 'subscription_period' ] );
-			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period_interval', $scheme_to_set[ 'subscription_period_interval' ] );
-			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_length', $scheme_to_set[ 'subscription_length' ] );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period', $scheme_to_set->get_period() );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period_interval', $scheme_to_set->get_interval() );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_length', $scheme_to_set->get_length() );
 
 			$scheme_set = true;
 
