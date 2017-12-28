@@ -120,7 +120,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 *
 	 * @return string  A string representation of the period, either Day, Week, Month or Year.
 	 */
-	public function get_period( $product ) {
+	public function get_period() {
 		return $this->data[ 'period' ];
 	}
 
