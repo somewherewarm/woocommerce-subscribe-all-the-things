@@ -37,16 +37,17 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 * @var array
 	 */
 	private $offset_map = array(
-		'subscription_period'          => 'period',
-		'subscription_period_interval' => 'interval',
-		'subscription_length'          => 'length',
-		'subscription_trial_period'    => 'trial_period',
-		'subscription_trial_length'    => 'trial_length',
-		'subscription_pricing_method'  => 'pricing_mode',
-		'subscription_discount'        => 'discount',
-		'subscription_regular_price'   => 'regular_price',
-		'subscription_sale_price'      => 'sale_price',
-		'subscription_price'           => 'price'
+		'subscription_period'            => 'period',
+		'subscription_period_interval'   => 'interval',
+		'subscription_length'            => 'length',
+		'subscription_payment_sync_date' => 'sync_date',
+		'subscription_trial_period'      => 'trial_period',
+		'subscription_trial_length'      => 'trial_length',
+		'subscription_pricing_method'    => 'pricing_mode',
+		'subscription_discount'          => 'discount',
+		'subscription_regular_price'     => 'regular_price',
+		'subscription_sale_price'        => 'sale_price',
+		'subscription_price'             => 'price'
 	);
 
 	/**
@@ -80,6 +81,19 @@ class WCS_ATT_Scheme implements ArrayAccess {
 
 			if ( 'inherit' === $this->data[ 'pricing_mode' ] ) {
 				$this->data[ 'discount' ] = isset( $args[ 'data' ][ 'subscription_discount' ] ) ? wc_format_decimal( $args[ 'data' ][ 'subscription_discount' ] ) : '';
+			}
+
+			$this->data[ 'sync_date' ] = 0;
+
+			if ( isset( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) ) {
+				if ( is_array( $args[ 'data' ][ 'subscription_payment_sync_date' ] && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ] ) ) ) {
+					$this->data[ 'sync_date' ] = array(
+						'day'   => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ],
+						'month' => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ]
+					);
+				} else {
+					$this->data[ 'sync_date' ] = absint( $args[ 'data' ][ 'subscription_payment_sync_date' ] );
+				}
 			}
 		}
 
@@ -158,6 +172,17 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 */
 	public function get_trial_length() {
 		return $this->data[ 'trial_length' ];
+	}
+
+	/**
+	 * Returns the sync day (integer) or sync month/day (array) of this scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return mixed
+	 */
+	public function get_sync_date() {
+		return $this->data[ 'sync_date' ];
 	}
 
 	/**
