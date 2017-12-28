@@ -111,6 +111,11 @@
 	margin-left: 5px;
 }
 
+#wcsatt_data .subscription_scheme_data .satt_subscription_payment_sync_date_day {
+	width: 50%;
+	margin-left: 5px;
+}
+
 #wcsatt_data .subscription_scheme_product_data {
 	display: block;
 	float: right;
