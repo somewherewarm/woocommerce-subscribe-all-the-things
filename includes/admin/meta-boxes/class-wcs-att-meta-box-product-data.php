@@ -43,7 +43,10 @@ class WCS_ATT_Meta_Box_Product_Data {
 		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
 		add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_content' ), 10, 3 );
 
-		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_product_content' action.
+		// Product-specific subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+		add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_product_content_display' ), 100, 3 );
+
+		// Product-specific subscription scheme options content.
 		add_action( 'wcsatt_subscription_scheme_product_content', array( __CLASS__, 'subscription_scheme_product_content' ), 10, 3 );
 
 		// Process and save the necessary meta.
@@ -196,7 +199,24 @@ class WCS_ATT_Meta_Box_Product_Data {
 	}
 
 	/**
-	 * Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+	 * Show product-specific subscription scheme options on the 'wcsatt_subscription_scheme_content' action.
+	 *
+	 * @param  int     $index
+	 * @param  array   $scheme_data
+	 * @param  int     $post_id
+	 * @return void
+	 */
+	public static function subscription_scheme_product_content_display( $index, $scheme_data, $post_id ) {
+
+		if ( $post_id > 0 ) {
+			?><div class="subscription_scheme_product_data"><?php
+				do_action( 'wcsatt_subscription_scheme_product_content', $index, $scheme_data, $post_id );
+			?></div><?php
+		}
+	}
+
+	/**
+	 * Product-specific subscription scheme options.
 	 *
 	 * @param  int     $index
 	 * @param  array   $scheme_data
