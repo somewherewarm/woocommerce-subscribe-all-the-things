@@ -30,7 +30,8 @@ class WCS_ATT_Product {
 		'subscription_length',
 		'subscription_trial_period',
 		'subscription_trial_length',
-		'subscription_sign_up_fee'
+		'subscription_sign_up_fee',
+		'subscription_payment_sync_date'
 	);
 
 	/**
