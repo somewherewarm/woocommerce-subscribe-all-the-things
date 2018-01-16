@@ -135,8 +135,8 @@ jQuery( function($) {
 	// One-time shipping toggle. Shows the one time shipping option only if the product contains any subscription schemes.
 	function one_time_shipping_toggle() {
 
-		var product_type  = $( 'select#product-type' ).val();
-		var schemes_count = $wcsatt_schemes.find( '.subscription_scheme' ).length;
+		var product_type  = $( 'select#product-type' ).val(),
+			schemes_count = $wcsatt_schemes.find( '.subscription_scheme' ).length;
 
 		if ( 'subscription' !== product_type && 'variable-subscription' !== product_type ) {
 			if ( schemes_count > 0 ) {
@@ -147,15 +147,17 @@ jQuery( function($) {
 		}
 	}
 
-	$wcsatt_data_tab.on( 'woocommerce_subscription_schemes_changed', function() {
-		one_time_shipping_toggle();
-	} );
-
+	// Trigger one-time shipping option toggle when switching product type.
 	$( 'select#product-type' ).change( function() {
 		one_time_shipping_toggle();
 	} ).change();
 
-	// Price override method.
+	// Toggle one-time shipping.
+	$wcsatt_data_tab.on( 'woocommerce_subscription_schemes_changed', function() {
+		one_time_shipping_toggle();
+	} );
+
+	// Toggle suitable price override method fields.
 	$wcsatt_schemes.on( 'change', 'select.subscription_pricing_method_input', function() {
 
 		var override_method = $( this ).val();
@@ -164,8 +166,6 @@ jQuery( function($) {
 		$( this ).closest( '.subscription_scheme_product_data' ).find( '.subscription_pricing_method_' + override_method ).show();
 
 	} );
-
-	$wcsatt_schemes.find( 'select.subscription_pricing_method_input' ).change();
 
 	// Hide "default to" option when "force subscription" is checked.
 	$wcsatt_data_tab.find( 'input#_wcsatt_force_subscription' ).on( 'change', function() {
@@ -266,6 +266,8 @@ jQuery( function($) {
 	}
 
 	function init_subscription_schemes_metaboxes() {
+
+		$wcsatt_schemes.find( 'select.subscription_pricing_method_input' ).change();
 
 		// Initial order.
 		var subscription_schemes = $wcsatt_schemes.find( '.subscription_scheme' ).get();
