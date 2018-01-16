@@ -202,7 +202,7 @@ class WCS_ATT_Display_Cart {
 
 				WCS_ATT_Product_Schemes::set_subscription_scheme( $dummy_product, $subscription_scheme_key );
 
-				$sub_suffix = WCS_ATT_Product_Prices::get_price_string( $dummy_product, array( 'price' => '', 'subscription_price' => false ) );
+				$sub_suffix = WCS_ATT_Product_Prices::get_price_string( $dummy_product, array( 'price' => '' ) );
 
 				$options[ $subscription_scheme_key ] = array(
 					'description' => sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_suffix ),

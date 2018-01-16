@@ -87,6 +87,51 @@ jQuery( function($) {
 
 	}
 
+	$.fn.wcsatt_refresh_sync_options = function() {
+
+		var $periodSelector         = $( this ).find( '.wc_input_subscription_period' ),
+			$syncOptions            = $( this ).find( '.subscription_sync' ),
+			$syncAnnualContainer    = $syncOptions.find( '.subscription_sync_annual' )
+			$syncWeekMonthContainer = $syncOptions.find( '.subscription_sync_week_month' ),
+			$syncWeekMonthSelect    = $syncWeekMonthContainer.find( 'select' ),
+			billingPeriod           = $periodSelector.val();
+
+		if ( 'day' === billingPeriod ) {
+
+			$syncOptions.hide();
+
+			$syncWeekMonthSelect.val(0);
+			$syncAnnualContainer.find( 'input[type="number"]' ).val(0);
+
+		} else {
+
+			$syncOptions.show();
+
+			if ( 'year' === billingPeriod ) {
+
+				$syncWeekMonthContainer.hide();
+
+				$syncAnnualContainer.find( 'input[type="number"]' ).val(0);
+				$syncWeekMonthSelect.val(0);
+
+				$syncAnnualContainer.show();
+
+			} else {
+
+				$syncAnnualContainer.hide();
+
+				$syncAnnualContainer.find( 'input[type="number"]' ).val(0);
+				$syncWeekMonthSelect.empty();
+
+				$.each( WCSubscriptions.syncOptions[ billingPeriod ], function( key, description ) {
+					$syncWeekMonthSelect.append( $('<option></option>' ).attr( 'value', key ).text( description ) );
+				} );
+
+				$syncWeekMonthContainer.show();
+			}
+		}
+	}
+
 	// One-time shipping toggle. Shows the one time shipping option only if the product contains any subscription schemes.
 	function one_time_shipping_toggle() {
 
@@ -136,6 +181,7 @@ jQuery( function($) {
 	// Update subscription ranges when subscription period or interval is changed.
 	$wcsatt_schemes.on( 'change', '.wc_input_subscription_period', function() {
 		$( this ).closest( '.subscription_scheme' ).wcsatt_refresh_scheme_lengths();
+		$( this ).closest( '.subscription_scheme' ).wcsatt_refresh_sync_options();
 	} );
 
 	// Remove.
