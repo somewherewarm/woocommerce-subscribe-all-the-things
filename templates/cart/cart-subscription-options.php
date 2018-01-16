@@ -8,7 +8,7 @@
  * We try to do this as little as possible, but it does happen.
  * When this occurs the version of the template file will be bumped and the readme will list any important changes.
  *
- * @version 2.0.0
+ * @version 2.1.0
  */
 
 // Exit if accessed directly.
@@ -21,12 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p><?php _e( 'Interested in subscribing to these items?', 'woocommerce-subscribe-all-the-things' ); ?></p>
 <ul class="wcsatt-options-cart">
 	<?php
-		foreach ( $options as $option_id => $option ) {
+		foreach ( $options as $option ) {
 			?>
-				<li>
+				<li class="<?php echo esc_attr( $option[ 'class' ] ); ?>">
 					<label>
-						<input type="radio" name="convert_to_sub" value="<?php echo $option_id ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
-						<?php echo wp_kses_post( $option[ 'description' ] ); ?>
+						<input type="radio" name="convert_to_sub" value="<?php echo $option[ 'value' ] ?>" <?php checked( $option[ 'selected' ], true, true ); ?> />
+						<?php echo '<span class="' . esc_attr( $option[ 'class' ] ) . '-details">' . wp_kses_post( $option[ 'description' ] ) . '</span>'; ?>
 					</label>
 				</li>
 			<?php

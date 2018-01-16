@@ -86,11 +86,14 @@ class WCS_ATT_Display_Cart {
 					$description = WCS_ATT_Cart::get_product_price( $cart_item, false );
 				}
 
+				$description = '<span class="one-time-option-price">' . $description . '</span>';
+
 			} else {
 				$description = __( 'only now', 'woocommerce-subscribe-all-the-things' );
 			}
 
 			$options[] = array(
+				'class'       => 'one-time-option',
 				'description' => $description,
 				'value'       => '0',
 				'selected'    => false === $active_subscription_scheme_key,
@@ -113,6 +116,8 @@ class WCS_ATT_Display_Cart {
 					) );
 				}
 
+				$description = '<span class="subscription-price">' . $description . '</span>';
+
 			} else {
 
 				$description = WCS_ATT_Product_Prices::get_price_string( $product, array(
@@ -123,6 +128,7 @@ class WCS_ATT_Display_Cart {
 			}
 
 			$options[] = array(
+				'class'       => 'subscription-option',
 				'description' => $description,
 				'value'       => $subscription_scheme_key,
 				'selected'    => $active_subscription_scheme_key === $subscription_scheme_key,
@@ -184,7 +190,9 @@ class WCS_ATT_Display_Cart {
 			$active_scheme_key = WCS_ATT_Cart::get_cart_subscription_scheme();
 			$options           = array();
 
-			$options[ '0' ] = array(
+			$options[] = array(
+				'class'       => 'one-time-option',
+				'value'       => '0',
 				'description' => _x( 'No thanks.', 'cart subscription selection - negative response', 'woocommerce-subscribe-all-the-things' ),
 				'selected'    => $active_scheme_key === false,
 			);
@@ -202,10 +210,13 @@ class WCS_ATT_Display_Cart {
 
 				WCS_ATT_Product_Schemes::set_subscription_scheme( $dummy_product, $subscription_scheme_key );
 
-				$sub_suffix = WCS_ATT_Product_Prices::get_price_string( $dummy_product, array( 'price' => '' ) );
+				$sub_suffix  = WCS_ATT_Product_Prices::get_price_string( $dummy_product, array( 'price' => '' ) );
+				$description = sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_suffix );
 
-				$options[ $subscription_scheme_key ] = array(
-					'description' => sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_suffix ),
+				$options[] = array(
+					'class'       => 'subscription-option',
+					'value'       => $subscription_scheme_key,
+					'description' => $description,
 					'selected'    => $active_scheme_key === $subscription_scheme_key,
 				);
 			}

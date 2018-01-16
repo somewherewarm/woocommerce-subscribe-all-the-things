@@ -86,9 +86,10 @@ class WCS_ATT_Display_Product {
 			// Non-recurring (one-time) option.
 			if ( false === $force_subscription ) {
 				$none_string                 = _x( 'None', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
-				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', 'woocommerce-subscribe-all-the-things' ), $none_string, '<span class="price">' . WCS_ATT_Product_Prices::get_price_html( $product, false ) . '</span>' ) : $none_string;
+				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', 'woocommerce-subscribe-all-the-things' ), $none_string, '<span class="price one-time-option-price">' . WCS_ATT_Product_Prices::get_price_html( $product, false ) . '</span>' ) : $none_string;
 
 				$options[] = array(
+					'class'       => 'one-time-option',
 					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
 					'value'       => '0',
 					'selected'    => '0' === $default_subscription_scheme_option_value,
@@ -108,6 +109,7 @@ class WCS_ATT_Display_Product {
 				);
 
 				$options[] = array(
+					'class'       => 'subscription-option',
 					'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( false === $force_subscription ? sprintf( _x( '%s', 'product subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $subscription_scheme->has_price_filter(), false === $force_subscription, $product, $subscription_scheme ),
 					'value'       => $subscription_scheme->get_key(),
 					'selected'    => $default_subscription_scheme_option_value === $subscription_scheme->get_key(),
