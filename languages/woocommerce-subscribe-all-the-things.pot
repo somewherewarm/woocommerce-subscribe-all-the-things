@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-dev\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-01-16 13:43:12+00:00\n"
+"POT-Creation-Date: 2018-01-16 15:10:07+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -183,7 +183,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:90
+#: includes/display/class-wcs-att-display-cart.php:92
 msgid "only now"
 msgstr ""
 
@@ -191,12 +191,12 @@ msgstr ""
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:205
-#: includes/display/class-wcs-att-display-product.php:235
+#: includes/display/class-wcs-att-display-product.php:207
+#: includes/display/class-wcs-att-display-product.php:237
 msgid "Sign up"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:227
+#: includes/display/class-wcs-att-display-product.php:229
 msgid "Select options"
 msgstr ""
 
@@ -301,12 +301,12 @@ msgctxt "input field placeholder for day field for annual subscriptions"
 msgid "Day"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:188
+#: includes/display/class-wcs-att-display-cart.php:196
 msgctxt "cart subscription selection - negative response"
 msgid "No thanks."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:208
+#: includes/display/class-wcs-att-display-cart.php:214
 msgctxt "cart subscription selection - positive response"
 msgid "Yes, %s."
 msgstr ""
@@ -316,7 +316,7 @@ msgctxt "product subscription selection - negative response"
 msgid "None"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:111
+#: includes/display/class-wcs-att-display-product.php:113
 msgctxt "product subscription selection - positive response"
 msgid "%s"
 msgstr ""

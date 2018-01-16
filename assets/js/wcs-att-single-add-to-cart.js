@@ -26,7 +26,7 @@
 			// Store scheme data for options that override the default prices.
 			var $scheme_options = bundle.$bundle_wrap.find( '.wcsatt-options-product .subscription-option' );
 
-			$.each( $scheme_options, function( index, scheme_option ) {
+			$scheme_options.each( function() {
 
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
@@ -137,7 +137,7 @@
 			// Store scheme data for options that override the default prices.
 			var $scheme_options = composite.$composite_data.find( '.wcsatt-options-product .subscription-option' );
 
-			$.each( $scheme_options, function( index, scheme_option ) {
+			$scheme_options.each( function() {
 
 				var $scheme_option = $( this ),
 					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
@@ -183,7 +183,7 @@
 
 				$.each( composite.satt_schemes, function( index, scheme ) {
 
-					var scheme_price_html = composite.composite_price_view.get_price_html();
+					var scheme_price_html = composite.composite_price_view.get_price_html(),
 						$scheme_price     = scheme.el.find( '.subscription-price' );
 
 					// Calculate the subscription price for each option that overrides default prices and update its html string.
