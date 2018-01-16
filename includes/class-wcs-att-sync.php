@@ -42,6 +42,10 @@ class WCS_ATT_Sync {
 
 			// Process and save the necessary meta.
 			add_filter( 'wcsatt_processed_scheme_data', array( __CLASS__, 'process_scheme_sync_data' ), 10, 2 );
+
+			// Add the translated fields to the Subscriptions admin script when viewing schemes on the 'WooCommerce > Settings' page.
+			add_filter( 'woocommerce_subscriptions_admin_script_parameters', array( __CLASS__, 'admin_script_parameters' ), 10 );
+
 		}
 
 		// Remember to set sync meta when setting a subscription scheme on a product object.
@@ -173,11 +177,35 @@ class WCS_ATT_Sync {
 	}
 
 	/**
+	 * Add translated syncing options for our client side script
+	 *
+	 * @param  array  $script_parameters
+	 */
+	public static function admin_script_parameters( $script_parameters ) {
+
+		$screen    = get_current_screen();
+		$screen_id = $screen ? $screen->id : '';
+
+		if ( $screen_id === 'woocommerce_page_wc-settings' && isset( $_GET[ 'tab' ] ) && $_GET[ 'tab' ] === 'subscriptions' ) {
+
+			$billing_period_strings = WC_Subscriptions_Synchroniser::get_billing_period_ranges();
+
+			$script_parameters[ 'syncOptions' ] = array(
+				'week'  => $billing_period_strings[ 'week' ],
+				'month' => $billing_period_strings[ 'month' ],
+			);
+
+		}
+
+		return $script_parameters;
+	}
+
+	/**
 	 * Set subscription payment sync data on product objects.
 	 *
-	 * @param string      $scheme_key
-	 * @param string      $active_scheme_key
-	 * @param WC_Product  $product
+	 * @param  string      $scheme_key
+	 * @param  string      $active_scheme_key
+	 * @param  WC_Product  $product
 	 */
 	public static function set_product_subscription_scheme_sync_date( $scheme_key, $active_scheme_key, $product ) {
 
