@@ -38,7 +38,7 @@ class WCS_ATT_Sync {
 			add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_sync_content' ), 20, 3 );
 
 			// Reword "Do not synchronise" to "Disabled".
-			add_filter( 'woocommerce_subscription_billing_period_ranges', array( __CLASS__, 'ame_subscription_billing_period_range_data' ) );
+			add_filter( 'woocommerce_subscription_billing_period_ranges', array( __CLASS__, 'rename_subscription_billing_period_range_data' ) );
 
 			// Process and save the necessary meta.
 			add_filter( 'wcsatt_processed_scheme_data', array( __CLASS__, 'process_scheme_sync_data' ), 10, 2 );
@@ -139,7 +139,7 @@ class WCS_ATT_Sync {
 	 * @param  array  $range_data
 	 * @return array
 	 */
-	public static function ame_subscription_billing_period_range_data( $range_data ) {
+	public static function rename_subscription_billing_period_range_data( $range_data ) {
 
 		foreach ( $range_data as $key => $data ) {
 			$range_data[ $key ][ 0 ] = __( 'Disabled', 'woocommerce-subscribe-all-the-things' );
@@ -177,7 +177,7 @@ class WCS_ATT_Sync {
 	}
 
 	/**
-	 * Add translated syncing options for our client side script
+	 * Add translated syncing options for our client side script.
 	 *
 	 * @param  array  $script_parameters
 	 */
