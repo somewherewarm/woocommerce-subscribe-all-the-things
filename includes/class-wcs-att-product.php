@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * API for working with subscription-enabled product objects.
  *
  * @class    WCS_ATT_Product
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Product {
 
