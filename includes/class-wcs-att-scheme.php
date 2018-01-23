@@ -100,6 +100,8 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		$this->data[ 'context' ] = isset( $args[ 'context' ] ) ? strval( $args[ 'context' ] ) : 'product';
 
 		$this->key = implode( '_', array_filter( array( $this->data[ 'interval' ], $this->data[ 'period' ], $this->data[ 'length' ] ) ) );
+
+		$this->data[ 'key' ] = $this->key;
 	}
 
 	/**
