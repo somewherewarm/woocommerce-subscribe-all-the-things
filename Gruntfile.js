@@ -33,9 +33,12 @@ module.exports = function( grunt ) {
 				globals: {
 					'jQuery': false,
 					'$': false,
+					'Backbone': false,
+					'WCSubscriptions': false,
 					'woocommerce_admin_meta_boxes': true,
 					'woocommerce_writepanel_params': false,
-					'wc_enhanced_select_params': false
+					'wc_enhanced_select_params': false,
+					'wcsatt_single_product_params': false
 				}
 			},
 			all: [
