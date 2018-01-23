@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Front-end support and single-product template modifications.
  *
  * @class    WCS_ATT_Display
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Display {
 
@@ -29,6 +29,8 @@ class WCS_ATT_Display {
 		require_once( 'display/class-wcs-att-display-cart.php' );
 		// Single-product display hooks.
 		require_once( 'display/class-wcs-att-display-product.php' );
+		// Front-end ajax hooks.
+		require_once( 'display/class-wcs-att-ajax.php' );
 
 		self::add_hooks();
 	}

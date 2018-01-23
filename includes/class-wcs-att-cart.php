@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart support.
  *
  * @class    WCS_ATT_Cart
- * @version  2.0.1
+ * @version  2.1.0
  */
 class WCS_ATT_Cart {
 
@@ -46,9 +46,6 @@ class WCS_ATT_Cart {
 
 		// Update the subscription scheme saved on a cart item when chosing a new option.
 		add_filter( 'woocommerce_update_cart_action_cart_updated', array( __CLASS__, 'update_cart_item_data' ), 10 );
-
-		// Ajax handler for saving the subscription scheme chosen at cart-level.
-		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_scheme' ) );
 
 		// Check successful application of subscription schemes.
 		add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'check_applied_subscription_schemes' ), 10 );
@@ -447,46 +444,6 @@ class WCS_ATT_Cart {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Ajax handler for saving the subscription scheme chosen at cart-level.
-	 *
-	 * @return void
-	 */
-	public static function update_cart_scheme() {
-
-		check_ajax_referer( 'wcsatt_update_cart_option', 'security' );
-
-		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
-			define( 'WOOCOMMERCE_CART', true );
-		}
-
-		$selected_scheme = false;
-
-		if ( ! empty( $_POST[ 'selected_scheme' ] ) ) {
-			$selected_scheme = wc_clean( $_POST[ 'selected_scheme' ] );
-		}
-
-		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
-				// Save scheme key on cart item.
-				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme;
-				// Apply scheme.
-				self::apply_subscription_scheme( $cart_item );
-			}
-		}
-
-		// Save chosen scheme.
-		self::set_cart_subscription_scheme( $selected_scheme );
-
-		// Recalculate totals.
-		WC()->cart->calculate_totals();
-
-		// Update the cart table apart from the totals in order to show modified price html strings with sub details.
-		wc_get_template( 'cart/cart.php' );
-
-		die();
 	}
 
 	/**
