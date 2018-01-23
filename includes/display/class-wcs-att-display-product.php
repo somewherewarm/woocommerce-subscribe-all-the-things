@@ -52,6 +52,9 @@ class WCS_ATT_Display_Product {
 		 * 'Add to subscription' view elements.
 		 */
 
+		// Render wrapper element.
+		add_filter( 'woocommerce_after_add_to_cart_button', array( __CLASS__, 'add_to_subscription' ), 1000 );
+
 		// Render subscriptions list.
 		add_action( 'wcsatt_add_product_to_subscription_html', array( __CLASS__, 'matching_subscriptions_template' ), 10, 3 );
 	}
@@ -292,6 +295,35 @@ class WCS_ATT_Display_Product {
 
 		return $supports;
 	}
+
+	/**
+	 * 'Add to subscription' view -- wrapper element.
+	 *
+	 * @since  2.1.0
+	 */
+	public static function add_to_subscription() {
+
+		global $product;
+
+		$subscription_options_visible = WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' );
+
+		if ( $subscription_options_visible ) {
+
+			$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
+			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
+			$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
+			$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
+
+			$subscription_options_visible = $is_single_scheme_forced_subscription || $default_subscription_scheme_key;
+		}
+
+		wc_get_template( 'single-product/product-add-to-subscription.php', array(
+			'product_id' => $product->get_id(),
+			'is_visible' => $subscription_options_visible
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+	}
+
 	/**
 	 * 'Add to subscription' view -- matching list of subscriptions.
 	 *

@@ -75,8 +75,16 @@ class WCS_ATT_Display {
 		}
 
 		if ( is_product() ) {
-			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-single-add-to-cart.js', array( 'jquery' ), WCS_ATT::VERSION, true );
+
+			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-single-add-to-cart.js', array( 'jquery', 'jquery-blockui', 'backbone' ), WCS_ATT::VERSION, true );
 			wp_enqueue_script( 'wcsatt-single-product' );
+
+			$params = array(
+				'i18n_subs_load_error' => __( 'Failed to load matching subscriptions. If this issue persists, please re-load the page and try again.', 'woocommerce-subscribe-all-the-things' ),
+				'wc_ajax_url'          => WC_AJAX::get_endpoint( "%%endpoint%%" )
+			);
+
+			wp_localize_script( 'wcsatt-single-product', 'wcsatt_single_product_params', $params );
 		}
 	}
 

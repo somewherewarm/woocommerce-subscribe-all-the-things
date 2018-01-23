@@ -1,5 +1,380 @@
 ;( function( $ ) {
 
+	// Ensure wcsatt_single_product_params exists to continue.
+	if ( typeof wcsatt_single_product_params === 'undefined' ) {
+		return false;
+	}
+
+	// Subscription Schemes model.
+	var Schemes_Model = function( opts ) {
+
+		var Model = Backbone.Model.extend( {
+
+			get_active_scheme_key: function() {
+				return this.get( 'active_scheme_key' );
+			},
+
+			get_active_scheme_period: function() {
+				var schemes = this.get( 'schemes' ),
+					key     = this.get( 'active_scheme_key' );
+
+				return key !== false ? schemes[ key ] : false;
+			},
+
+			get_last_active_scheme_period: function() {
+				return this.previous( 'active_scheme_key' );
+			},
+
+			set_active_scheme: function( key_to_set ) {
+				this.set( { active_scheme_key: key_to_set !== '0' ? key_to_set : false } );
+			},
+
+			set_schemes: function( schemes_to_set ) {
+				this.set( { schemes: schemes_to_set } );
+			},
+
+			initialize: function() {
+
+				var params = {
+					schemes:           {},
+					active_scheme_key: ''
+				};
+
+				this.set( params );
+			}
+
+		} );
+
+		var obj = new Model( opts );
+		return obj;
+	};
+
+	// Subscription Schemes view.
+	var Schemes_View = function( opts ) {
+
+		var View = Backbone.View.extend( {
+
+			$el_options: false,
+
+			events: {
+				'change .wcsatt-options-wrapper input': 'active_scheme_changed',
+				'show_variation': 'variation_found',
+				'reset_data': 'reset_schemes'
+			},
+
+			active_scheme_changed: function( e ) {
+				this.model.set_active_scheme( e.currentTarget.value );
+			},
+
+			variation_found: function() {
+				this.initialize( { $el_options: this.$el.find( '.wcsatt-options-wrapper' ) } );
+			},
+
+			reset_schemes: function() {
+				this.model.set_schemes( {} );
+				this.model.set_active_scheme( false );
+			},
+
+			find_schemes: function() {
+
+				var schemes = {};
+
+				this.$el_options.find( '.subscription-option input' ).each( function() {
+					var scheme_data = $( this ).data( 'custom_data' );
+					schemes[ scheme_data.subscription_scheme.key ] = scheme_data.subscription_scheme;
+				} );
+
+				return schemes;
+			},
+
+			initialize: function( options ) {
+
+				this.$el_options = options.$el_options;
+
+				this.model.set_schemes( this.find_schemes() );
+				this.$el_options.find( 'input:checked' ).change();
+			}
+
+		} );
+
+		var obj = new View( opts );
+		return obj;
+	};
+
+	// Add-to-subscription model.
+	var Matching_Subscriptions_Model = function( opts ) {
+
+		var Model = Backbone.Model.extend( {
+
+			product: false,
+			xhr: false,
+
+			cached_responses: {},
+
+			set_period: function( period_to_set ) {
+				this.set( { period: period_to_set } );
+			},
+
+			get_period: function() {
+				return this.get( 'period' );
+			},
+
+			get_matching_subscriptions_html: function() {
+
+				var model             = this,
+					active_scheme_key = this.product.schemes_model.get_active_scheme_key();
+
+				if ( this.xhr ) {
+					this.xhr.abort();
+				}
+
+				active_scheme_key = false === active_scheme_key ? '0' : active_scheme_key;
+
+
+				if ( typeof this.cached_responses[ active_scheme_key ] !== 'undefined' ) {
+
+					model.set( { html: this.cached_responses[ active_scheme_key ] } );
+					model.trigger( 'matching_subscriptions_loaded' );
+
+				} else {
+
+					var data = {
+						action:    'wcsatt_load_matching_subscriptions',
+						product_id: this.product.get_product_id(),
+						scheme_key: active_scheme_key
+					};
+
+					// Get matching subscriptions list via ajax.
+					this.xhr = $.post( wcsatt_single_product_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'wcsatt_load_matching_subscriptions' ), data, function( response ) {
+
+						if ( 'success' === response.result ) {
+							model.set( { html: response.html } );
+							model.cached_responses[ data.scheme_key ] = response.html;
+						} else {
+							model.set( { html: false } );
+							model.attributes.period = false;
+						}
+
+						model.trigger( 'matching_subscriptions_loaded' );
+
+					} );
+				}
+			},
+
+			// Active scheme changed.
+			active_scheme_changed: function() {
+
+				if ( this.xhr ) {
+					this.xhr.abort();
+				}
+			},
+
+			initialize: function( options ) {
+
+				this.product = options.product;
+
+				var params = {
+					period: false,
+					html:   false
+				};
+
+				this.set( params );
+
+				this.listenTo( this.product.schemes_model, 'change:active_scheme_key', this.active_scheme_changed );
+				this.on( 'change:period', this.get_matching_subscriptions_html );
+			}
+
+		} );
+
+		var obj = new Model( opts );
+		return obj;
+	};
+
+	// Add-to-subscription view.
+	var Matching_Subscriptions_View = function( opts ) {
+
+		var View = Backbone.View.extend( {
+
+			$el_content: false,
+			product:     false,
+
+			block_params: {
+				message:    null,
+				fadeIn:     0,
+				fadeOut:    0,
+				overlayCSS: {
+					background: 'rgba( 255, 255, 255, 0 )',
+					opacity:    1,
+				}
+			},
+
+			events: {
+				'click a.wcsatt-add-to-subscription-action': 'action_link_clicked'
+			},
+
+			// 'Add to subscription' link 'click' event handler.
+			action_link_clicked: function() {
+
+				var model = this.model,
+					view  = this;
+
+				if ( ! this.matching_subscriptions_visible() ) {
+
+					if ( this.model.get_period() === this.product.schemes_model.get_active_scheme_period() ) {
+						this.toggle();
+					} else {
+						this.$el.block( this.block_params );
+						setTimeout( function() {
+							model.set_period( view.product.schemes_model.get_active_scheme_period() );
+						}, 200 );
+					}
+
+				} else {
+					this.toggle();
+				}
+
+				return false;
+			},
+
+			// Active scheme changed.
+			active_scheme_changed: function() {
+
+				var view = this;
+
+				if ( false === this.product.schemes_model.get_active_scheme_period() ) {
+
+					this.$el.slideUp( 200 );
+
+				} else {
+
+					if ( view.$el.hasClass( 'open' ) && view.model.get_period() !== view.product.schemes_model.get_active_scheme_period() ) {
+
+						view.$el.block( view.block_params );
+
+						if ( false === view.product.schemes_model.get_last_active_scheme_period() ) {
+							view.toggle( true );
+						}
+
+						setTimeout( function() {
+							view.model.set_period( view.product.schemes_model.get_active_scheme_period() );
+						}, 250 );
+					}
+
+					setTimeout( function() {
+						view.$el.slideDown( 200 );
+					}, 50 );
+				}
+			},
+
+			// Toggles the matching subscriptions content wrapper.
+			toggle: function( now ) {
+
+				now = typeof now === 'undefined' ? false : now;
+
+				var view     = this,
+					duration = now ? 0 : 200;
+
+				if ( view.$el.data( 'animating' ) === true ) {
+					return false;
+				}
+
+				if ( view.$el.hasClass( 'closed' ) ) {
+					setTimeout( function() {
+						view.$el_content.slideDown( { duration: duration, queue: false, always: function() {
+							view.$el.data( 'animating', false );
+						} } );
+					}, 10 );
+					view.$el.removeClass( 'closed' ).addClass( 'open' );
+					view.$el.data( 'animating', true );
+				} else {
+					setTimeout( function() {
+						view.$el_content.slideUp( { duration: duration, queue: false, always: function() {
+							view.$el.data( 'animating', false );
+						} } );
+					}, 10 );
+					view.$el.removeClass( 'open' ).addClass( 'closed' );
+					view.$el.data( 'animating', true );
+				}
+
+				return true;
+			},
+
+			// True if the matching subscriptions select wrapper is visible.
+			matching_subscriptions_visible: function() {
+				return this.$el_content.is( ':visible' );
+			},
+
+			// New subscriptions list loaded?
+			matching_subscriptions_loaded: function() {
+				this.render();
+			},
+
+			// Render the subscriptions selector.
+			render: function() {
+
+				var html = this.model.get( 'html' );
+
+				this.$el.unblock();
+
+				if ( false === html ) {
+
+					window.alert( wcsatt_single_product_params.i18n_subs_load_error );
+
+					if ( this.matching_subscriptions_visible() ) {
+						this.toggle();
+					}
+
+				} else {
+
+					this.$el_content.html( html );
+
+					if ( ! this.matching_subscriptions_visible() ) {
+						this.toggle();
+					}
+				}
+			},
+
+			initialize: function( options ) {
+
+				this.product     = options.product;
+				this.$el_content = options.$el_content;
+
+				this.listenTo( this.model, 'matching_subscriptions_loaded', this.matching_subscriptions_loaded );
+				this.listenTo( this.product.schemes_model, 'change:active_scheme_key', this.active_scheme_changed );
+			}
+
+		} );
+
+		var obj = new View( opts );
+		return obj;
+	};
+
+	// SATT Product object.
+	var SATT_Product = function( $product_form ) {
+
+		this.$form = $product_form;
+
+		this.schemes_model = false;
+		this.schemes_view  = false;
+
+		this.matching_subscriptions_model = false;
+		this.matching_subscriptions_view  = false;
+
+		this.initialize = function() {
+
+			this.schemes_model                = new Schemes_Model( { product: this } );
+			this.matching_subscriptions_model = new Matching_Subscriptions_Model( { product: this } );
+
+			this.schemes_view                = new Schemes_View( { model: this.schemes_model, el: $product_form, $el_options: $product_form.find( '.wcsatt-options-wrapper' ) } );
+			this.matching_subscriptions_view = new Matching_Subscriptions_View( { product: this, model: this.matching_subscriptions_model, el: $product_form.find( '.wcsatt-add-to-subscription-wrapper' ), $el_content: $product_form.find( '.wcsatt-add-to-subscription-options' ) } );
+		};
+
+		this.get_product_id = function() {
+			return $product_form.find( '.wcsatt-add-to-subscription-wrapper' ).data( 'product_id' );
+		}
+	};
+
+	// Product Bundles integration.
 	var PB_Integration = function( bundle ) {
 
 		var self = this;
@@ -29,7 +404,7 @@
 			$scheme_options.each( function() {
 
 				var $scheme_option = $( this ),
-					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
+					scheme_data    = $scheme_option.find( 'input' ).data( 'custom_data' );
 
 				bundle.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
@@ -140,7 +515,7 @@
 			$scheme_options.each( function() {
 
 				var $scheme_option = $( this ),
-					scheme_data    = $( this ).find( 'input' ).data( 'custom_data' );
+					scheme_data    = $scheme_option.find( 'input' ).data( 'custom_data' );
 
 				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
 			} );
@@ -234,6 +609,15 @@
 		// Lights on.
 		this.integrate();
 	};
+
+	// Initialize SATT script.
+	$( '.product .cart:not(.cart_group)' ).each( function() {
+		var $product_form = $( this ),
+			satt_script   = new SATT_Product( $product_form );
+
+		satt_script.initialize();
+		$product_form.data.satt_script = satt_script;
+	} );
 
 	// Hook into Bundles.
 	$( '.bundle_form .bundle_data' ).each( function() {
