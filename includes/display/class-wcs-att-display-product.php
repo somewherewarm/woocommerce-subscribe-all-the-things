@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Single-product template modifications.
  *
  * @class    WCS_ATT_Display_Product
- * @version  2.0.1
+ * @version  2.1.0
  */
 class WCS_ATT_Display_Product {
 
@@ -47,6 +47,13 @@ class WCS_ATT_Display_Product {
 
 		// Replace plain variation price html with subscription options template.
 		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'add_subscription_options_to_variation_data' ), 0, 3 );
+
+		/*
+		 * 'Add to subscription' view elements.
+		 */
+
+		// Render subscriptions list.
+		add_action( 'wcsatt_add_product_to_subscription_html', array( __CLASS__, 'matching_subscriptions_template' ), 10, 3 );
 	}
 
 	/**
@@ -284,6 +291,40 @@ class WCS_ATT_Display_Product {
 		}
 
 		return $supports;
+	}
+	/**
+	 * 'Add to subscription' view -- matching list of subscriptions.
+	 *
+	 * @param  array       $subscriptions
+	 * @param  WC_Product  $product
+	 * @param  WCS_ATT_Scheme|null  $scheme
+	 * @return void
+	 */
+	public static function matching_subscriptions_template( $subscriptions, $product, $scheme ) {
+
+		add_action( 'woocommerce_my_subscriptions_actions', array( __CLASS__, 'add_to_subscription_button_template' ) );
+
+		wc_get_template( 'single-product/product-add-to-subscription-list.php', array(
+			'subscriptions' => $subscriptions,
+			'product'       => $product,
+			'scheme'        => $scheme,
+			'user_id'       => get_current_user_id()
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+
+		remove_action( 'woocommerce_my_subscriptions_actions', array( __CLASS__, 'add_to_subscription_button_template' ) );
+	}
+
+	/**
+	 * 'Add to subscription' view -- 'Add' button template.
+	 *
+	 * @param  WC_Subscription  $subscription
+	 */
+	public static function add_to_subscription_button_template( $subscription ) {
+
+		wc_get_template( 'single-product/product-add-to-subscription-button.php', array(
+			'subscription' => $subscription
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+
 	}
 }
 
