@@ -91,10 +91,9 @@ class WCS_ATT_Product_Schemes {
 		// If not explicitly set on object, initialize with schemes defined at product-level.
 		if ( '' === $schemes ) {
 
-			$supported_types = WCS_ATT()->get_supported_product_types();
-			$schemes         = array();
+			$schemes = array();
 
-			if ( in_array( $product->get_type(), $supported_types ) ) {
+			if ( WCS_ATT_Product::supports_feature( $product, 'subscription_schemes' ) ) {
 
 				$product_schemes_meta = $product->get_meta( '_wcsatt_schemes', true );
 

@@ -60,17 +60,10 @@ class WCS_ATT_Display_Product {
 
 		$content = '';
 
-		$subscription_schemes      = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-		$show_subscription_options = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
-
-		// Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
-		if ( $product->is_type( 'variable' ) ) {
-			$show_subscription_options = false;
-		}
-
-		if ( $show_subscription_options ) {
+		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
 
 			$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
+			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
 			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
 			$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
 			$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.

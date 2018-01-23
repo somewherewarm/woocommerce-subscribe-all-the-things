@@ -110,9 +110,7 @@ class WCS_ATT_Switcher {
 	public static function is_product_switchable( $is_switchable, $product ) {
 
 		if ( ! $is_switchable ) {
-
-			$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-			$is_switchable        = sizeof( $subscription_schemes ) > 1;
+			$is_switchable = WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_switching' );
 		}
 
 		return $is_switchable;

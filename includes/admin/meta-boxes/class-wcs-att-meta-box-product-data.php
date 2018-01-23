@@ -362,9 +362,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 	 */
 	public static function save_subscription_data( $product ) {
 
-		$product_type = $product->get_type();
-
-		if ( in_array( $product_type, WCS_ATT()->get_supported_product_types() ) ) {
+		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_schemes' ) ) {
 
 			$schemes = array();
 
@@ -376,7 +374,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 				foreach ( $posted_schemes as $posted_scheme ) {
 
 					// Copy variable type fields.
-					if ( 'variable' === $product_type ) {
+					if ( $product->is_type( 'variable' ) ) {
 						if ( isset( $posted_scheme[ 'subscription_regular_price_variable' ] ) ) {
 							$posted_scheme[ 'subscription_regular_price' ] = $posted_scheme[ 'subscription_regular_price_variable' ];
 						}

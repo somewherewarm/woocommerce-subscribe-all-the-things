@@ -83,6 +83,61 @@ class WCS_ATT_Product {
 		return $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) );
 	}
 
+	/**
+	 * Query for support of SATT features.
+	 *
+	 * @param  WC_Product  $product  Product object to check.
+	 * @param  string      $feature  Feature.
+	 * @param  array       $args     Additional arguments.
+	 * @return boolean               Result.
+	 */
+	public static function supports_feature( $product, $feature, $args = array() ) {
+
+		$is_feature_supported = false;
+
+		switch ( $feature ) {
+
+			case 'subscription_schemes':
+
+				$supported_product_types = WCS_ATT()->get_supported_product_types();
+				$is_feature_supported    = in_array( $product->get_type(), $supported_product_types );
+
+			break;
+			case 'subscription_scheme_options_product_single':
+
+				// Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
+				if ( ! $product->is_type( 'variable' ) ) {
+					$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+					$is_feature_supported = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
+				}
+
+			break;
+			case 'subscription_scheme_options_product_cart':
+
+				if ( isset( $args[ 'cart_item' ] ) && isset( $args[ 'cart_item_key' ] ) ) {
+					$subscription_schemes = WCS_ATT_Cart::get_subscription_schemes( $args[ 'cart_item' ], 'product' );
+					$is_feature_supported = apply_filters( 'wcsatt_show_cart_item_options', ! empty( $subscription_schemes ), $args[ 'cart_item' ], $args[ 'cart_item_key' ] );
+				}
+
+			break;
+			case 'subscription_scheme_switching':
+
+				// Scheme switching allowed for all products with more than 1 subscription scheme.
+				$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+				$is_feature_supported = sizeof( $subscription_schemes ) > 1;
+
+			break;
+			case 'subscription_management_add_to_subscription':
+
+				$is_feature_supported = self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+
+			break;
+		}
+
+		// Only possible to turn off features :)
+		return $is_feature_supported ? apply_filters( 'wcsatt_product_supports_feature', $is_feature_supported, $product, $feature, $args ) : $is_feature_supported;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Filters

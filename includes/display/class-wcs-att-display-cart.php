@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart template modifications.
  *
  * @class    WCS_ATT_Display_Cart
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Display_Cart {
 
@@ -55,21 +55,24 @@ class WCS_ATT_Display_Cart {
 	 */
 	public static function show_cart_item_subscription_options( $price, $cart_item, $cart_item_key ) {
 
-		$product                     = $cart_item[ 'data' ];
-		$subscription_schemes        = WCS_ATT_Cart::get_subscription_schemes( $cart_item, 'product' );
-		$show_convert_to_sub_options = apply_filters( 'wcsatt_show_cart_item_options', ! empty( $subscription_schemes ), $cart_item, $cart_item_key );
+		$product       = $cart_item[ 'data' ];
+		$supports_args = array(
+			'cart_item'     => $cart_item,
+			'cart_item_key' => $cart_item_key
+		);
+
+		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_cart', $supports_args ) ) {
+			return $price;
+		}
 
 		$is_mini_cart = did_action( 'woocommerce_before_mini_cart' ) && ! did_action( 'woocommerce_after_mini_cart' );
 
-		// currently show options only in cart
+		// Only show options in cart.
 		if ( ! is_cart() || $is_mini_cart ) {
 			return $price;
 		}
 
-		if ( ! $show_convert_to_sub_options ) {
-			return $price;
-		}
-
+		$subscription_schemes           = WCS_ATT_Cart::get_subscription_schemes( $cart_item, 'product' );
 		$active_subscription_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
 		$force_subscription             = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
 		$price_filter_exists            = WCS_ATT_Product_Schemes::price_filter_exists( $subscription_schemes );
