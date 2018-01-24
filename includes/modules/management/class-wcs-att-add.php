@@ -203,8 +203,13 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 				$period   = $subscription->get_billing_period();
 				$interval = $subscription->get_billing_interval();
 
-				// Code not readable on purpose. Leave this alone.
+				// Period and interval must match.
 				if ( $period !== $scheme->get_period() || absint( $interval ) !== $scheme->get_interval() ) {
+					continue;
+				}
+
+				// The subscription must have an upcoming renewal.
+				if ( ! $subscription->get_time( 'next_payment' ) ) {
 					continue;
 				}
 
