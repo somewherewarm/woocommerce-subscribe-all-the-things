@@ -112,9 +112,22 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 
 		global $product;
 
-		$subscription_options_visible = WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' );
+		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' ) ) {
+			return;
+		}
 
-		if ( $subscription_options_visible ) {
+		// Bypass when switching.
+		if ( WCS_ATT_Switch::switching_product( $product ) ) {
+			return;
+		}
+
+		$subscription_options_visible = false;
+
+		/*
+		 * Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
+		 * The add-to-subscription template is displayed when a variation is found.
+		 */
+		if ( ! $product->is_type( 'variable' ) ) {
 
 			$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
 			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );

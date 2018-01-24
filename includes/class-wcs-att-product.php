@@ -105,11 +105,8 @@ class WCS_ATT_Product {
 			break;
 			case 'subscription_scheme_options_product_single':
 
-				// Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
-				if ( ! $product->is_type( 'variable' ) ) {
-					$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-					$is_feature_supported = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
-				}
+				$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+				$is_feature_supported = apply_filters( 'wcsatt_show_single_product_options', ! empty( $subscription_schemes ), $product );
 
 			break;
 			case 'subscription_scheme_options_product_cart':
@@ -122,9 +119,9 @@ class WCS_ATT_Product {
 			break;
 			case 'subscription_scheme_switching':
 
-				// Scheme switching allowed for all products with more than 1 subscription scheme.
+				// Scheme switching allowed for all products with more than 1 subscription scheme, or variable ones.
 				$subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-				$is_feature_supported = sizeof( $subscription_schemes ) > 1;
+				$is_feature_supported = sizeof( $subscription_schemes ) > 1 || ( sizeof( $subscription_schemes ) && $product->is_type( array( 'variable', 'variation' ) ) );
 
 			break;
 			case 'subscription_management_add_to_subscription':

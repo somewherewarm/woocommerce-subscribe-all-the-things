@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-dev\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-01-23 17:06:15+00:00\n"
+"POT-Creation-Date: 2018-01-24 14:16:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -175,7 +175,7 @@ msgstr ""
 msgid "&quot;%1$s&quot; is only available with a subscription plan. %2$s"
 msgstr ""
 
-#: includes/class-wcs-att-display.php:83
+#: includes/class-wcs-att-display.php:86
 msgid ""
 "Failed to load matching subscriptions. If this issue persists, please "
 "re-load the page and try again."
@@ -193,16 +193,16 @@ msgstr ""
 msgid "only now"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:92
+#: includes/display/class-wcs-att-display-product.php:89
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:210
-#: includes/display/class-wcs-att-display-product.php:240
+#: includes/display/class-wcs-att-display-product.php:204
+#: includes/display/class-wcs-att-display-product.php:234
 msgid "Sign up"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:232
+#: includes/display/class-wcs-att-display-product.php:226
 msgid "Select options"
 msgstr ""
 
@@ -258,23 +258,23 @@ msgstr ""
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:178
+#: woocommerce-subscribe-all-the-things.php:182
 msgid ""
 "WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
 "order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:188
+#: woocommerce-subscribe-all-the-things.php:192
 msgid ""
 "WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
 "version %s+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:252
+#: woocommerce-subscribe-all-the-things.php:256
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:252
+#: woocommerce-subscribe-all-the-things.php:256
 msgid "%s and %s"
 msgstr ""
 
@@ -329,12 +329,12 @@ msgctxt "cart subscription selection - positive response"
 msgid "Yes, %s."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:91
+#: includes/display/class-wcs-att-display-product.php:88
 msgctxt "product subscription selection - negative response"
 msgid "None"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:116
+#: includes/display/class-wcs-att-display-product.php:113
 msgctxt "product subscription selection - positive response"
 msgid "%s"
 msgstr ""
