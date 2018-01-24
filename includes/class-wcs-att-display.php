@@ -30,7 +30,7 @@ class WCS_ATT_Display {
 		// Single-product display hooks.
 		require_once( 'display/class-wcs-att-display-product.php' );
 		// Front-end ajax hooks.
-		require_once( 'display/class-wcs-att-ajax.php' );
+		require_once( 'display/class-wcs-att-display-ajax.php' );
 
 		self::add_hooks();
 	}
@@ -39,6 +39,9 @@ class WCS_ATT_Display {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
+
+		// Add subscription management hooks.
+		WCS_ATT_Management::register_hooks( 'display' );
 
 		// Enqueue scripts and styles.
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'frontend_scripts' ) );

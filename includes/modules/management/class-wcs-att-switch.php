@@ -1,6 +1,6 @@
 <?php
 /**
- * WCS_ATT_Switcher class
+ * WCS_ATT_Switch class
  *
  * @author   SomewhereWarm <info@somewherewarm.gr>
  * @package  WooCommerce Subscribe All the Things
@@ -15,40 +15,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handles scheme switching for SATT items.
  *
- * @class    WCS_ATT_Switcher
+ * @class    WCS_ATT_Switch
  * @version  2.1.0
  */
-class WCS_ATT_Switcher {
+class WCS_ATT_Switch extends WCS_ATT_Abstract_Module {
 
 	/**
-	 * Initialization.
+	 * Register hooks.
+	 *
+	 * @param  string  $type
+	 * @return void
 	 */
-	public static function init() {
-		self::add_hooks();
-	}
+	public static function register_hooks( $type ) {
 
-	/**
-	 * Hook-in.
-	 */
-	private static function add_hooks() {
+		if ( 'core' === $type ) {
 
-		// Allow scheme switching for SATT products with more than 1 scheme.
-		add_filter( 'wcs_is_product_switchable', array( __CLASS__, 'is_product_switchable' ), 10, 2 );
+			// Allow scheme switching for SATT products with more than 1 scheme.
+			add_filter( 'wcs_is_product_switchable', array( __CLASS__, 'is_product_switchable' ), 10, 2 );
 
-		// Disable one-time purchases when switching.
-		add_filter( 'wcsatt_force_subscription', array( __CLASS__, 'force_subscription' ), 10, 2 );
+			// Disable one-time purchases when switching.
+			add_filter( 'wcsatt_force_subscription', array( __CLASS__, 'force_subscription' ), 10, 2 );
 
-		// Allow WCS to recognize any supported product as a subscription when validating a switch: Add filter.
-		add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'add_is_subscription_filter' ), 9 );
+			// Allow WCS to recognize any supported product as a subscription when validating a switch: Add filter.
+			add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'add_is_subscription_filter' ), 9 );
 
-		// Allow WCS to recognize any supported product as a subscription when validating a switch: Remove filter.
-		add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'remove_is_subscription_filter' ), 11 );
+			// Allow WCS to recognize any supported product as a subscription when validating a switch: Remove filter.
+			add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'remove_is_subscription_filter' ), 11 );
 
-		// Make WCS see products with a switched scheme as non-identical ones.
-		add_filter( 'woocommerce_subscriptions_switch_is_identical_product', array( __CLASS__, 'is_identical_product' ), 10, 6 );
+			// Make WCS see products with a switched scheme as non-identical ones.
+			add_filter( 'woocommerce_subscriptions_switch_is_identical_product', array( __CLASS__, 'is_identical_product' ), 10, 6 );
 
-		// Modify cart item being switched.
-		add_action( 'wcsatt_applied_cart_item_subscription_scheme', array( __CLASS__, 'edit_switched_cart_item' ), 10, 2 );
+			// Modify cart item being switched.
+			add_action( 'wcsatt_applied_cart_item_subscription_scheme', array( __CLASS__, 'edit_switched_cart_item' ), 10, 2 );
+		}
 	}
 
 	/**
@@ -249,5 +248,3 @@ class WCS_ATT_Switcher {
 		}
 	}
 }
-
-WCS_ATT_Switcher::init();

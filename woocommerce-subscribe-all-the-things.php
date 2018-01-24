@@ -139,15 +139,19 @@ class WCS_ATT {
 	 */
 	public function includes() {
 
+		// Abstract classes.
+		require_once( 'includes/modules/abstract/class-wcs-att-abstract-module.php' );
+
+		// Classes.
 		require_once( 'includes/class-wcs-att-core-compatibility.php' );
 		require_once( 'includes/class-wcs-att-integrations.php' );
 		require_once( 'includes/class-wcs-att-scheme.php' );
 		require_once( 'includes/class-wcs-att-product.php' );
 		require_once( 'includes/class-wcs-att-cart.php' );
-		require_once( 'includes/class-wcs-att-display.php' );
 		require_once( 'includes/class-wcs-att-order.php' );
-		require_once( 'includes/class-wcs-att-switcher.php' );
 		require_once( 'includes/class-wcs-att-sync.php' );
+		require_once( 'includes/class-wcs-att-management.php' );
+		require_once( 'includes/class-wcs-att-display.php' );
 
 		// Legacy stuff.
 		require_once( 'includes/legacy/class-wcs-att-schemes.php' );
