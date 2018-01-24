@@ -121,6 +121,11 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 			return;
 		}
 
+		// User must be logged in.
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
 		$subscription_options_visible = false;
 
 		/*
