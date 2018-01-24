@@ -167,6 +167,11 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 			'html'   => ''
 		);
 
+		// User must be logged in.
+		if ( ! is_user_logged_in() ) {
+			wp_send_json( $failure );
+		}
+
 		$product_id = ! empty( $_POST[ 'product_id' ] ) ? absint( $_POST[ 'product_id' ] ) : false;
 		$scheme_key = ! empty( $_POST[ 'scheme_key' ] ) ? wc_clean( $_POST[ 'scheme_key' ] ) : false;
 
