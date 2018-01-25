@@ -126,7 +126,9 @@ class WCS_ATT_Product {
 			break;
 			case 'subscription_management_add_to_subscription':
 
-				$is_feature_supported = self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+				if ( $product->is_purchasable() ) {
+					$is_feature_supported = self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+				}
 
 			break;
 		}
