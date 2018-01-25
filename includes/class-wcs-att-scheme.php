@@ -102,6 +102,27 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		$this->key = implode( '_', array_filter( array( $this->data[ 'interval' ], $this->data[ 'period' ], $this->data[ 'length' ] ) ) );
 
 		$this->data[ 'key' ] = $this->key;
+
+		/*
+		 * Syncing & Proration.
+		 */
+
+		$this->data[ 'is_synced' ]   = false;
+		$this->data[ 'is_prorated' ] = false;
+
+		if ( class_exists( 'WC_Subscriptions_Synchroniser' ) ) {
+
+			$dummy_product = new WC_Product( 0 );
+
+			WCS_ATT_Product_Schemes::set_subscription_schemes( $dummy_product, array(
+				$this->get_key() => $this
+			) );
+
+			WCS_ATT_Product_Schemes::set_subscription_scheme( $dummy_product, $this->get_key() );
+
+			$this->data[ 'is_prorated' ] = WC_Subscriptions_Synchroniser::is_product_prorated( $dummy_product );
+			$this->data[ 'is_synced' ]   = WC_Subscriptions_Synchroniser::is_product_synced( $dummy_product );
+		}
 	}
 
 	/**
@@ -185,6 +206,24 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 */
 	public function get_sync_date() {
 		return $this->data[ 'sync_date' ];
+	}
+
+	/**
+	 * Whether the first payment is processed at the time of sign-up but prorated to the sync day.
+	 *
+	 * @since  2.1.0
+	 */
+	public function is_prorated() {
+		return $this->data[ 'is_prorated' ];
+	}
+
+	/**
+	 * Whether the first payment needs to be processed on a specific day (instead of at the time of sign-up).
+	 *
+	 * @since  2.1.0
+	 */
+	public function is_synced() {
+		return $this->data[ 'is_synced' ];
 	}
 
 	/**
