@@ -14,15 +14,16 @@
 				return this.get( 'active_scheme_key' );
 			},
 
-			get_active_scheme_period: function() {
-				var schemes = this.get( 'schemes' ),
-					key     = this.get( 'active_scheme_key' );
+			get_last_active_scheme_key: function() {
+				return this.previous( 'active_scheme_key' );
+			},
 
-				return key !== false ? schemes[ key ] : false;
+			get_active_scheme_period: function() {
+				return this.get_scheme_prop( this.get_active_scheme_key(), 'period' );
 			},
 
 			get_last_active_scheme_period: function() {
-				return this.previous( 'active_scheme_key' );
+				return this.get_scheme_prop( this.get_last_active_scheme_key(), 'period' );
 			},
 
 			set_active_scheme: function( key_to_set ) {
@@ -31,6 +32,25 @@
 
 			set_schemes: function( schemes_to_set ) {
 				this.set( { schemes: schemes_to_set } );
+			},
+
+			is_active_scheme_prorated: function() {
+				return this.get_scheme_prop( this.get_active_scheme_key(), 'is_prorated' );
+			},
+
+			was_last_active_scheme_prorated: function() {
+				return this.get_scheme_prop( this.get_last_active_scheme_key(), 'is_prorated' );
+			},
+
+			get_scheme_prop: function( key, prop ) {
+
+				var schemes = this.get( 'schemes' );
+
+				if ( typeof schemes[ key ] === 'undefined' || typeof schemes[ key ][ prop ] === 'undefined' ) {
+					return null;
+				}
+
+				return schemes[ key ][ prop ];
 			},
 
 			initialize: function() {
@@ -241,7 +261,7 @@
 
 				var view = this;
 
-				if ( false === this.product.schemes_model.get_active_scheme_period() ) {
+				if ( false === this.product.schemes_model.get_active_scheme_key() || this.product.schemes_model.is_active_scheme_prorated() ) {
 
 					this.$el.slideUp( 200 );
 
@@ -251,7 +271,7 @@
 
 						view.$el.block( view.block_params );
 
-						if ( false === view.product.schemes_model.get_last_active_scheme_period() ) {
+						if ( false === view.product.schemes_model.get_last_active_scheme_key() || this.product.schemes_model.was_last_active_scheme_prorated() ) {
 							view.toggle( true );
 						}
 

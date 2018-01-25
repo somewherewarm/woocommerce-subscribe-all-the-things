@@ -139,8 +139,9 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
 			$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
 			$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
+			$default_subscription_scheme          = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $default_subscription_scheme_key );
 
-			$subscription_options_visible = $is_single_scheme_forced_subscription || $default_subscription_scheme_key;
+			$subscription_options_visible = $is_single_scheme_forced_subscription || ( is_object( $default_subscription_scheme ) && ! $default_subscription_scheme->is_prorated() );
 		}
 
 		wc_get_template( 'single-product/product-add-to-subscription.php', array(
