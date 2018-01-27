@@ -86,7 +86,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			$this->data[ 'sync_date' ] = 0;
 
 			if ( isset( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) ) {
-				if ( is_array( $args[ 'data' ][ 'subscription_payment_sync_date' ] && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ] ) ) ) {
+				if ( is_array( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ] ) ) {
 					$this->data[ 'sync_date' ] = array(
 						'day'   => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ],
 						'month' => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ]
