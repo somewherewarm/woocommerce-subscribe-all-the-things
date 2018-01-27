@@ -70,6 +70,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			$this->data[ 'pricing_mode' ] = isset( $args[ 'data' ][ 'subscription_pricing_method' ] ) && in_array( $args[ 'data' ][ 'subscription_pricing_method' ], array( 'inherit', 'override' ) ) ? strval( $args[ 'data' ][ 'subscription_pricing_method' ] ) : 'inherit';
 
 			if ( 'override' === $this->data[ 'pricing_mode' ] ) {
+
 				$this->data[ 'regular_price' ] = isset( $args[ 'data' ][ 'subscription_regular_price' ] ) ? wc_format_decimal( $args[ 'data' ][ 'subscription_regular_price' ] ) : '';
 				$this->data[ 'sale_price' ]    = isset( $args[ 'data' ][ 'subscription_sale_price' ] ) ? wc_format_decimal( $args[ 'data' ][ 'subscription_sale_price' ] ) : '';
 				$this->data[ 'price' ]         = '' !== $this->data[ 'sale_price' ] && $this->data[ 'sale_price' ] < $this->data[ 'regular_price' ] ? $this->data[ 'sale_price' ] : $this->data[ 'regular_price' ];
@@ -86,11 +87,14 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			$this->data[ 'sync_date' ] = 0;
 
 			if ( isset( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) ) {
+
 				if ( is_array( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ] ) ) {
+
 					$this->data[ 'sync_date' ] = array(
 						'day'   => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ],
 						'month' => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ]
 					);
+
 				} else {
 					$this->data[ 'sync_date' ] = absint( $args[ 'data' ][ 'subscription_payment_sync_date' ] );
 				}
