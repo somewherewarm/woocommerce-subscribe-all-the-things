@@ -214,6 +214,29 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 					continue;
 				}
 
+				// The scheme length must match the remaining subscription renewals.
+				if ( $scheme->get_length() ) {
+
+					$subscription_next_payment = $subscription->get_time( 'next_payment' );
+					$subscription_end          = $subscription->get_time( 'end' );
+
+					// If the scheme has a length but the subscription is endless, dump it.
+					if ( ! $subscription_end ) {
+						continue;
+					}
+
+					$subscription_periods_left = wcs_estimate_periods_between( $subscription_next_payment, $subscription_end, $scheme->get_period() );
+
+					if ( $subscription_periods_left !== $scheme->get_length() ) {
+						continue;
+					}
+				}
+
+				// If the scheme is synced, the next renewal date of the subscription must match.
+				if ( $scheme->is_synced() ) {
+
+				}
+
 				$matching_subscriptions[ $subscription_id ] = $subscription;
 			}
 		}
