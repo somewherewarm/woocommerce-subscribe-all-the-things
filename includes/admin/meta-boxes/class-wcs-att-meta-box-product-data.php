@@ -445,21 +445,14 @@ class WCS_ATT_Meta_Box_Product_Data {
 					 */
 					$posted_scheme = apply_filters( 'wcsatt_processed_scheme_data', $posted_scheme, $product );
 
-					// Construct scheme id.
+					// Don't store multiple schemes with the same billing schedule.
 					$scheme_key = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
 
-					/**
-					 * Allow third parties to filter the scheme key.
-					 *
-					 * @since  2.1.0
-					 *
-					 * @param  string      $scheme_key
-					 * @param  WC_Product  $product
-					 */
-					$scheme_key = apply_filters( 'wcsatt_processed_scheme_key', $scheme_key, $product );
+					if ( isset( $schemes[ $scheme_key ] ) ) {
+						continue;
+					}
 
-					$schemes[ $scheme_key ]         = $posted_scheme;
-					$schemes[ $scheme_key ][ 'id' ] = $scheme_key;
+					$schemes[ $scheme_key ] = $posted_scheme;
 				}
 			}
 
@@ -482,7 +475,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 			// Save scheme options.
 			if ( ! empty( $schemes ) ) {
 
-				$product->update_meta_data( '_wcsatt_schemes', $schemes );
+				$product->update_meta_data( '_wcsatt_schemes', array_values( $schemes ) );
 
 				// Set regular price to zero should the shop owner forget.
 				if ( 'yes' === $force_subscription && empty( $_POST[ '_regular_price' ] ) ) {
