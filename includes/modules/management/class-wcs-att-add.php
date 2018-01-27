@@ -232,9 +232,23 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 					}
 				}
 
-				// If the scheme is synced, the next renewal date of the subscription must match.
+				// If the scheme is synced, its payment day must match the next subscription renewal payment day.
 				if ( $scheme->is_synced() ) {
 
+					$scheme_sync_day           = $scheme->get_sync_date();
+					$subscription_next_payment = $subscription->get_time( 'next_payment' );
+
+					if ( 'week' === $period && $scheme_sync_day !== intval( date( 'N', $subscription_next_payment ) ) ) {
+						continue;
+					}
+
+					if ( 'month' === $period && $scheme_sync_day !== intval( date( 'j', $subscription_next_payment ) ) ) {
+						continue;
+					}
+
+					if ( 'year' === $period && ( $scheme_sync_day[ 'day' ] !== date( 'd', $subscription_next_payment ) || $scheme_sync_day[ 'month' ] !== date( 'm', $subscription_next_payment ) ) ) {
+						continue;
+					}
 				}
 
 				$matching_subscriptions[ $subscription_id ] = $subscription;
