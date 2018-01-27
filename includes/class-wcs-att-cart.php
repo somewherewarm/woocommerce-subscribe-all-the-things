@@ -211,8 +211,8 @@ class WCS_ATT_Cart {
 
 			$posted_subscription_scheme_key = null;
 
-			if ( isset( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
-				$posted_subscription_scheme_option = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
+			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product_id ] ) ) {
+				$posted_subscription_scheme_option = wc_clean( $_REQUEST[ 'convert_to_sub_' . $product_id ] );
 				$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
 			}
 

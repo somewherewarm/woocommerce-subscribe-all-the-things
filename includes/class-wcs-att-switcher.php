@@ -207,7 +207,7 @@ class WCS_ATT_Switcher {
 
 			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product_id ] ) ) {
 
-				$new_subscription_scheme_key = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
+				$new_subscription_scheme_key = wc_clean( $_REQUEST[ 'convert_to_sub_' . $product_id ] );
 				$old_subscription_scheme_key = WCS_ATT_Order::get_subscription_scheme( $item );
 
 				if ( $new_subscription_scheme_key && $new_subscription_scheme_key !== $old_subscription_scheme_key ) {
