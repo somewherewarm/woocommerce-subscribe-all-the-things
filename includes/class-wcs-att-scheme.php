@@ -101,7 +101,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 
 		$this->key = implode( '_', array_filter( array( $this->data[ 'interval' ], $this->data[ 'period' ], $this->data[ 'length' ] ) ) );
 
-		$this->data[ 'key' ] = $this->key;
+		$this->data[ 'key' ] = $this->data[ 'id' ] = $this->key;
 
 		/*
 		 * Syncing & Proration.
