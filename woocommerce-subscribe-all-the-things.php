@@ -148,6 +148,7 @@ class WCS_ATT {
 		require_once( 'includes/class-wcs-att-order.php' );
 		require_once( 'includes/class-wcs-att-switcher.php' );
 		require_once( 'includes/class-wcs-att-sync.php' );
+		require_once( 'includes/class-wcs-att-form-handler.php' );
 
 		// Legacy stuff.
 		require_once( 'includes/legacy/class-wcs-att-schemes.php' );

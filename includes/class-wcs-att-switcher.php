@@ -84,9 +84,10 @@ class WCS_ATT_Switcher {
 
 				$product_id = apply_filters( 'woocommerce_add_to_cart_product_id', absint( $_REQUEST[ 'add-to-cart' ] ) );
 
-				if ( isset( $_REQUEST[ 'convert_to_sub_' . $product_id ] ) ) {
-					$posted    = wc_clean( $_REQUEST[ 'convert_to_sub_' . $product_id ] );
-					$switching = ! empty( $posted );
+				$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
+
+				if ( null !== $posted_subscription_scheme_key ) {
+					$switching = ! empty( $posted_subscription_scheme_key );
 				}
 			}
 		}
@@ -205,9 +206,11 @@ class WCS_ATT_Switcher {
 
 		if ( $is_identical ) {
 
-			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product_id ] ) ) {
+			$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
 
-				$new_subscription_scheme_key = wc_clean( $_REQUEST[ 'convert_to_sub_' . $product_id ] );
+			if ( null !== $posted_subscription_scheme_key ) {
+
+				$new_subscription_scheme_key = $posted_subscription_scheme_key;
 				$old_subscription_scheme_key = WCS_ATT_Order::get_subscription_scheme( $item );
 
 				if ( $new_subscription_scheme_key && $new_subscription_scheme_key !== $old_subscription_scheme_key ) {
