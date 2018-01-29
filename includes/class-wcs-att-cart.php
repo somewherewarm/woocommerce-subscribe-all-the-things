@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart support.
  *
  * @class    WCS_ATT_Cart
- * @version  2.0.1
+ * @version  2.1.0
  */
 class WCS_ATT_Cart {
 
@@ -209,12 +209,7 @@ class WCS_ATT_Cart {
 
 		if ( self::is_supported_product_type( $product_id ) && ! isset( $cart_item[ 'wcsatt_data' ] ) ) { // Might be set - @see 'WCS_ATT_Order::restore_cart_item_from_order_item'.
 
-			$posted_subscription_scheme_key = null;
-
-			if ( isset( $_REQUEST[ 'convert_to_sub_' . $product_id ] ) ) {
-				$posted_subscription_scheme_option = wc_clean( $_REQUEST[ 'convert_to_sub_' . $product_id ] );
-				$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
-			}
+			$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
 
 			$cart_item[ 'wcsatt_data' ] = array(
 				'active_subscription_scheme' => $posted_subscription_scheme_key,
@@ -436,9 +431,7 @@ class WCS_ATT_Cart {
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
 
-				$selected_scheme_option = isset( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ? wc_clean( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) : null;
-				$selected_scheme_key    = '0' !== $selected_scheme_option ? $selected_scheme_option : false;
-				$selected_scheme_key    = apply_filters( 'wcsatt_updated_cart_item_scheme_id', $selected_scheme_key, $cart_item, $cart_item_key );
+				$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart-item', array( 'cart_item_key' => $cart_item_key, 'cart_item' => $cart_item ) );
 
 				if ( null !== $selected_scheme_key ) {
 					WC()->cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme_key;
@@ -462,23 +455,23 @@ class WCS_ATT_Cart {
 			define( 'WOOCOMMERCE_CART', true );
 		}
 
-		$selected_scheme = false;
+		$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart' );
 
-		if ( ! empty( $_POST[ 'selected_scheme' ] ) ) {
-			$selected_scheme = wc_clean( $_POST[ 'selected_scheme' ] );
+		if ( empty( $posted_subscription_scheme_key ) ) {
+			$posted_subscription_scheme_key = false;
 		}
 
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
 				// Save scheme key on cart item.
-				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme;
+				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $posted_subscription_scheme_key;
 				// Apply scheme.
 				self::apply_subscription_scheme( $cart_item );
 			}
 		}
 
 		// Save chosen scheme.
-		self::set_cart_subscription_scheme( $selected_scheme );
+		self::set_cart_subscription_scheme( $posted_subscription_scheme_key );
 
 		// Recalculate totals.
 		WC()->cart->calculate_totals();
