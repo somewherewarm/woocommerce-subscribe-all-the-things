@@ -55,23 +55,23 @@ class WCS_ATT_Display_Ajax {
 			define( 'WOOCOMMERCE_CART', true );
 		}
 
-		$selected_scheme = false;
+		$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart' );
 
-		if ( ! empty( $_POST[ 'selected_scheme' ] ) ) {
-			$selected_scheme = wc_clean( $_POST[ 'selected_scheme' ] );
+		if ( empty( $posted_subscription_scheme_key ) ) {
+			$posted_subscription_scheme_key = false;
 		}
 
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
 				// Save scheme key on cart item.
-				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme;
+				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $posted_subscription_scheme_key;
 				// Apply scheme.
 				WCS_ATT_Cart::apply_subscription_scheme( $cart_item );
 			}
 		}
 
 		// Save chosen scheme.
-		WCS_ATT_Cart::set_cart_subscription_scheme( $selected_scheme );
+		WCS_ATT_Cart::set_cart_subscription_scheme( $posted_subscription_scheme_key );
 
 		// Recalculate totals.
 		WC()->cart->calculate_totals();
