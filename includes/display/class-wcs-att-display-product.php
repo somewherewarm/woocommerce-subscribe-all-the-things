@@ -58,79 +58,83 @@ class WCS_ATT_Display_Product {
 	 */
 	public static function get_subscription_options_content( $product, $parent_product = null ) {
 
-		$content = '';
-
-		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
-
-			$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
-			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
-			$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
-			$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
-			$posted_subscription_scheme_key       = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
-			$options                              = array();
-
-			// Option selected by default.
-			if ( null !== $posted_subscription_scheme_key ) {
-				$default_subscription_scheme_key = $posted_subscription_scheme_key;
-			}
-
-			$default_subscription_scheme_option_value = false === $default_subscription_scheme_key ? '0' : $default_subscription_scheme_key;
-
-			// Non-recurring (one-time) option.
-			if ( false === $force_subscription ) {
-				$none_string                 = _x( 'None', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
-				$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', 'woocommerce-subscribe-all-the-things' ), $none_string, '<span class="price one-time-option-price">' . WCS_ATT_Product_Prices::get_price_html( $product, false ) . '</span>' ) : $none_string;
-
-				$options[] = array(
-					'class'       => 'one-time-option',
-					'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
-					'value'       => '0',
-					'selected'    => '0' === $default_subscription_scheme_option_value,
-					'data'        => apply_filters( 'wcsatt_single_product_one_time_option_data', array(), $product )
-				);
-			}
-
-			// Subscription options.
-			foreach ( $subscription_schemes as $subscription_scheme ) {
-
-				$sub_price_html = '<span class="price subscription-price">' . WCS_ATT_Product_Prices::get_price_html( $product, $subscription_scheme->get_key() ) . '</span>';
-
-				$option_data = array(
-					'subscription_scheme'   => $subscription_scheme->get_data(),
-					'overrides_price'       => $subscription_scheme->has_price_filter(),
-					'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false )
-				);
-
-				$options[] = array(
-					'class'       => 'subscription-option',
-					'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( false === $force_subscription ? sprintf( _x( '%s', 'product subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $subscription_scheme->has_price_filter(), false === $force_subscription, $product, $subscription_scheme ),
-					'value'       => $subscription_scheme->get_key(),
-					'selected'    => $default_subscription_scheme_option_value === $subscription_scheme->get_key(),
-					'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )
-				);
-			}
-
-			if ( $prompt = is_a( $parent_product, 'WC_Product' ) ? $parent_product->get_meta( '_wcsatt_subscription_prompt', true ) : $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
-				$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
-			}
-
-			$options = apply_filters( 'wcsatt_single_product_options', $options, $subscription_schemes, $product );
-
-			ob_start();
-
-			wc_get_template( 'single-product/product-subscription-options.php', array(
-				'product'        => $product,
-				'product_id'     => $product_id,
-				'options'        => $options,
-				'allow_one_time' => false === $force_subscription,
-				'prompt'         => $prompt,
-			), false, WCS_ATT()->plugin_path() . '/templates/' );
-
-			$content = ob_get_clean();
+		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
+			return '';
 		}
 
-		return $content;
+		/*
+		 * Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
+		 */
+		if ( $product->is_type( 'variable' ) ) {
+			return '';
+		}
+
+		$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
+		$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+		$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
+		$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
+		$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
+		$posted_subscription_scheme_key       = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
+		$options                              = array();
+
+		// Option selected by default.
+		if ( null !== $posted_subscription_scheme_key ) {
+			$default_subscription_scheme_key = $posted_subscription_scheme_key;
+		}
+
+		$default_subscription_scheme_option_value = false === $default_subscription_scheme_key ? '0' : $default_subscription_scheme_key;
+
+		// Non-recurring (one-time) option.
+		if ( false === $force_subscription ) {
+			$none_string                 = _x( 'None', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
+			$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', 'woocommerce-subscribe-all-the-things' ), $none_string, '<span class="price one-time-option-price">' . WCS_ATT_Product_Prices::get_price_html( $product, false ) . '</span>' ) : $none_string;
+
+			$options[] = array(
+				'class'       => 'one-time-option',
+				'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
+				'value'       => '0',
+				'selected'    => '0' === $default_subscription_scheme_option_value,
+				'data'        => apply_filters( 'wcsatt_single_product_one_time_option_data', array(), $product )
+			);
+		}
+
+		// Subscription options.
+		foreach ( $subscription_schemes as $subscription_scheme ) {
+
+			$sub_price_html = '<span class="price subscription-price">' . WCS_ATT_Product_Prices::get_price_html( $product, $subscription_scheme->get_key() ) . '</span>';
+
+			$option_data = array(
+				'subscription_scheme'   => $subscription_scheme->get_data(),
+				'overrides_price'       => $subscription_scheme->has_price_filter(),
+				'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false )
+			);
+
+			$options[] = array(
+				'class'       => 'subscription-option',
+				'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( false === $force_subscription ? sprintf( _x( '%s', 'product subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $subscription_scheme->has_price_filter(), false === $force_subscription, $product, $subscription_scheme ),
+				'value'       => $subscription_scheme->get_key(),
+				'selected'    => $default_subscription_scheme_option_value === $subscription_scheme->get_key(),
+				'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )
+			);
+		}
+
+		if ( $prompt = is_a( $parent_product, 'WC_Product' ) ? $parent_product->get_meta( '_wcsatt_subscription_prompt', true ) : $product->get_meta( '_wcsatt_subscription_prompt', true ) ) {
+			$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
+		}
+
+		$options = apply_filters( 'wcsatt_single_product_options', $options, $subscription_schemes, $product );
+
+		ob_start();
+
+		wc_get_template( 'single-product/product-subscription-options.php', array(
+			'product'        => $product,
+			'product_id'     => $product_id,
+			'options'        => $options,
+			'allow_one_time' => false === $force_subscription,
+			'prompt'         => $prompt,
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+
+		return ob_get_clean();
 	}
 
 	/*
