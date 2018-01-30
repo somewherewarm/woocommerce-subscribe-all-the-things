@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( empty( $subscriptions ) ) {
-	_e( 'No active subscriptions found to match.', 'woocommerce-subscribe-all-the-things' );
+	_e( 'No matching subscriptions found.', 'woocommerce-subscribe-all-the-things' );
 } else {
 	wc_get_template( 'myaccount/my-subscriptions.php', array( 'subscriptions' => $subscriptions, 'user_id' => $user_id ), '', plugin_dir_path( WC_Subscriptions::$plugin_file ) . 'templates/' );
 }
