@@ -286,6 +286,25 @@
 				}
 			},
 
+			// Handles add-to-subscription button clicks.
+			add_to_subscription_button_clicked: function( event ) {
+
+				var $add_to_sub_button  = $( this ),
+					$add_to_cart_button = event.data.view.product.$form.find( '.single_add_to_cart_button' ),
+					$add_to_cart        = event.data.view.product.$form.find( '[name="add-to-cart"]' ),
+					product_id          = event.data.view.product.get_product_id(),
+					subscription_id     = $add_to_sub_button.data( 'subscription_id' );
+
+				event.data.view.product.$form.find( 'input.add-to-subscription' ).remove();
+
+				$add_to_sub_button.after( '<input type="hidden" class="add-to-subscription" name="add_to_sub_' + product_id + '" value="' + subscription_id + '"/>' );
+
+				$add_to_cart.attr( 'name', 'add-to-subscription' );
+				$add_to_cart_button.click();
+
+				return false;
+			},
+
 			// Toggles the matching subscriptions content wrapper.
 			toggle: function( now ) {
 
@@ -361,6 +380,8 @@
 
 				this.listenTo( this.model, 'matching_subscriptions_loaded', this.matching_subscriptions_loaded );
 				this.listenTo( this.product.schemes_model, 'change:active_scheme_key', this.active_scheme_changed );
+
+				this.$el_content.on( 'click', 'a.wcsatt-add-to-subscription-button', { view: this }, this.add_to_subscription_button_clicked );
 			}
 
 		} );
