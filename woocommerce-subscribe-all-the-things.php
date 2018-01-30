@@ -47,6 +47,13 @@ class WCS_ATT {
 	protected static $_instance = null;
 
 	/**
+	 * SATT modules.
+	 *
+	 * @var array
+	 */
+	protected $modules = array();
+
+	/**
 	 * Main WCS_ATT Instance.
 	 *
 	 * Ensures only one instance of WCS_ATT is loaded or can be loaded.
@@ -139,15 +146,32 @@ class WCS_ATT {
 	 */
 	public function includes() {
 
+		// Abstract classes.
+		require_once( 'includes/modules/abstract/class-wcs-att-abstract-module.php' );
+
+		// Classes.
 		require_once( 'includes/class-wcs-att-core-compatibility.php' );
 		require_once( 'includes/class-wcs-att-integrations.php' );
 		require_once( 'includes/class-wcs-att-scheme.php' );
 		require_once( 'includes/class-wcs-att-product.php' );
 		require_once( 'includes/class-wcs-att-cart.php' );
-		require_once( 'includes/class-wcs-att-display.php' );
 		require_once( 'includes/class-wcs-att-order.php' );
-		require_once( 'includes/class-wcs-att-switcher.php' );
 		require_once( 'includes/class-wcs-att-sync.php' );
+		require_once( 'includes/class-wcs-att-form-handler.php' );
+
+		// Modules.
+		require_once( 'includes/modules/class-wcs-att-management.php' );
+
+		$this->modules = apply_filters( 'wcsatt_modules', array(
+			'WCS_ATT_Management'
+		) );
+
+		foreach ( $this->modules as $module ) {
+			$module::initialize();
+		}
+
+		// Components.
+		require_once( 'includes/class-wcs-att-display.php' );
 		require_once( 'includes/class-wcs-att-form-handler.php' );
 
 		// Legacy stuff.
@@ -156,6 +180,18 @@ class WCS_ATT {
 		// Admin includes.
 		if ( is_admin() ) {
 			$this->admin_includes();
+		}
+	}
+
+	/**
+	 * Register all module hooks associated with a named SATT component.
+	 *
+	 * @param  string  $component
+	 */
+	public function register_module_hooks( $component ) {
+
+		foreach ( $this->modules as $module ) {
+			$module::register_hooks( $component );
 		}
 	}
 

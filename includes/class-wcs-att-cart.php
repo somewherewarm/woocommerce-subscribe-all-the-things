@@ -47,9 +47,6 @@ class WCS_ATT_Cart {
 		// Update the subscription scheme saved on a cart item when chosing a new option.
 		add_filter( 'woocommerce_update_cart_action_cart_updated', array( __CLASS__, 'update_cart_item_data' ), 10 );
 
-		// Ajax handler for saving the subscription scheme chosen at cart-level.
-		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_scheme' ) );
-
 		// Check successful application of subscription schemes.
 		add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'check_applied_subscription_schemes' ), 10 );
 	}
@@ -433,53 +430,13 @@ class WCS_ATT_Cart {
 
 				$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart-item', array( 'cart_item_key' => $cart_item_key, 'cart_item' => $cart_item ) );
 
-				if ( null !== $selected_scheme_key ) {
-					WC()->cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme_key;
+				if ( null !== $posted_subscription_scheme_key ) {
+					WC()->cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $posted_subscription_scheme_key;
 				}
 			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * Ajax handler for saving the subscription scheme chosen at cart-level.
-	 *
-	 * @return void
-	 */
-	public static function update_cart_scheme() {
-
-		check_ajax_referer( 'wcsatt_update_cart_option', 'security' );
-
-		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
-			define( 'WOOCOMMERCE_CART', true );
-		}
-
-		$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart' );
-
-		if ( empty( $posted_subscription_scheme_key ) ) {
-			$posted_subscription_scheme_key = false;
-		}
-
-		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
-				// Save scheme key on cart item.
-				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $posted_subscription_scheme_key;
-				// Apply scheme.
-				self::apply_subscription_scheme( $cart_item );
-			}
-		}
-
-		// Save chosen scheme.
-		self::set_cart_subscription_scheme( $posted_subscription_scheme_key );
-
-		// Recalculate totals.
-		WC()->cart->calculate_totals();
-
-		// Update the cart table apart from the totals in order to show modified price html strings with sub details.
-		wc_get_template( 'cart/cart.php' );
-
-		die();
 	}
 
 	/**

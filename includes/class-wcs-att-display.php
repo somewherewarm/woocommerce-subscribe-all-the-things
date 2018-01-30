@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Front-end support and single-product template modifications.
  *
  * @class    WCS_ATT_Display
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Display {
 
@@ -29,6 +29,8 @@ class WCS_ATT_Display {
 		require_once( 'display/class-wcs-att-display-cart.php' );
 		// Single-product display hooks.
 		require_once( 'display/class-wcs-att-display-product.php' );
+		// Front-end ajax hooks.
+		require_once( 'display/class-wcs-att-display-ajax.php' );
 
 		self::add_hooks();
 	}
@@ -40,6 +42,8 @@ class WCS_ATT_Display {
 
 		// Enqueue scripts and styles.
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'frontend_scripts' ) );
+
+		WCS_ATT()->register_module_hooks( 'display' );
 	}
 
 	/*
@@ -73,8 +77,16 @@ class WCS_ATT_Display {
 		}
 
 		if ( is_product() ) {
-			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-single-add-to-cart.js', array( 'jquery' ), WCS_ATT::VERSION, true );
+
+			wp_register_script( 'wcsatt-single-product', WCS_ATT()->plugin_url() . '/assets/js/wcs-att-single-add-to-cart.js', array( 'jquery', 'jquery-blockui', 'backbone' ), WCS_ATT::VERSION, true );
 			wp_enqueue_script( 'wcsatt-single-product' );
+
+			$params = array(
+				'i18n_subs_load_error' => __( 'Failed to load matching subscriptions. If this issue persists, please re-load the page and try again.', 'woocommerce-subscribe-all-the-things' ),
+				'wc_ajax_url'          => WC_AJAX::get_endpoint( "%%endpoint%%" )
+			);
+
+			wp_localize_script( 'wcsatt-single-product', 'wcsatt_single_product_params', $params );
 		}
 	}
 

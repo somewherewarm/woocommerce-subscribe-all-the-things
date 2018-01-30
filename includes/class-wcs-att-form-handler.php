@@ -31,6 +31,7 @@ class WCS_ATT_Form_Handler {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
+		WCS_ATT()->register_module_hooks( 'form' );
 	}
 
 	/**
@@ -40,7 +41,7 @@ class WCS_ATT_Form_Handler {
 	 * @param  array   $args
 	 * @return string
 	 */
-	public static function get_posted_subscription_scheme( $context, $args ) {
+	public static function get_posted_subscription_scheme( $context, $args = array() ) {
 
 		if ( 'product' === $context ) {
 

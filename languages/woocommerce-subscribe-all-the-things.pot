@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-dev\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-01-17 07:48:14+00:00\n"
+"POT-Creation-Date: 2018-01-27 04:12:23+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -145,7 +145,7 @@ msgid ""
 "variation."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:418
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:416
 msgid "Please enter positive subscription discount values, between 0-100."
 msgstr ""
 
@@ -157,22 +157,28 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:542
+#: includes/class-wcs-att-cart.php:499
 msgid "Please choose a new subscription plan."
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:548
+#: includes/class-wcs-att-cart.php:505
 msgid ""
 "The &quot;%1$s&quot; subscription that you signed up for is no longer "
 "available. %2$s"
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:560
+#: includes/class-wcs-att-cart.php:517
 msgid "Please choose a plan to proceed."
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:566
+#: includes/class-wcs-att-cart.php:523
 msgid "&quot;%1$s&quot; is only available with a subscription plan. %2$s"
+msgstr ""
+
+#: includes/class-wcs-att-display.php:86
+msgid ""
+"Failed to load matching subscriptions. If this issue persists, please "
+"re-load the page and try again."
 msgstr ""
 
 #: includes/class-wcs-att-sync.php:105 includes/class-wcs-att-sync.php:118
@@ -183,7 +189,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:92
+#: includes/display/class-wcs-att-display-cart.php:95
 msgid "only now"
 msgstr ""
 
@@ -191,12 +197,12 @@ msgstr ""
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:207
-#: includes/display/class-wcs-att-display-product.php:237
+#: includes/display/class-wcs-att-display-product.php:204
+#: includes/display/class-wcs-att-display-product.php:234
 msgid "Sign up"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:229
+#: includes/display/class-wcs-att-display-product.php:226
 msgid "Select options"
 msgstr ""
 
@@ -231,6 +237,18 @@ msgstr ""
 msgid "Interested in subscribing to these items?"
 msgstr ""
 
+#: templates/single-product/product-add-to-subscription-button.php:20
+msgid "Add"
+msgstr ""
+
+#: templates/single-product/product-add-to-subscription-list.php:20
+msgid "No active subscriptions found to match."
+msgstr ""
+
+#: templates/single-product/product-add-to-subscription.php:21
+msgid "Add to subscription"
+msgstr ""
+
 #: templates/single-product/product-subscription-options.php:26
 msgid "Choose a subscription plan:"
 msgstr ""
@@ -240,23 +258,23 @@ msgstr ""
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:178
+#: woocommerce-subscribe-all-the-things.php:182
 msgid ""
 "WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
 "order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:188
+#: woocommerce-subscribe-all-the-things.php:192
 msgid ""
 "WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
 "version %s+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:252
+#: woocommerce-subscribe-all-the-things.php:256
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:252
+#: woocommerce-subscribe-all-the-things.php:256
 msgid "%s and %s"
 msgstr ""
 
@@ -301,12 +319,12 @@ msgctxt "input field placeholder for day field for annual subscriptions"
 msgid "Day"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:196
+#: includes/display/class-wcs-att-display-cart.php:199
 msgctxt "cart subscription selection - negative response"
 msgid "No thanks."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:214
+#: includes/display/class-wcs-att-display-cart.php:217
 msgctxt "cart subscription selection - positive response"
 msgid "Yes, %s."
 msgstr ""

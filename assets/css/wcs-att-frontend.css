@@ -22,3 +22,52 @@ ul.wcsatt-options-product {
 .single-product div.product .single_variation ul.wcsatt-options-product .price {
 	display: inline;
 }
+
+@font-face {
+	font-family: 'FontAwesomeSATT';
+	src: url("../fonts/fa.eot?v=2.1.0");
+	src: url("../fonts/fa.eot?#iefix&v=2.1.0") format("embedded-opentype"), url("../fonts/fa.woff2?v=2.1.0") format("woff2"), url("../fonts/fa.woff?v=2.1.0") format("woff"), url("../fonts/fa.ttf?v=2.1.0") format("truetype"), url("../fonts/fa.svg?v=2.1.0#fontawesomesatt") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+.wcsatt-add-to-subscription-wrapper:before {
+	display: table;
+	clear: both;
+	content: '';
+	margin-top: 2em;
+}
+
+a.wcsatt-add-to-subscription-action:before {
+	font-family: FontAwesomeSATT;
+	margin-right: 0.5em;
+}
+
+.wcsatt-add-to-subscription-wrapper.closed a.wcsatt-add-to-subscription-action:before {
+	content: '\f107';
+}
+
+.wcsatt-add-to-subscription-wrapper.open a.wcsatt-add-to-subscription-action:before {
+	content: '\f106';
+}
+
+.wcsatt-add-to-subscription-options:before {
+	display: table;
+	clear: both;
+	content: '';
+	margin-top: 1.5em;
+}
+
+.wcsatt-add-to-subscription-options .subscription-status {
+	display: none;
+}
+
+.wcsatt-add-to-subscription-options table.my_account_orders {
+	margin-bottom: 0;
+}
+
+.wcsatt-add-to-subscription-options .button.add:after {
+	font-family: FontAwesomeSATT;
+	content: "\f067";
+	margin-left: 0.5em;
+}
