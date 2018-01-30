@@ -134,7 +134,7 @@ class WCS_ATT_Display_Product {
 			'prompt'         => $prompt,
 		), false, WCS_ATT()->plugin_path() . '/templates/' );
 
-		return ob_get_clean();;
+		return ob_get_clean();
 	}
 
 	/*

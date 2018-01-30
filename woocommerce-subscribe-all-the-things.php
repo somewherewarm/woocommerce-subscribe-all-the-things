@@ -157,6 +157,7 @@ class WCS_ATT {
 		require_once( 'includes/class-wcs-att-cart.php' );
 		require_once( 'includes/class-wcs-att-order.php' );
 		require_once( 'includes/class-wcs-att-sync.php' );
+		require_once( 'includes/class-wcs-att-form-handler.php' );
 
 		// Modules.
 		require_once( 'includes/modules/class-wcs-att-management.php' );
