@@ -37,7 +37,5 @@ abstract class WCS_ATT_Abstract_Module {
 	 * @param  string  $type
 	 * @return void
 	 */
-	public static function register_hooks( $type ) {
-
-	}
+	public static function register_hooks( $type ) {}
 }

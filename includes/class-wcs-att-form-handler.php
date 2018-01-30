@@ -31,8 +31,7 @@ class WCS_ATT_Form_Handler {
 	 * Hook-in.
 	 */
 	private static function add_hooks() {
-		// Add subscription management hooks.
-		WCS_ATT_Management::register_hooks( 'form' );
+		WCS_ATT()->register_module_hooks( 'form' );
 	}
 
 	/**

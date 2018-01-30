@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @class    WCS_ATT_Management
  * @version  2.1.0
  */
-class WCS_ATT_Management {
+class WCS_ATT_Management extends WCS_ATT_Abstract_Module {
 
 	/**
 	 * Management modules.
@@ -30,9 +30,9 @@ class WCS_ATT_Management {
 	/**
 	 * Initialization.
 	 */
-	public static function init() {
+	public static function initialize() {
 		self::register_modules();
-		self::register_hooks( 'core' );
+		parent::initialize();
 	}
 
 	/**
@@ -41,9 +41,9 @@ class WCS_ATT_Management {
 	private static function register_modules() {
 
 		// Line item switching module.
-		require_once( 'modules/management/class-wcs-att-switch.php' );
+		require_once( 'management/class-wcs-att-switch.php' );
 		// Add-to-subscription module.
-		require_once( 'modules/management/class-wcs-att-add.php' );
+		require_once( 'management/class-wcs-att-add.php' );
 
 		// Initialize modules.
 		self::$modules = apply_filters( 'wcsatt_management_modules', array(
@@ -57,16 +57,14 @@ class WCS_ATT_Management {
 	}
 
 	/**
-	 * Register hooks by type.
+	 * Register hooks by component type.
 	 *
-	 * @param  string  $type
+	 * @param  string  $component
 	 * @return void
 	 */
-	public static function register_hooks( $type ) {
+	public static function register_hooks( $component ) {
 		foreach ( self::$modules as $module ) {
-			$module::register_hooks( $type );
+			$module::register_hooks( $component );
 		}
 	}
 }
-
-WCS_ATT_Management::init();
