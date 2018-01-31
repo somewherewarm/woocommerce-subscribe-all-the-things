@@ -579,7 +579,7 @@ class WCS_ATT_Integrations {
 		$bundled_product_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $bundled_product );
 
 		// Copy container schemes to child.
-		if ( ! empty( $container_schemes ) && array_keys( $container_schemes ) !== array_keys( $bundled_product_schemes ) ) {
+		if ( array_keys( $container_schemes ) !== array_keys( $bundled_product_schemes ) ) {
 
 			$bundled_product_schemes = array();
 
@@ -600,14 +600,15 @@ class WCS_ATT_Integrations {
 
 		$container_scheme       = WCS_ATT_Product_Schemes::get_subscription_scheme( $container_product );
 		$bundled_product_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $bundled_product );
+		$scheme_to_set          = is_null( $container_scheme ) ? false : $container_scheme;
 
 		// Set active container scheme on child.
-		if ( $container_scheme !== $bundled_product_scheme ) {
-			WCS_ATT_Product_Schemes::set_subscription_scheme( $bundled_product, $container_scheme );
+		if ( $scheme_to_set !== $bundled_product_scheme ) {
+			WCS_ATT_Product_Schemes::set_subscription_scheme( $bundled_product, $scheme_to_set );
 		}
 
 		// Copy "Force Subscription" state.
-		WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $bundled_product, WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $container_product ) );
+		WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $bundled_product, $scheme_to_set ? WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $container_product ) : false );
 	}
 
 	/**
