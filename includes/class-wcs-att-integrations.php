@@ -208,7 +208,7 @@ class WCS_ATT_Integrations {
 		// Cart.
 
 		// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
-		add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'add_container_item_subtotal_subscription_details' ), 1000, 3 );
+		add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'filter_container_item_subtotal' ), 1000, 3 );
 
 		// Modify bundle container cart item options to include child item prices.
 		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
@@ -639,12 +639,19 @@ class WCS_ATT_Integrations {
 	 * @param  string  $cart_item_key
 	 * @return string
 	 */
-	public static function add_container_item_subtotal_subscription_details( $subtotal, $cart_item, $cart_item_key ) {
+	public static function filter_container_item_subtotal( $subtotal, $cart_item, $cart_item_key ) {
 
 		$is_mnm = $cart_item[ 'data' ]->is_type( 'mix-and-match' );
 
 		// Note: MnM container subtotals originally modified by WCS are not overwritten by MnM.
 		if ( self::is_bundle_type_container_cart_item( $cart_item ) && false === $is_mnm && self::has_scheme_data( $cart_item ) ) {
+
+			$scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ], 'object' );
+
+			if ( $scheme && $scheme->is_synced() ) {
+				$subtotal = wc_price( self::calculate_container_item_subtotal( $cart_item, $scheme->get_key() ) );
+			}
+
 			$subtotal = WCS_ATT_Product_Prices::get_price_string( $cart_item[ 'data' ], array(
 				'price' => $subtotal
 			) );
@@ -653,6 +660,46 @@ class WCS_ATT_Integrations {
 		return $subtotal;
 	}
 
+	/**
+	 * Calculates bundle container item subtotals.
+	 *
+	 * TODO: Maybe calculate this from recurring carts to account for discounts?
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array   $cart_item
+	 * @param  string  $scheme_key
+	 * @return double
+	 */
+	private static function calculate_container_item_subtotal( $cart_item, $scheme_key ) {
+
+		$product          = $cart_item[ 'data' ];
+		$tax_display_cart = get_option( 'woocommerce_tax_display_cart' );
+
+		if ( 'excl' === $tax_display_cart ) {
+			$subtotal = wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+		} else {
+			$subtotal = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+		}
+
+		$child_items = self::get_bundle_type_cart_items( $cart_item );
+
+		if ( ! empty( $child_items ) ) {
+
+			foreach ( $child_items as $child_key => $child_item ) {
+
+				$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
+
+				if ( 'excl' === $tax_display_cart ) {
+					$subtotal += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+				} else {
+					$subtotal += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+				}
+			}
+		}
+
+		return $subtotal;
+	}
 
 	/**
 	 * Modify bundle container cart item subscription options to include child item prices.
@@ -677,28 +724,11 @@ class WCS_ATT_Integrations {
 
 			if ( $price_filter_exists ) {
 
-				$tax_display_cart = get_option( 'woocommerce_tax_display_cart' );
+				$bundle_price = array();
 
 				foreach ( $scheme_keys as $scheme_key ) {
-
-					$price_key = false === $scheme_key ? '0' : $scheme_key;
-
-					if ( 'excl' === $tax_display_cart ) {
-						$bundle_price[ $price_key ] = wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
-					} else {
-						$bundle_price[ $price_key ] = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
-					}
-
-					foreach ( $child_items as $child_key => $child_item ) {
-
-						$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
-
-						if ( 'excl' === $tax_display_cart ) {
-							$bundle_price[ $price_key ] += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-						} else {
-							$bundle_price[ $price_key ] += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-						}
-					}
+					$price_key                  = false === $scheme_key ? '0' : $scheme_key;
+					$bundle_price[ $price_key ] = self::calculate_container_item_subtotal( $cart_item, $scheme_key );
 				}
 
 				$options = array();
@@ -707,6 +737,7 @@ class WCS_ATT_Integrations {
 				if ( false === $force_subscription ) {
 
 					$options[] = array(
+						'class'       => 'one-time-option',
 						'description' => wc_price( $bundle_price[ '0' ] ),
 						'value'       => '0',
 						'selected'    => false === $active_subscription_scheme_key,
@@ -724,6 +755,7 @@ class WCS_ATT_Integrations {
 					) );
 
 					$options[] = array(
+						'class'       => 'subscription-option',
 						'description' => $description,
 						'value'       => $subscription_scheme_key,
 						'selected'    => $active_subscription_scheme_key === $subscription_scheme_key,
