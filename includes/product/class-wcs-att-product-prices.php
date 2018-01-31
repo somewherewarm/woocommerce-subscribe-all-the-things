@@ -86,15 +86,23 @@ class WCS_ATT_Product_Prices {
 	 */
 	public static function get_price_html( $product, $scheme_key = '', $args = array() ) {
 
-		$price_html = isset( $args[ 'price' ] ) ? $args[ 'price' ] : null;
+		$product_price = isset( $args[ 'product_price' ] ) ? $args[ 'product_price' ] : true;
 
-		if ( null === $price_html ) {
-			// No infinite loops, thank you.
-			$price_html = self::get_price_html_unfiltered( $product );
+		if ( $product_price ) {
 
-			if ( empty( $price_html ) ) {
-				return $price_html;
+			$price_html = isset( $args[ 'price' ] ) ? $args[ 'price' ] : null;
+
+			if ( null === $price_html ) {
+				// No infinite loops, thank you.
+				$price_html = self::get_price_html_unfiltered( $product );
+
+				if ( empty( $price_html ) ) {
+					return $price_html;
+				}
 			}
+
+		} else {
+			$price_html = '';
 		}
 
 		$active_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
@@ -115,7 +123,7 @@ class WCS_ATT_Product_Prices {
 			// Scheme is set on the object? Just add the subscription details.
 			if ( WCS_ATT_Product::is_subscription( $product ) ) {
 
-				if ( $switched_scheme ) {
+				if ( $switched_scheme && $product_price ) {
 					// No infinite loops, thank you.
 					$price_html = self::get_price_html_unfiltered( $product );
 				}
@@ -172,6 +180,7 @@ class WCS_ATT_Product_Prices {
 					if ( $price_filter_exists ) {
 						foreach ( $schemes as $scheme ) {
 							if ( $scheme->has_price_filter() ) {
+
 								if ( 'inherit' !== $scheme->get_pricing_mode() ) {
 									$use_discount_html_format = false;
 									break;
@@ -182,6 +191,9 @@ class WCS_ATT_Product_Prices {
 										$has_variable_discount = true;
 									}
 								}
+
+							} else {
+								$has_variable_discount = true;
 							}
 						}
 					}

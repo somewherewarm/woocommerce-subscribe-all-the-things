@@ -447,7 +447,13 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $scheme_option.find( 'input' ).data( 'custom_data' );
 
-				bundle.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
+				bundle.satt_schemes.push( {
+					el:           $scheme_option,
+					data:         scheme_data,
+					price_html:   $scheme_option.find( '.subscription-price' ).html(),
+					details_html: $scheme_option.find( '.subscription-details' ).prop( 'outerHTML' )
+				} );
+
 			} );
 		};
 
@@ -468,13 +474,14 @@
 
 				$.each( bundle.satt_schemes, function( index, scheme ) {
 
-					var scheme_price_html = bundle.get_price_html();
+					var scheme_price_html       = bundle.get_price_html(),
+						scheme_price_inner_html = $( scheme_price_html ).html();
 
 					// If only a single option is present, then bundle prices are already overridden on the server side.
 					// In this case, simply grab the subscription details from the option and append them to the bundle price string.
 					if ( bundle.satt_schemes.length === 1 && bundle.$bundle_wrap.find( '.wcsatt-options-product .one-time-option' ).length === 0 ) {
 
-						bundle.$bundle_price.find( '.price' ).html( $( scheme_price_html ).html() + scheme.details_html );
+						bundle.$bundle_price.find( '.price' ).html( scheme_price_inner_html + scheme.details_html );
 
 					// If multiple options are present, then calculate the subscription price for each option that overrides default prices and update its html string.
 					} else {
@@ -508,11 +515,15 @@
 							price_data = bundle.calculate_subtotals( false, price_data );
 							price_data = bundle.calculate_totals( price_data );
 
-							scheme_price_html = bundle.get_price_html( price_data );
+							scheme_price_html       = bundle.get_price_html( price_data );
+							scheme_price_inner_html = $( scheme_price_html ).html() + ' ';
+
+						} else {
+							scheme_price_inner_html = '';
 						}
 
 						if ( bundle.passes_validation() ) {
-							$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
+							$scheme_price.html( scheme_price_inner_html + scheme.details_html ).find( 'span.total' ).remove();
 						} else {
 							$scheme_price.html( scheme.price_html );
 						}
@@ -558,7 +569,13 @@
 				var $scheme_option = $( this ),
 					scheme_data    = $scheme_option.find( 'input' ).data( 'custom_data' );
 
-				composite.satt_schemes.push( { el: $scheme_option, data: scheme_data, price_html: $scheme_option.find( '.subscription-price' ).html(), details_html: $( '<div>' ).html( $scheme_option.find( '.subscription-details' ) ).html() } );
+				composite.satt_schemes.push( {
+					el:           $scheme_option,
+					data:         scheme_data,
+					price_html:   $scheme_option.find( '.subscription-price' ).html(),
+					details_html: $scheme_option.find( '.subscription-details' ).prop( 'outerHTML' )
+				} );
+
 			} );
 		};
 
@@ -599,8 +616,9 @@
 
 				$.each( composite.satt_schemes, function( index, scheme ) {
 
-					var scheme_price_html = composite.composite_price_view.get_price_html(),
-						$scheme_price     = scheme.el.find( '.subscription-price' );
+					var scheme_price_html       = composite.composite_price_view.get_price_html(),
+						scheme_price_inner_html = '',
+						$scheme_price           = scheme.el.find( '.subscription-price' );
 
 					// Calculate the subscription price for each option that overrides default prices and update its html string.
 					if ( scheme.data.overrides_price === true ) {
@@ -631,12 +649,13 @@
 
 						var totals = composite.data_model.calculate_totals( price_data );
 
-						price_data.totals = totals;
-						scheme_price_html = composite.composite_price_view.get_price_html( price_data );
+						price_data.totals       = totals;
+						scheme_price_html       = composite.composite_price_view.get_price_html( price_data );
+						scheme_price_inner_html = $( scheme_price_html ).html() + ' ';
 					}
 
 					if ( 'pass' === composite.api.get_composite_validation_status() ) {
-						$scheme_price.html( $( scheme_price_html ).html() + scheme.details_html ).find( 'span.total' ).remove();
+						$scheme_price.html( scheme_price_inner_html + scheme.details_html ).find( 'span.total' ).remove();
 					} else {
 						$scheme_price.html( scheme.price_html );
 					}

@@ -86,7 +86,8 @@ class WCS_ATT_Display_Product {
 
 		// Non-recurring (one-time) option.
 		if ( false === $force_subscription ) {
-			$none_string                 = _x( 'None', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
+
+			$none_string                 = _x( 'none', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
 			$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', 'woocommerce-subscribe-all-the-things' ), $none_string, '<span class="price one-time-option-price">' . WCS_ATT_Product_Prices::get_price_html( $product, false ) . '</span>' ) : $none_string;
 
 			$options[] = array(
@@ -101,7 +102,27 @@ class WCS_ATT_Display_Product {
 		// Subscription options.
 		foreach ( $subscription_schemes as $subscription_scheme ) {
 
-			$sub_price_html = '<span class="price subscription-price">' . WCS_ATT_Product_Prices::get_price_html( $product, $subscription_scheme->get_key() ) . '</span>';
+			$sub_price_html_args = array(
+				'subscription_price' => true,
+				'product_price'      => true
+			);
+
+			$price_class = 'price';
+
+			if ( false === $subscription_scheme->has_price_filter() ) {
+
+				$price_class = 'no-price';
+
+				if ( $subscription_scheme->is_synced() ) {
+					$sub_price_html_args[ 'product_price' ] = false;
+				} else {
+					$sub_price_html_args[ 'subscription_price' ] = false;
+				}
+			}
+
+			$sub_price_html = WCS_ATT_Product_Prices::get_price_html( $product, $subscription_scheme->get_key(), $sub_price_html_args );
+			$sub_price_html = false === $sub_price_html_args[ 'subscription_price' ] ? '<span class="subscription-details">' . $sub_price_html . '</span>' : $sub_price_html;
+			$sub_price_html = '<span class="' . $price_class . ' subscription-price">' . $sub_price_html . '</span>';
 
 			$option_data = array(
 				'subscription_scheme'   => $subscription_scheme->get_data(),
@@ -109,9 +130,11 @@ class WCS_ATT_Display_Product {
 				'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false )
 			);
 
+			$description = false === $force_subscription ? sprintf( _x( '%s', 'product subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_price_html ) : $sub_price_html;
+
 			$options[] = array(
 				'class'       => 'subscription-option',
-				'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', ucfirst( false === $force_subscription ? sprintf( _x( '%s', 'product subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_price_html ) : $sub_price_html ), $sub_price_html, $subscription_scheme->has_price_filter(), false === $force_subscription, $product, $subscription_scheme ),
+				'description' => apply_filters( 'wcsatt_single_product_subscription_option_description', $description, $sub_price_html, $subscription_scheme->has_price_filter(), false === $force_subscription, $product, $subscription_scheme ),
 				'value'       => $subscription_scheme->get_key(),
 				'selected'    => $default_subscription_scheme_option_value === $subscription_scheme->get_key(),
 				'data'        => apply_filters( 'wcsatt_single_product_subscription_option_data', $option_data, $subscription_scheme, $product )

@@ -119,16 +119,24 @@ class WCS_ATT_Display_Cart {
 					) );
 				}
 
-				$description = '<span class="subscription-price">' . $description . '</span>';
+				$price_class = 'price';
 
 			} else {
 
 				$description = WCS_ATT_Product_Prices::get_price_string( $product, array(
 					'scheme_key'         => $subscription_scheme_key,
-					'subscription_price' => false,
+					'subscription_price' => false === $subscription_scheme->is_synced() ? false : true,
 					'price'              => ''
 				) );
+
+				if ( false === $subscription_scheme->is_synced() ) {
+					$description = '<span class="subscription-details">' . $description . '</span>';
+				}
+
+				$price_class = 'no-price';
 			}
+
+			$description = '<span class="' . $price_class . ' subscription-price">' . $description . '</span>';
 
 			$options[] = array(
 				'class'       => 'subscription-option',
@@ -213,8 +221,18 @@ class WCS_ATT_Display_Cart {
 
 				WCS_ATT_Product_Schemes::set_subscription_scheme( $dummy_product, $subscription_scheme_key );
 
-				$sub_suffix  = WCS_ATT_Product_Prices::get_price_string( $dummy_product, array( 'price' => '' ) );
-				$description = sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $sub_suffix );
+				$price_string_args = array(
+					'price'              => '',
+					'subscription_price' => true
+				);
+
+				if ( false === $subscription_scheme->is_synced() ) {
+					$price_string_args[ 'subscription_price' ] = false;
+				}
+
+				$option_html = WCS_ATT_Product_Prices::get_price_string( $dummy_product, $price_string_args );
+				$option_html = false === $price_string_args[ 'subscription_price' ] ? '<span class="subscription-details">' . $option_html . '</span>' : $option_html;
+				$description = sprintf( _x( 'Yes, %s.', 'cart subscription selection - positive response', 'woocommerce-subscribe-all-the-things' ), $option_html );
 
 				$options[] = array(
 					'class'       => 'subscription-option',
