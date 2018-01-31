@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-dev\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-01-27 04:12:23+00:00\n"
+"POT-Creation-Date: 2018-01-31 23:47:22+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -157,25 +157,25 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:499
+#: includes/class-wcs-att-cart.php:492
 msgid "Please choose a new subscription plan."
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:505
+#: includes/class-wcs-att-cart.php:498
 msgid ""
 "The &quot;%1$s&quot; subscription that you signed up for is no longer "
 "available. %2$s"
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:517
+#: includes/class-wcs-att-cart.php:510
 msgid "Please choose a plan to proceed."
 msgstr ""
 
-#: includes/class-wcs-att-cart.php:523
+#: includes/class-wcs-att-cart.php:516
 msgid "&quot;%1$s&quot; is only available with a subscription plan. %2$s"
 msgstr ""
 
-#: includes/class-wcs-att-display.php:86
+#: includes/class-wcs-att-display.php:85
 msgid ""
 "Failed to load matching subscriptions. If this issue persists, please "
 "re-load the page and try again."
@@ -193,37 +193,47 @@ msgstr ""
 msgid "only now"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:89
+#: includes/display/class-wcs-att-display-product.php:91
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:204
-#: includes/display/class-wcs-att-display-product.php:234
+#: includes/display/class-wcs-att-display-product.php:228
+#: includes/display/class-wcs-att-display-product.php:258
 msgid "Sign up"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:226
+#: includes/display/class-wcs-att-display-product.php:250
 msgid "Select options"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:193
+#: includes/modules/management/class-wcs-att-add.php:379
+msgid ""
+"Subscription #%d cannot be edited. Please get in touch with us for "
+"assistance."
+msgstr ""
+
+#: includes/modules/management/class-wcs-att-add.php:460
+msgid "You have successfully added \"%1$s\" to subscription %2$s."
+msgstr ""
+
+#: includes/product/class-wcs-att-product-prices.php:205
 msgid "%s&#37; off"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:194
+#: includes/product/class-wcs-att-product-prices.php:206
 msgid "subscribe and get %1$s%2$s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:194
+#: includes/product/class-wcs-att-product-prices.php:206
 msgid " up to"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:195
-#: includes/product/class-wcs-att-product-prices.php:226
+#: includes/product/class-wcs-att-product-prices.php:207
+#: includes/product/class-wcs-att-product-prices.php:238
 msgid "&ndash; or %s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:228
+#: includes/product/class-wcs-att-product-prices.php:240
 msgid "&ndash; subscription plan available"
 msgid_plural "&ndash; subscription plans available"
 msgstr[0] ""
@@ -242,7 +252,7 @@ msgid "Add"
 msgstr ""
 
 #: templates/single-product/product-add-to-subscription-list.php:20
-msgid "No active subscriptions found to match."
+msgid "No matching subscriptions found."
 msgstr ""
 
 #: templates/single-product/product-add-to-subscription.php:21
@@ -253,28 +263,28 @@ msgstr ""
 msgid "Choose a subscription plan:"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:72
-#: woocommerce-subscribe-all-the-things.php:81
+#: woocommerce-subscribe-all-the-things.php:79
+#: woocommerce-subscribe-all-the-things.php:88
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:182
+#: woocommerce-subscribe-all-the-things.php:214
 msgid ""
 "WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
 "order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:192
+#: woocommerce-subscribe-all-the-things.php:224
 msgid ""
 "WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
 "version %s+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:256
+#: woocommerce-subscribe-all-the-things.php:288
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:256
+#: woocommerce-subscribe-all-the-things.php:288
 msgid "%s and %s"
 msgstr ""
 
@@ -300,18 +310,23 @@ msgstr ""
 msgid "http://prospress.com/"
 msgstr ""
 
-#: includes/class-wcs-att-integrations.php:829
+#: includes/class-wcs-att-integrations.php:862
 msgctxt "used in order note"
 msgid ""
 "\"%1$s\" (Product ID: #%2$d) removal triggered by \"%3$s\" via the My "
 "Account page."
 msgstr ""
 
-#: includes/class-wcs-att-integrations.php:884
+#: includes/class-wcs-att-integrations.php:917
 msgctxt "used in order note"
 msgid ""
 "\"%1$s\" (Product ID: #%2$d) removal un-done by \"%3$s\" via the My Account "
 "page."
+msgstr ""
+
+#: includes/modules/management/class-wcs-att-add.php:453
+msgctxt "used in order note"
+msgid "Customer added \"%1$s\" (Product ID: #%2$d) from the product page."
 msgstr ""
 
 #: includes/class-wcs-att-sync.php:120
@@ -319,48 +334,53 @@ msgctxt "input field placeholder for day field for annual subscriptions"
 msgid "Day"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:199
+#: includes/display/class-wcs-att-display-cart.php:207
 msgctxt "cart subscription selection - negative response"
 msgid "No thanks."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-cart.php:217
+#: includes/display/class-wcs-att-display-cart.php:235
 msgctxt "cart subscription selection - positive response"
 msgid "Yes, %s."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:88
+#: includes/display/class-wcs-att-display-product.php:90
 msgctxt "product subscription selection - negative response"
-msgid "None"
+msgid "none"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:113
+#: includes/display/class-wcs-att-display-product.php:133
 msgctxt "product subscription selection - positive response"
 msgid "%s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:159
-#: includes/product/class-wcs-att-product-prices.php:220
+#: includes/modules/management/class-wcs-att-add.php:458
+msgctxt "link to subscription"
+msgid "<a href=\"%1$s\">#%2$s</a>"
+msgstr ""
+
+#: includes/product/class-wcs-att-product-prices.php:167
+#: includes/product/class-wcs-att-product-prices.php:232
 msgctxt "Price range: from"
 msgid "%1$s%2$s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:218
+#: includes/product/class-wcs-att-product-prices.php:230
 msgctxt "Price range: starting at"
 msgid "%1$s%2$s"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:218
+#: includes/product/class-wcs-att-product-prices.php:230
 msgctxt "subscriptions \"starting at\" price string"
 msgid "<span class=\"from\">starting at </span>"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:220
+#: includes/product/class-wcs-att-product-prices.php:232
 msgctxt "subscription \"from\" price string"
 msgid "<span class=\"from\">from </span>"
 msgstr ""
 
-#: includes/product/class-wcs-att-product-prices.php:232
+#: includes/product/class-wcs-att-product-prices.php:244
 msgctxt "price html sub options suffix"
 msgid "%1$s%2$s"
 msgstr ""

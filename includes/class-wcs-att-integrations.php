@@ -931,7 +931,7 @@ class WCS_ATT_Integrations {
 	 */
 	public static function set_bundled_items_scheme( $bundled_items, $bundle ) {
 
-		if ( ! empty( $bundled_items ) && $bundle->is_synced() ) {
+		if ( ! empty( $bundled_items ) && $bundle->is_synced() && WCS_ATT_Product_Schemes::has_subscription_schemes( $bundle ) ) {
 
 			// Set the default scheme when one-time purchases are disabled, no scheme is set on the object, and only a single sub scheme exists.
 			if ( 1 === sizeof( WCS_ATT_Product_Schemes::get_subscription_schemes( $bundle ) ) && WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $bundle ) && ! WCS_ATT_Product_Schemes::get_subscription_scheme( $bundle ) ) {
@@ -1038,7 +1038,7 @@ class WCS_ATT_Integrations {
 	 */
 	public static function set_component_option_scheme( $component_option, $component_id, $composite ) {
 
-		if ( $component_option ) {
+		if ( $component_option && WCS_ATT_Product_Schemes::has_subscription_schemes( $composite ) ) {
 
 			$having = array(
 				'price',
