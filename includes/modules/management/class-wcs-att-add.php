@@ -447,6 +447,7 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 
 		$added_item = wcs_get_order_item( $added_item_id, $subscription );
 
+		// Save the scheme key!
 		$added_item->add_meta_data( '_wcsatt_scheme', false === $subscription_scheme ? '0' : $subscription_scheme, true );
 
 		$subscription->add_order_note( sprintf( _x( 'Customer added "%1$s" (Product ID: #%2$d) from the product page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $product_id ) );
@@ -458,6 +459,13 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 
 		wc_add_notice( sprintf( __( 'You have successfully added "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $subscription_link ) );
 
+		/**
+		 * Filter redirect url.
+		 *
+		 * @param  string  $url
+		 * @param  int     $product_id
+		 * @param  string  $subscription_id
+		 */
 		$redirect_url = apply_filters( 'wcsatt_add_product_to_subscription_redirect_url', $subscription_url, $product_id, $subscription_id );
 
 		wp_safe_redirect( $subscription_url );
