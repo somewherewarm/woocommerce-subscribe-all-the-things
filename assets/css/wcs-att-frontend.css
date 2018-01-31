@@ -19,6 +19,22 @@ ul.wcsatt-options-product {
 	margin: 0 0 2em 5px;
 }
 
+li span.subscription-option-details, li span.one-time-option-details {
+	padding-left: 0.2em;
+}
+
+li span.price span.subscription-details {
+	padding-left: 0.1em;
+}
+
+.wcsatt-options-product li span.subscription-details, .wcsatt-options-product li span.one-time-option-details {
+	display: inline-block;
+}
+
+li .no-price span.subscription-details:first-letter, li span.one-time-option-details:first-letter {
+	text-transform: uppercase;
+}
+
 .single-product div.product .single_variation ul.wcsatt-options-product .price {
 	display: inline;
 }
