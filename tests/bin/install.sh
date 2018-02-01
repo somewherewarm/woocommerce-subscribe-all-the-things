@@ -81,6 +81,7 @@ install_test_suite() {
 		# set up testing suite
 		mkdir -p $TESTS_LIB_DIR
 		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $TESTS_LIB_DIR/includes
+		svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/data/ $TESTS_LIB_DIR/data
 	fi
 
 	cd $TESTS_LIB_DIR
@@ -136,9 +137,8 @@ install_wcs() {
 
 	cd $INITIAL_DIR
 
-
 	if [ ! -d ../woocommerce-subscriptions ]; then
-        git clone https://$GITHUB_TOKEN@github.com/Prospress/woocommerce-subscriptions.git ../woocommerce-subscriptions -b $WCS_VERSION
+        git clone https://github.com/Prospress/woocommerce-subscriptions.git ../woocommerce-subscriptions -b $WCS_VERSION
     fi
 }
 
