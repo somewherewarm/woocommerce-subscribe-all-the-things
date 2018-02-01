@@ -11,6 +11,7 @@ jQuery( function( $ ) {
 
 		var $cart_totals    = $( 'div.cart_totals' ),
 			$cart_table     = $( 'table.shop_table.cart' ),
+			$options        = $( this ).closest( '.wcsatt-options-cart' ),
 			$cart_wrapper   = $cart_table.closest( '.woocommerce' ),
 			selected_option = $( this ).val(),
 			cart_referrer   = $cart_table.find( 'input[name="_wp_http_referer"]' ).val();
@@ -31,21 +32,31 @@ jQuery( function( $ ) {
 
 		$.post( wcsatt_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'wcsatt_update_cart_option' ), data, function( response ) {
 
-			var $response        = $( $.parseHTML( response ) ),
-				$response_totals = $response.find( 'div.cart_totals' ),
-				$response_table  = $response.find( 'table.shop_table.cart' );
+			if ( 'success' === response.result ) {
 
-			if ( cart_referrer ) {
-				$response_table.find( 'input[name="_wp_http_referer"]' ).val( cart_referrer );
+				var $html        = $( $.parseHTML( response.html ) ),
+					$html_totals = $html.find( 'div.cart_totals' ),
+					$html_table  = $html.find( 'table.shop_table.cart' );
+
+				if ( cart_referrer ) {
+					$html_table.find( 'input[name="_wp_http_referer"]' ).val( cart_referrer );
+				}
+
+				$html_table.find( 'input[name="update_cart"]' ).prop( 'disabled', true );
+
+				$cart_totals.replaceWith( $html_totals );
+				$cart_table.replaceWith( $html_table );
+
+				$cart_wrapper.trigger( 'wcsatt_updated_cart' );
+
+			} else {
+
+				window.alert( wcsatt_cart_params.i18n_update_cart_sub_error );
+				$options.find( 'input[value="' + response.reset_to_scheme + '"]' ).prop( 'checked', true );
 			}
 
-			$response_table.find( 'input[name="update_cart"]' ).prop( 'disabled', true );
-
-			$cart_totals.replaceWith( $response_totals );
-			$cart_table.replaceWith( $response_table );
-
-			$cart_wrapper.trigger( 'wcsatt_updated_cart' );
 			$cart_wrapper.unblock();
+
 		} );
 	} );
 } );

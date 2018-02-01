@@ -49,13 +49,27 @@ class WCS_ATT_Display_Ajax {
 	 */
 	public static function update_cart_scheme() {
 
-		check_ajax_referer( 'wcsatt_update_cart_option', 'security' );
+		$current_scheme_key = WCS_ATT_Cart::get_cart_subscription_scheme();
+
+		$failure = array(
+			'result'          => 'failure',
+			'reset_to_scheme' => false === $current_scheme_key ? '0' : $current_scheme_key,
+			'html'            => ''
+		);
+
+		if ( ! check_ajax_referer( 'wcsatt_update_cart_option', 'security', false ) ) {
+			wp_send_json( $failure );
+		}
 
 		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
 			define( 'WOOCOMMERCE_CART', true );
 		}
 
 		$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart' );
+
+		if ( is_null( $posted_subscription_scheme_key ) ) {
+			wp_send_json( $failure );
+		}
 
 		if ( empty( $posted_subscription_scheme_key ) ) {
 			$posted_subscription_scheme_key = false;
@@ -76,10 +90,17 @@ class WCS_ATT_Display_Ajax {
 		// Recalculate totals.
 		WC()->cart->calculate_totals();
 
+		ob_start();
+
 		// Update the cart table apart from the totals in order to show modified price html strings with sub details.
 		wc_get_template( 'cart/cart.php' );
 
-		die();
+		$html = ob_get_clean();
+
+		wp_send_json( array(
+			'result' => 'success',
+			'html'   => $html
+		) );
 	}
 }
 
