@@ -17,7 +17,7 @@ TESTS_LIB_DIR="${WP_TESTS_DIR-/tmp/wordpress-tests-lib}"
 TESTS_CORE_DIR="${WP_CORE_DIR-/tmp/wordpress}"
 
 TESTS_DIR="$TESTS_CORE_DIR/.."
-INITIAL_DIR="."
+INITIAL_DIR=$PWD
 
 echo $TESTS_LIB_DIR
 echo $TESTS_CORE_DIR
