@@ -21,6 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 
 	/**
+	 * Using this to pass data from 'WC_Form_Handler::add_to_cart_action' into our own logic.
+	 * @var array
+	 */
+	private static $add_product_to_subscription = array();
+
+	/**
 	 * Register hooks.
 	 *
 	 * @param  string  $type
@@ -42,7 +48,7 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	private static function register_template_hooks() {
 
 		// Render wrapper element.
-		add_filter( 'woocommerce_after_add_to_cart_button', array( __CLASS__, 'add_product_to_subscription' ), 1000 );
+		add_filter( 'woocommerce_after_add_to_cart_button', array( __CLASS__, 'add_product_to_subscription_template' ), 1000 );
 
 		// Render subscriptions list.
 		add_action( 'wcsatt_add_product_to_subscription_html', array( __CLASS__, 'subscriptions_matching_product_template' ), 10, 3 );
@@ -63,7 +69,7 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	private static function register_form_hooks() {
 
 		// Adds products to subscriptions after validating.
-		add_action( 'wp_loaded', array( __CLASS__, 'add_product_to_subscription_action' ) );
+		add_action( 'wp_loaded', array( __CLASS__, 'add_product_to_subscription_form_handler' ) );
 	}
 
 	/*
@@ -118,7 +124,7 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	 *
 	 * @since  2.1.0
 	 */
-	public static function add_product_to_subscription() {
+	public static function add_product_to_subscription_template() {
 
 		global $product;
 
@@ -351,7 +357,7 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	/**
 	 * Adds products to subscriptions after validating.
 	 */
-	public static function add_product_to_subscription_action() {
+	public static function add_product_to_subscription_form_handler() {
 
 		$posted_data = self::get_posted_add_to_subscription_data( 'product' );
 
@@ -367,12 +373,12 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 			return;
 		}
 
- 		if ( ! wp_verify_nonce( $posted_data[ 'nonce' ], 'add_product_to_subscription' ) ) {
- 			return;
- 		}
+		if ( ! wp_verify_nonce( $posted_data[ 'nonce' ], 'add_product_to_subscription' ) ) {
+			return;
+		}
 
 		$product_id      = $posted_data[ 'product_id' ];
-		$subscription_id =  $posted_data[ 'subscription_id' ];
+		$subscription_id = $posted_data[ 'subscription_id' ];
 		$subscription    = wcs_get_subscription( $subscription_id );
 
 		if ( ! $subscription ) {
@@ -385,20 +391,122 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 		 * Use 'woocommerce_add_to_cart_validation' filter to:
 		 *
 		 * - Let WC validate the form.
-		 * - If valid, prevent WC from adding the product to the cart at the last minute.
-		 * - Add the validated product to the selected subscription.
+		 * - If invalid, stop.
+		 * - If valid, add the validated product to the selected subscription.
 		 */
-		add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'add_product_to_subscription_validation' ), 9999, 5 );
+
+		self::$add_product_to_subscription = false;
+
+		add_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'validate_add_product_to_subscription' ), 9999, 5 );
+
+		/**
+		 * 'wcsatt_pre_add_product_to_subscription_validation' action.
+		 *
+		 * @param  int  $product_id
+		 * @param  int  $subscription_id
+		 */
+		do_action( 'wcsatt_pre_add_product_to_subscription_validation', $product_id, $subscription_id );
 
 		$_REQUEST[ 'add-to-cart' ] = $product_id;
 
-		// No worries, nothing gets added to the cart past this point.
+		// No worries, nothing gets added to the cart at this point.
 		WC_Form_Handler::add_to_cart_action();
 
 		// Disarm 'WC_Form_Handler::add_to_cart_action'.
 		$_REQUEST[ 'add-to-cart' ] = false;
 
-		remove_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'add_product_to_subscription_validation' ), 9999 );
+		/**
+		 * 'wcsatt_pre_add_product_to_subscription_validation' action.
+		 *
+		 * @param  int  $product_id
+		 * @param  int  $subscription_id
+		 */
+		do_action( 'wcsatt_post_add_product_to_subscription_validation', $product_id, $subscription_id );
+
+
+		// Remove filter.
+		remove_filter( 'woocommerce_add_to_cart_validation', array( __CLASS__, 'validate_add_product_to_subscription' ), 9999 );
+
+		// Validation passed?
+		if ( ! self::$add_product_to_subscription ) {
+			return;
+		}
+
+		$subscription_scheme = $posted_data[ 'subscription_scheme' ];
+		$quantity            = self::$add_product_to_subscription[ 'quantity' ];
+		$variation_id        = self::$add_product_to_subscription[ 'variation_id' ];
+		$variations          = self::$add_product_to_subscription[ 'variations' ];
+
+		// At this point we've got the green light to proceed.
+		self::add_product_to_subscription( $subscription, $subscription_scheme, $product_id, $quantity, $variation_id, $variations );
+	}
+
+	/**
+	 * Adds a product to a subscription.
+	 *
+	 * @param WC_Subscription   $subscription
+	 * @param string|null|bool  $subscription_scheme
+	 * @param int               $product_id
+	 * @param int               $quantity
+	 * @param int               $variation_id
+	 * @param array             $variations
+	 */
+	public static function add_product_to_subscription( $subscription, $subscription_scheme, $product_id, $quantity, $variation_id = 0, $variations = array() ) {
+
+		$product = wc_get_product( $variation_id ? $variation_id : $product_id );
+
+		// Set scheme on product (remember doing so may end up changing its price).
+		WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $subscription_scheme );
+
+		$add_product_to_subscription_callback = apply_filters( 'wscatt_add_product_to_subscription_callback', false, $product );
+
+		if ( is_callable( $add_product_to_subscription_callback ) ) {
+
+			$added_item_id = call_user_func_array( $add_product_to_subscription_callback, array( $subscription, $product, $quantity ) );
+
+		} else {
+
+			$added_item_id = $subscription->add_product( $product, $quantity, array(
+				'product_id'   => $product_id,
+				'variation_id' => $variation_id,
+				'variations'   => $variations
+			) );
+		}
+
+		$subscription_url  = $subscription->get_view_order_url();
+		$subscription_link = sprintf( _x( '<a href="%1$s">#%2$s</a>', 'link to subscription', 'woocommerce-subscribe-all-the-things' ), esc_url( $subscription_url ), $subscription->get_id() );
+
+		if ( ! $added_item_id || is_wp_error( $added_item_id ) ) {
+
+			wc_add_notice( sprintf( __( 'There was a problem adding "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $product->get_name(), $subscription_link ), 'error' );
+
+		} else {
+
+			$subscription->calculate_totals();
+
+			$added_item = wcs_get_order_item( $added_item_id, $subscription );
+
+			// Save the scheme key!
+			$added_item->add_meta_data( '_wcsatt_scheme', false === $subscription_scheme ? '0' : $subscription_scheme, true );
+
+			$subscription->add_order_note( sprintf( _x( 'Customer added "%1$s" (Product ID: #%2$d) from the product page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $product_id ) );
+
+			$subscription->save();
+
+			wc_add_notice( sprintf( __( 'You have successfully added "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $subscription_link ) );
+		}
+
+		/**
+		 * Filter redirect url.
+		 *
+		 * @param  string  $url
+		 * @param  int     $product_id
+		 * @param  string  $subscription_id
+		 */
+		$redirect_url = apply_filters( 'wcsatt_add_product_to_subscription_redirect_url', $subscription_url, $added_item_id, $product, $subscription );
+
+		wp_safe_redirect( $subscription_url );
+		exit;
 	}
 
 	/*
@@ -408,7 +516,9 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	*/
 
 	/**
-	 * Adds products to subscriptions after validating.
+	 * Signals 'add_product_to_subscription_form_handler' that validation failed.
+	 * Data is exchanged via the 'add_product_to_subscription' static prop.
+	 * Always returns false to ensure nothing gets added to the cart.
 	 *
 	 * @param  boolean  $result
 	 * @param  int      $product_id
@@ -417,58 +527,18 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	 * @param  array    $variations
 	 * @return bool
 	 */
-	public static function add_product_to_subscription_validation( $result, $product_id, $quantity, $variation_id = 0, $variations = array() ) {
+	public static function validate_add_product_to_subscription( $result, $product_id, $quantity, $variation_id = 0, $variations = array() ) {
 
-		if ( ! $result ) {
-			return false;
+		if ( $result ) {
+
+			self::$add_product_to_subscription = array(
+				'product_id'   => $product_id,
+				'variation_id' => $variation_id,
+				'quantity'     => $quantity,
+				'variations'   => $variations
+			);
 		}
 
-		$posted_data = self::get_posted_add_to_subscription_data( 'product' );
-
-		if ( empty( $posted_data[ 'subscription_id' ] ) ) {
-			return false;
-		}
-
-		$subscription_id     = $posted_data[ 'subscription_id' ];
-		$subscription        = wcs_get_subscription( $subscription_id );
-		$subscription_scheme = $posted_data[ 'subscription_scheme' ];
-		$product             = wc_get_product( $variation_id ? $variation_id : $product_id );
-
-		// Set scheme on product (remember doing so may end up changing its price).
-		WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $subscription_scheme );
-
-		$added_item_id = $subscription->add_product( $product, $quantity, array(
-			'product_id'   => $product_id,
-			'variation_id' => $variation_id,
-			'variations'   => $variations
-		) );
-
-		$subscription->calculate_totals();
-
-		$added_item = wcs_get_order_item( $added_item_id, $subscription );
-
-		// Save the scheme key!
-		$added_item->add_meta_data( '_wcsatt_scheme', false === $subscription_scheme ? '0' : $subscription_scheme, true );
-
-		$subscription->add_order_note( sprintf( _x( 'Customer added "%1$s" (Product ID: #%2$d) from the product page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $product_id ) );
-
-		$subscription->save();
-
-		$subscription_url  = $subscription->get_view_order_url();
-		$subscription_link = sprintf( _x( '<a href="%1$s">#%2$s</a>', 'link to subscription', 'woocommerce-subscribe-all-the-things' ), esc_url( $subscription_url ), $subscription->get_id() );
-
-		wc_add_notice( sprintf( __( 'You have successfully added "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $subscription_link ) );
-
-		/**
-		 * Filter redirect url.
-		 *
-		 * @param  string  $url
-		 * @param  int     $product_id
-		 * @param  string  $subscription_id
-		 */
-		$redirect_url = apply_filters( 'wcsatt_add_product_to_subscription_redirect_url', $subscription_url, $product_id, $subscription_id );
-
-		wp_safe_redirect( $subscription_url );
-		exit;
+		return false;
 	}
 }

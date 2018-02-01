@@ -169,6 +169,42 @@ class WCS_ATT_Integrations {
 		// Bundled cart items inherit the subscription schemes of their parent, with some modifications (first add).
 		add_filter( 'woocommerce_add_cart_item', array( __CLASS__, 'set_child_item_schemes' ), 0, 2 );
 
+		// Modify the validation context when adding a bundle to an order.
+		add_action( 'wcsatt_pre_add_product_to_subscription_validation', array( __CLASS__, 'set_bundle_validation_context' ), 10 );
+
+		// Modify the validation context when adding a bundle to an order.
+		add_action( 'wcsatt_post_add_product_to_subscription_validation', array( __CLASS__, 'reset_bundle_validation_context' ), 10 );
+
+		/*
+		 * All types: Display/templates integration.
+		 */
+
+		/*
+		 * Cart.
+		 */
+
+		// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
+		add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'filter_container_item_subtotal' ), 1000, 3 );
+
+		// Modify bundle container cart item options to include child item prices.
+		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
+
+		/*
+		 * 'My Account > Subscriptions' view.
+		 */
+
+		// Don't count bundle-type child items and hidden bundle-type container/child items.
+		add_filter( 'wcs_can_items_be_removed', array( __CLASS__, 'can_remove_subscription_items' ), 10, 2 );
+
+		// Hide "Remove" buttons of child line items under 'My Account > Subscriptions'.
+		add_filter( 'wcs_can_item_be_removed', array( __CLASS__, 'can_remove_child_subscription_item' ), 10, 3 );
+
+		// Handle parent subscription line item removals under 'My Account > Subscriptions'.
+		add_action( 'wcs_user_removed_item', array( __CLASS__, 'user_removed_parent_subscription_item' ), 10, 2 );
+
+		// Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
+		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
+
 		/*
 		 * Bundles.
 		 */
@@ -176,10 +212,13 @@ class WCS_ATT_Integrations {
 		if ( class_exists( 'WC_Bundles' ) ) {
 
 			// When loading bundled items, always set the active bundle scheme on the bundled objects.
-			add_action( 'woocommerce_bundled_items', array( __CLASS__, 'set_bundled_items_scheme' ), 10, 2 );
+			add_filter( 'woocommerce_bundled_items', array( __CLASS__, 'set_bundled_items_scheme' ), 10, 2 );
 
 			// Add scheme data to runtime price cache hashes.
 			add_filter( 'woocommerce_bundle_prices_hash', array( __CLASS__, 'bundle_prices_hash' ), 10, 2 );
+
+			// Add bundle to subscription.
+			add_filter( 'wscatt_add_product_to_subscription_callback', array( __CLASS__, 'add_product_bundle_to_subscription_callback' ), 10, 2 );
 		}
 
 		/*
@@ -195,37 +234,11 @@ class WCS_ATT_Integrations {
 			add_action( 'wcsatt_set_product_subscription_scheme', array( __CLASS__, 'set_composite_product_scheme' ), 10, 3 );
 
 			// Products in component option objects inherit the subscription schemes of their container object -- SLOW!
-			add_action( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
+			add_filter( 'woocommerce_composite_component_option', array( __CLASS__, 'set_component_option_scheme' ), 10, 3 );
 
 			// Add scheme data to runtime price cache hashes.
 			add_filter( 'woocommerce_composite_prices_hash', array( __CLASS__, 'composite_prices_hash' ), 10, 2 );
 		}
-
-		/*
-		 * All types: Display/templates integration.
-		 */
-
-		// Cart.
-
-		// Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
-		add_filter( 'woocommerce_cart_item_subtotal', array( __CLASS__, 'filter_container_item_subtotal' ), 1000, 3 );
-
-		// Modify bundle container cart item options to include child item prices.
-		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
-
-		// Susbcription View.
-
-		// Don't count bundle-type child items and hidden bundle-type container/child items.
-		add_filter( 'wcs_can_items_be_removed', array( __CLASS__, 'can_remove_subscription_items' ), 10, 2 );
-
-		// Hide "Remove" buttons of child line items under 'My Account > Subscriptions'.
-		add_filter( 'wcs_can_item_be_removed', array( __CLASS__, 'can_remove_child_subscription_item' ), 10, 3 );
-
-		// Handle parent subscription line item removals under 'My Account > Subscriptions'.
-		add_action( 'wcs_user_removed_item', array( __CLASS__, 'user_removed_parent_subscription_item' ), 10, 2 );
-
-		// Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
-		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
 	}
 
 	/*
@@ -478,9 +491,98 @@ class WCS_ATT_Integrations {
 		}
 	}
 
+	/**
+	 * Set the active bundle scheme on a bundled item.
+	 *
+	 * @param  WC_Bundled_Item    $bundled_item
+	 * @param  WC_Product_Bundle  $bundle
+	 */
+	public static function set_bundled_item_scheme( $bundled_item, $bundle ) {
+
+		// Callable since PB 5.2.4.
+		if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
+
+			$having = array(
+				'price',
+				'regular_price'
+			);
+
+			$what = array(
+				'min',
+				'max'
+			);
+
+			if ( $bundled_product = $bundled_item->get_product() ) {
+				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+			}
+
+			foreach ( $having as $price ) {
+				foreach ( $what as $min_or_max ) {
+					if ( $bundled_product = $bundled_item->get_product( array( 'having' => $price, 'what' => $min_or_max ) ) ) {
+						self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Calculates bundle container item subtotals.
+	 *
+	 * TODO: Maybe calculate this from recurring carts to account for discounts?
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array   $cart_item
+	 * @param  string  $scheme_key
+	 * @return double
+	 */
+	private static function calculate_container_item_subtotal( $cart_item, $scheme_key ) {
+
+		$product          = $cart_item[ 'data' ];
+		$tax_display_cart = get_option( 'woocommerce_tax_display_cart' );
+
+		if ( 'excl' === $tax_display_cart ) {
+			$subtotal = wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+		} else {
+			$subtotal = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
+		}
+
+		$child_items = self::get_bundle_type_cart_items( $cart_item );
+
+		if ( ! empty( $child_items ) ) {
+
+			foreach ( $child_items as $child_key => $child_item ) {
+
+				$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
+
+				if ( 'excl' === $tax_display_cart ) {
+					$subtotal += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+				} else {
+					$subtotal += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
+				}
+			}
+		}
+
+		return $subtotal;
+	}
+
+	/**
+	 * Add bundles to subscriptions using 'WC_PB_Order::add_bundle_to_order'.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  WC_Subscription  $subscription
+	 * @param  WC_Product       $product
+	 * @param  int              $quantity
+	 */
+	public static function add_bundle_to_order( $subscription, $product, $quantity ) {
+		return WC_PB()->order->add_bundle_to_order( $product, $subscription, $quantity, array( 'configuration' => WC_PB()->cart->get_posted_bundle_configuration( $product ) ) );
+	}
+
 	/*
 	|--------------------------------------------------------------------------
-	| Hooks
+	| Hooks - Application
 	|--------------------------------------------------------------------------
 	*/
 
@@ -633,6 +735,43 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
+	 * Modify the bundle validation context when adding a product to an order.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  int  $product_id
+	 */
+	public static function set_bundle_validation_context( $product_id ) {
+		add_filter( 'woocommerce_bundle_validation_context', array( __CLASS__, 'set_product_bundle_validation_context' ) );
+	}
+
+	/**
+	 * Modify the bundle validation context when adding a product to an order.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  int  $product_id
+	 */
+	public static function reset_bundle_validation_context( $product_id ) {
+		remove_filter( 'woocommerce_bundle_validation_context', array( __CLASS__, 'set_product_bundle_validation_context' ) );
+	}
+
+	/**
+	 * Sets the bundle validation context to 'add-to-order'.
+	 * ]
+	 * @param  WC_Product_Bundle  $bundle
+	 */
+	public static function set_product_bundle_validation_context( $product ) {
+		return 'add-to-order';
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Hooks - Cart Templates
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
 	 * Add subscription details next to subtotal of per-item-priced bundle-type container cart items.
 	 *
 	 * @param  string  $subtotal
@@ -656,47 +795,6 @@ class WCS_ATT_Integrations {
 			$subtotal = WCS_ATT_Product_Prices::get_price_string( $cart_item[ 'data' ], array(
 				'price' => $subtotal
 			) );
-		}
-
-		return $subtotal;
-	}
-
-	/**
-	 * Calculates bundle container item subtotals.
-	 *
-	 * TODO: Maybe calculate this from recurring carts to account for discounts?
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  array   $cart_item
-	 * @param  string  $scheme_key
-	 * @return double
-	 */
-	private static function calculate_container_item_subtotal( $cart_item, $scheme_key ) {
-
-		$product          = $cart_item[ 'data' ];
-		$tax_display_cart = get_option( 'woocommerce_tax_display_cart' );
-
-		if ( 'excl' === $tax_display_cart ) {
-			$subtotal = wc_get_price_excluding_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
-		} else {
-			$subtotal = wc_get_price_including_tax( $product, array( 'price' => WCS_ATT_Product_Prices::get_price( $product, $scheme_key ) ) );
-		}
-
-		$child_items = self::get_bundle_type_cart_items( $cart_item );
-
-		if ( ! empty( $child_items ) ) {
-
-			foreach ( $child_items as $child_key => $child_item ) {
-
-				$child_qty = ceil( $child_item[ 'quantity' ] / $cart_item[ 'quantity' ] );
-
-				if ( 'excl' === $tax_display_cart ) {
-					$subtotal += wc_get_price_excluding_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-				} else {
-					$subtotal += wc_get_price_including_tax( $child_item[ 'data' ], array( 'price' => WCS_ATT_Product_Prices::get_price( $child_item[ 'data' ], $scheme_key ), 'qty' => $child_qty ) );
-				}
-			}
 		}
 
 		return $subtotal;
@@ -767,6 +865,12 @@ class WCS_ATT_Integrations {
 
 		return $options;
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Hooks - Subscriptions View
+	|--------------------------------------------------------------------------
+	*/
 
 	/**
 	 * Don't count bundle-type child items and hidden bundle-type container/child items.
@@ -923,6 +1027,12 @@ class WCS_ATT_Integrations {
 		}
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| Hooks - Bundles
+	|--------------------------------------------------------------------------
+	*/
+
 	/**
 	 * When loading bundled items, always set the active bundle scheme on the bundled objects.
 	 *
@@ -963,39 +1073,27 @@ class WCS_ATT_Integrations {
 	}
 
 	/**
-	 * Set the active bundle scheme on a bundled item.
+	 * Return 'add_bundle_to_order' as a callback for adding bundles to subscriptions.
 	 *
-	 * @param  WC_Bundled_Item    $bundled_item
-	 * @param  WC_Product_Bundle  $bundle
+	 * @since  2.1.0
+	 *
+	 * @param  array       $callback
+	 * @param  WC_Product  $product
 	 */
-	public static function set_bundled_item_scheme( $bundled_item, $bundle ) {
+	public static function add_product_bundle_to_subscription_callback( $callback, $product ) {
 
-		// Callable since PB 5.2.4.
-		if ( is_callable( array( $bundled_item, 'get_product' ) ) ) {
-
-			$having = array(
-				'price',
-				'regular_price'
-			);
-
-			$what = array(
-				'min',
-				'max'
-			);
-
-			if ( $bundled_product = $bundled_item->get_product() ) {
-				self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
-			}
-
-			foreach ( $having as $price ) {
-				foreach ( $what as $min_or_max ) {
-					if ( $bundled_product = $bundled_item->get_product( array( 'having' => $price, 'what' => $min_or_max ) ) ) {
-						self::set_bundled_product_subscription_schemes( $bundled_product, $bundle );
-					}
-				}
-			}
+		if ( $product->is_type( 'bundle' ) ) {
+			$callback = array( __CLASS__, 'add_bundle_to_order' );
 		}
+
+		return $callback;
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Hooks - Composites
+	|--------------------------------------------------------------------------
+	*/
 
 	/**
 	 * Set the default scheme when one-time purchases are disabled, no scheme is set on the object, and only a single sub scheme exists.
