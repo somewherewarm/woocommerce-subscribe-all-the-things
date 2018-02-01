@@ -118,11 +118,11 @@ install_db() {
 
 install_wc() {
 
-	if [ ! -d "../woocommerce" ]; then
-		git clone https://github.com/woocommerce/woocommerce "../woocommerce"
+	if [ ! -d ../woocommerce ]; then
+		git clone https://github.com/woocommerce/woocommerce ../woocommerce
 	fi
 
-	cd "../woocommerce"
+	cd ../woocommerce
 
 	git checkout $WC_BRANCH
 	git pull
@@ -134,7 +134,7 @@ install_wc() {
 install_wsc() {
 
 	if [ ! -d ../woocommerce-subscriptions ]; then
-        git clone https://$GITHUB_TOKEN@github.com/Prospress/woocommerce-subscriptions.git "../woocommerce-subscriptions" -b $WCS_VERSION
+        git clone https://$GITHUB_TOKEN@github.com/Prospress/woocommerce-subscriptions.git ../woocommerce-subscriptions -b $WCS_VERSION
     fi
 }
 
