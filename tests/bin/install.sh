@@ -17,6 +17,7 @@ TESTS_LIB_DIR="${WP_TESTS_DIR-/tmp/wordpress-tests-lib}"
 TESTS_CORE_DIR="${WP_CORE_DIR-/tmp/wordpress}"
 
 TESTS_DIR="$TESTS_CORE_DIR/.."
+INITIAL_DIR="."
 
 echo $TESTS_LIB_DIR
 echo $TESTS_CORE_DIR
@@ -117,6 +118,8 @@ install_db() {
 }
 
 install_wc() {
+
+    cd $INITIAL_DIR
 
 	if [ ! -d ../woocommerce ]; then
 		git clone https://github.com/woocommerce/woocommerce ../woocommerce
