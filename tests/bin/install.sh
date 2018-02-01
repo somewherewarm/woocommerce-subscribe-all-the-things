@@ -10,9 +10,11 @@ DB_USER=$2
 DB_PASS=$3
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
+WC_BRANCH=${6-master}
+WCS_VERSION=${7-master}
 
-TESTS_LIB_DIR="${WP_TESTS_DIR:?/tmp/wordpress-tests-lib}"
-TESTS_CORE_DIR="${WP_CORE_DIR:?/tmp/wordpress}"
+TESTS_LIB_DIR="${WP_TESTS_DIR-/tmp/wordpress-tests-lib}"
+TESTS_CORE_DIR="${WP_CORE_DIR-/tmp/wordpress}"
 
 TESTS_DIR="$TESTS_CORE_DIR/.."
 
@@ -114,6 +116,31 @@ install_db() {
 	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA || true
 }
 
+install_wc() {
+
+	if [ ! -d "../woocommerce" ]; then
+		git clone https://github.com/woocommerce/woocommerce "../woocommerce"
+	fi
+
+	cd "../woocommerce"
+
+	git checkout $WC_BRANCH
+	git pull
+
+	cd ..
+
+}
+
+install_wsc() {
+
+	if [ ! -d ../woocommerce-subscriptions ]; then
+        git clone https://$GITHUB_TOKEN@github.com/Prospress/woocommerce-subscriptions.git "../woocommerce-subscriptions" -b $WCS_VERSION
+    fi
+}
+
+
 install_wp
 install_test_suite
 install_db
+install_wc
+install_wsc
