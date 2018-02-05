@@ -127,7 +127,7 @@ class WCS_ATT_Product {
 			case 'subscription_management_add_to_subscription':
 
 				if ( $product->is_purchasable() ) {
-					$is_feature_supported = self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+					$is_feature_supported = false === $product->is_type( 'mix-and-match' ) && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
 				}
 
 			break;
