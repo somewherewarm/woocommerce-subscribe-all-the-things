@@ -88,7 +88,6 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 		wc_get_template( 'single-product/product-add-to-subscription-button.php', array(
 			'subscription' => $subscription
 		), false, WCS_ATT()->plugin_path() . '/templates/' );
-
 	}
 
 	/**
@@ -530,6 +529,27 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	public static function validate_add_product_to_subscription( $result, $product_id, $quantity, $variation_id = 0, $variations = array() ) {
 
 		if ( $result ) {
+
+			$product = wc_get_product( $variation_id ? $variation_id : $product_id );
+
+			/*
+			 * Validate stock.
+			 */
+
+			if ( ! $product->is_in_stock() ) {
+				wc_add_notice( sprintf( __( '&quot;%s&quot; is out of stock.', 'woocommerce-subscribe-all-the-things' ), $product->get_name() ), 'error' );
+				return false;
+			}
+
+			if ( ! $product->has_enough_stock( $quantity ) ) {
+				/* translators: 1: product name 2: quantity in stock */
+				wc_add_notice( sprintf( __( '&quot;%1$s&quot; does not have enough stock (%2$s remaining).', 'woocommerce-subscribe-all-the-things' ), $product->get_name(), wc_format_stock_quantity_for_display( $product->get_stock_quantity(), $product ) ), 'error' );
+				return false;
+			}
+
+			/*
+			 * Flash the green light.
+			 */
 
 			self::$add_product_to_subscription = array(
 				'product_id'   => $product_id,
