@@ -291,16 +291,24 @@
 
 				var $add_to_sub_button  = $( this ),
 					$add_to_cart_button = event.data.view.product.$form.find( '.single_add_to_cart_button' ),
-					$add_to_cart        = event.data.view.product.$form.find( '[name="add-to-cart"]' ),
 					product_id          = event.data.view.product.get_product_id(),
 					subscription_id     = $add_to_sub_button.data( 'subscription_id' );
 
 				event.data.view.product.$form.find( 'input.add-to-subscription' ).remove();
 
-				$add_to_sub_button.after( '<input type="hidden" class="add-to-subscription" name="add_to_sub_' + product_id + '" value="' + subscription_id + '"/>' );
+				// Trigger JS notice.
+				if ( $add_to_cart_button.hasClass( 'disabled' ) ) {
 
-				$add_to_cart.attr( 'name', 'add-to-subscription' );
-				$add_to_cart_button.click();
+					$add_to_cart_button.click();
+
+				// Submit form.
+				} else {
+
+					$add_to_sub_button.after( '<input type="hidden" class="add-to-subscription" name="add_to_sub_' + product_id + '" value="' + subscription_id + '"/>' );
+					$add_to_sub_button.after( '<input type="hidden" class="add-to-subscription" name="add-to-subscription" value="' + product_id + '"/>' );
+
+					event.data.view.product.$form.submit();
+				}
 
 				return false;
 			},
@@ -671,7 +679,7 @@
 	};
 
 	// Initialize SATT script.
-	$( '.product .cart:not(.cart_group)' ).each( function() {
+	$( '.product form.cart' ).each( function() {
 		var $product_form = $( this ),
 			satt_script   = new SATT_Product( $product_form );
 
