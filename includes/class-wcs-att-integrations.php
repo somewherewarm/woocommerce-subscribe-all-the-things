@@ -205,6 +205,9 @@ class WCS_ATT_Integrations {
 		// Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
 		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
 
+		// Don't attempt to increment the quantity of bundle-type subscription items when adding to an existing subscription.
+		add_filter( 'wcsatt_add_product_to_subscription_found_item', array( __CLASS__, 'found_bundle_in_subscription' ), 10, 3 );
+
 		/*
 		 * Bundles.
 		 */
@@ -1079,6 +1082,25 @@ class WCS_ATT_Integrations {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Don't attempt to increment the quantity of bundle-type subscription items when adding to an existing subscription.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  false|WC_Order_Item_Product  $found_item
+	 * @param  WC_Product                   $product
+	 * @param  WC_Subscription              $subscription
+	 * @return false|WC_Order_Item_Product
+	 */
+	public static function found_bundle_in_subscription( $found_item, $product, $subscription ) {
+
+		if ( $found_item && self::is_bundle_type_product( $product ) ) {
+			$found_item = false;
+		}
+
+		return $found_item;
 	}
 
 	/*

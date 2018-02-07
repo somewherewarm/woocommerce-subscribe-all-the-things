@@ -452,60 +452,127 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	 */
 	public static function add_product_to_subscription( $subscription, $subscription_scheme, $product_id, $quantity, $variation_id = 0, $variations = array() ) {
 
-		$product = wc_get_product( $variation_id ? $variation_id : $product_id );
-
-		// Set scheme on product (remember doing so may end up changing its price).
-		WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $subscription_scheme );
-
-		$add_product_to_subscription_callback = apply_filters( 'wscatt_add_product_to_subscription_callback', false, $product );
-
-		if ( is_callable( $add_product_to_subscription_callback ) ) {
-
-			$added_item_id = call_user_func_array( $add_product_to_subscription_callback, array( $subscription, $product, $quantity ) );
-
-		} else {
-
-			$added_item_id = $subscription->add_product( $product, $quantity, array(
-				'product_id'   => $product_id,
-				'variation_id' => $variation_id,
-				'variations'   => $variations
-			) );
-		}
-
+		$product           = wc_get_product( $variation_id ? $variation_id : $product_id );
 		$subscription_url  = $subscription->get_view_order_url();
 		$subscription_link = sprintf( _x( '<a href="%1$s">#%2$s</a>', 'link to subscription', 'woocommerce-subscribe-all-the-things' ), esc_url( $subscription_url ), $subscription->get_id() );
+		$found_item        = false;
+		$product_added     = false;
 
-		if ( ! $added_item_id || is_wp_error( $added_item_id ) ) {
+		// Set scheme on product (because doing so may change its price and we want to account for that).
+		WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $subscription_scheme );
 
-			wc_add_notice( sprintf( __( 'There was a problem adding "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $product->get_name(), $subscription_link ), 'error' );
+		/*
+		 * Does an identical line item already exist? What does identical mean in this context?
+		 */
+		foreach ( $subscription->get_items() as $item_id => $item ) {
 
+			// Same ID?
+			if ( $item->get_product_id() === $product->get_id() || $item->get_variation_id() === $product->get_id() ) {
+
+				$price_excl_tax = wc_get_price_excluding_tax( $product, array( 'qty' => $item->get_quantity() ) );
+
+				// Same total?
+				if ( $price_excl_tax == $item->get_total() && $price_excl_tax == $item->get_subtotal() ) {
+
+					$found_item = $item;
+
+					// Same variation?
+					if ( $product->is_type( 'variation' ) ) {
+
+						foreach ( $variations as $key => $value ) {
+
+							// Same attributes/values?
+							if ( $value !== $item->get_meta( str_replace( 'attribute_', '', $key ), true ) ) {
+								$found_item = false;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			// There's still a chance something else might be different, so let's add a filter here.
+			$found_item = apply_filters( 'wcsatt_add_product_to_subscription_found_item', $found_item, $product, $subscription );
+
+			if ( $found_item ) {
+				break;
+			}
+		}
+
+		// If an identical line item was found, increase its quantity in the subscription.
+		if ( $found_item ) {
+
+			$item_qty       = $found_item->get_quantity();
+			$item_qty_new   = $item_qty + $quantity;
+			$item_total_new = wc_get_price_excluding_tax( $product, array( 'qty' => $item_qty_new ) );
+
+			$found_item->set_quantity( $item_qty_new );
+			$found_item->set_total( $item_total_new );
+			$found_item->set_subtotal( $item_total_new );
+			$found_item->save();
+
+			$subscription->add_order_note( sprintf( _x( 'Customer increased the quantity of "%1$s" (Product ID: #%2$d) from %3$s to %4$s from the product page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), $found_item->get_name(), $product_id, $item_qty, $item_qty_new ) );
+
+			$product_added = true;
+			$added_item    = $found_item;
+
+			do_action( 'wcsatt_add_product_to_subscription_line_item_quantity_updated', $added_item, $product, $subscription, $quantity );
+
+		// Otherwise, add a new line item.
 		} else {
 
+			$add_product_to_subscription_callback = apply_filters( 'wscatt_add_product_to_subscription_callback', false, $product );
+
+			if ( is_callable( $add_product_to_subscription_callback ) ) {
+
+				$added_item_id = call_user_func_array( $add_product_to_subscription_callback, array( $subscription, $product, $quantity ) );
+
+			} else {
+
+				$added_item_id = $subscription->add_product( $product, $quantity, array(
+					'product_id'   => $product_id,
+					'variation_id' => $variation_id,
+					'variations'   => $variations
+				) );
+			}
+
+			if ( ! $added_item_id || is_wp_error( $added_item_id ) ) {
+
+				wc_add_notice( sprintf( __( 'There was a problem adding "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $product->get_name(), $subscription_link ), 'error' );
+
+			} else {
+
+				$product_added = true;
+				$added_item    = wcs_get_order_item( $added_item_id, $subscription );
+
+				// Save the scheme key!
+				$added_item->add_meta_data( '_wcsatt_scheme', false === $subscription_scheme ? '0' : $subscription_scheme, true );
+
+				$subscription->add_order_note( sprintf( _x( 'Customer added "%1$s" (Product ID: #%2$d) from the product page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $product_id ) );
+
+				do_action( 'wcsatt_add_product_to_subscription_line_item_added', $added_item, $product, $subscription );
+			}
+		}
+
+		if ( $product_added ) {
+
 			$subscription->calculate_totals();
-
-			$added_item = wcs_get_order_item( $added_item_id, $subscription );
-
-			// Save the scheme key!
-			$added_item->add_meta_data( '_wcsatt_scheme', false === $subscription_scheme ? '0' : $subscription_scheme, true );
-
-			$subscription->add_order_note( sprintf( _x( 'Customer added "%1$s" (Product ID: #%2$d) from the product page.', 'used in order note', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $product_id ) );
-
 			$subscription->save();
 
 			wc_add_notice( sprintf( __( 'You have successfully added "%1$s" to subscription %2$s.', 'woocommerce-subscribe-all-the-things' ), $added_item->get_name(), $subscription_link ) );
+
+			/**
+			 * Filter redirect url.
+			 *
+			 * @param  string  $url
+			 * @param  int     $product_id
+			 * @param  string  $subscription_id
+			 */
+			$redirect_url = apply_filters( 'wcsatt_add_product_to_subscription_redirect_url', $subscription_url, $added_item, $product, $subscription );
+
+			wp_safe_redirect( $subscription_url );
+			exit;
 		}
-
-		/**
-		 * Filter redirect url.
-		 *
-		 * @param  string  $url
-		 * @param  int     $product_id
-		 * @param  string  $subscription_id
-		 */
-		$redirect_url = apply_filters( 'wcsatt_add_product_to_subscription_redirect_url', $subscription_url, $added_item_id, $product, $subscription );
-
-		wp_safe_redirect( $subscription_url );
-		exit;
 	}
 
 	/*
