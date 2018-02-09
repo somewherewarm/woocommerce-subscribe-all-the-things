@@ -354,6 +354,9 @@ class WCS_ATT_Cart {
 				do_action( 'wcsatt_applied_cart_item_subscription_scheme', $cart_item, $cart_item_key );
 			}
 		}
+
+		// If the cart is empty, reset the cart-level scheme stored in session data.
+		self::maybe_reset_cart_subscription_scheme();
 	}
 
 	/**
@@ -520,6 +523,19 @@ class WCS_ATT_Cart {
 					error_log( sprintf( 'Incorrect subscription scheme applied to cart item %s (%s). Scheme to apply: "%s". Applied scheme: "%s".', $cart_item_key, $cart_item[ 'data' ]->get_name(), var_export( $scheme_to_apply, true ), var_export( $applied_scheme, true ) ) );
 				}
 			}
+		}
+	}
+
+	/**
+	 * Reset stored cart subscription scheme when the cart is empty.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return void
+	 */
+	public static function maybe_reset_cart_subscription_scheme() {
+		if ( ! WC()->cart->get_cart_contents_count() ) {
+			self::set_cart_subscription_scheme( false );
 		}
 	}
 
