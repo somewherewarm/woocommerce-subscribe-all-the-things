@@ -18,6 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <div class="wcsatt-add-to-subscription-wrapper closed" data-product_id="<?php echo $product_id; ?>" <?php echo $is_visible ? '' : 'style="display:none;"'; ?>>
-	<a class="wcsatt-add-to-subscription-action" href="#"><?php _e( 'Add to subscription', 'woocommerce-subscribe-all-the-things' ); ?></a>
+	<label class="wcsatt-add-to-subscription-action-label">
+		<input class="wcsatt-add-to-subscription-action-input" type="checkbox" name="add-to-subscription-input" value="yes" />
+		<span class="wcsatt-add-to-subscription-action" href="#"><?php _e( 'Add to an existing subscription?', 'woocommerce-subscribe-all-the-things' ); ?></span>
+	</label>
 	<div class="wcsatt-add-to-subscription-options" style="display:none;"></div>
+	<input type="hidden" class="add-to-subscription-input" name="add-product-to-subscription" value="<?php echo $product_id; ?>" />
 </div>

@@ -150,7 +150,6 @@
 
 				active_scheme_key = false === active_scheme_key ? '0' : active_scheme_key;
 
-
 				if ( typeof this.cached_responses[ active_scheme_key ] !== 'undefined' ) {
 
 					model.set( { html: this.cached_responses[ active_scheme_key ] } );
@@ -229,20 +228,22 @@
 			},
 
 			events: {
-				'click a.wcsatt-add-to-subscription-action': 'action_link_clicked'
+				'click .wcsatt-add-to-subscription-action': 'action_link_clicked'
 			},
 
 			// 'Add to subscription' link 'click' event handler.
 			action_link_clicked: function() {
 
-				var model = this.model,
-					view  = this;
+				var model         = this.model,
+					view          = this,
+					state_changed = false;
 
 				if ( ! this.matching_subscriptions_visible() ) {
 
 					if ( this.model.get_period() === this.product.schemes_model.get_active_scheme_period() ) {
-						this.toggle();
+						state_changed = this.toggle();
 					} else {
+						state_changed = true;
 						this.$el.block( this.block_params );
 						setTimeout( function() {
 							model.set_period( view.product.schemes_model.get_active_scheme_period() );
@@ -250,10 +251,12 @@
 					}
 
 				} else {
-					this.toggle();
+					state_changed = this.toggle();
 				}
 
-				return false;
+				if ( ! state_changed ) {
+					return false;
+				}
 			},
 
 			// Active scheme changed.
@@ -289,28 +292,13 @@
 			// Handles add-to-subscription button clicks.
 			add_to_subscription_button_clicked: function( event ) {
 
-				var $add_to_sub_button  = $( this ),
-					$add_to_cart_button = event.data.view.product.$form.find( '.single_add_to_cart_button' ),
-					product_id          = event.data.view.product.get_product_id(),
-					subscription_id     = $add_to_sub_button.data( 'subscription_id' );
-
-				event.data.view.product.$form.find( 'input.add-to-subscription' ).remove();
+				var $add_to_cart_button = event.data.view.product.$form.find( '.single_add_to_cart_button' );
 
 				// Trigger JS notice.
 				if ( $add_to_cart_button.hasClass( 'disabled' ) ) {
-
 					$add_to_cart_button.click();
-
-				// Submit form.
-				} else {
-
-					$add_to_sub_button.after( '<input type="hidden" class="add-to-subscription" name="add_to_sub_' + product_id + '" value="' + subscription_id + '"/>' );
-					$add_to_sub_button.after( '<input type="hidden" class="add-to-subscription" name="add-to-subscription" value="' + product_id + '"/>' );
-
-					event.data.view.product.$form.submit();
+					return false;
 				}
-
-				return false;
 			},
 
 			// Toggles the matching subscriptions content wrapper.
@@ -326,19 +314,24 @@
 				}
 
 				if ( view.$el.hasClass( 'closed' ) ) {
+
 					setTimeout( function() {
 						view.$el_content.slideDown( { duration: duration, queue: false, always: function() {
 							view.$el.data( 'animating', false );
 						} } );
 					}, 10 );
+
 					view.$el.removeClass( 'closed' ).addClass( 'open' );
 					view.$el.data( 'animating', true );
+
 				} else {
+
 					setTimeout( function() {
 						view.$el_content.slideUp( { duration: duration, queue: false, always: function() {
 							view.$el.data( 'animating', false );
 						} } );
 					}, 10 );
+
 					view.$el.removeClass( 'open' ).addClass( 'closed' );
 					view.$el.data( 'animating', true );
 				}
@@ -389,7 +382,7 @@
 				this.listenTo( this.model, 'matching_subscriptions_loaded', this.matching_subscriptions_loaded );
 				this.listenTo( this.product.schemes_model, 'change:active_scheme_key', this.active_scheme_changed );
 
-				this.$el_content.on( 'click', 'a.wcsatt-add-to-subscription-button', { view: this }, this.add_to_subscription_button_clicked );
+				this.$el_content.on( 'click', '.wcsatt-add-to-subscription-button', { view: this }, this.add_to_subscription_button_clicked );
 			}
 
 		} );

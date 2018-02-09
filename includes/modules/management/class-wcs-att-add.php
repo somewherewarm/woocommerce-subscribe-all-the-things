@@ -47,7 +47,11 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	 */
 	private static function register_template_hooks() {
 
-		// Render wrapper element.
+		/*
+		 * Add Product to Subscription.
+		 */
+
+		// Render the add-to-subscription wrapper element in single-product pages.
 		add_filter( 'woocommerce_after_add_to_cart_button', array( __CLASS__, 'add_product_to_subscription_template' ), 1000 );
 
 		// Render subscriptions list.
@@ -74,135 +78,17 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 
 	/*
 	|--------------------------------------------------------------------------
-	| Template Functions
+	| Application
 	|--------------------------------------------------------------------------
 	*/
 
 	/**
-	 * 'Add to subscription' view -- 'Add' button template.
+	 * Gets all subscriptions matching a scheme.
 	 *
-	 * @param  WC_Subscription  $subscription
+	 * @param  WCS_ATT_Scheme  $scheme
+	 * @return array
 	 */
-	public static function add_to_subscription_button_template( $subscription ) {
-
-		wc_get_template( 'single-product/product-add-to-subscription-button.php', array(
-			'subscription' => $subscription
-		), false, WCS_ATT()->plugin_path() . '/templates/' );
-	}
-
-	/**
-	 * 'Add to subscription' view -- matching list of subscriptions.
-	 *
-	 * @param  array       $subscriptions
-	 * @param  WC_Product  $product
-	 * @param  WCS_ATT_Scheme|null  $scheme
-	 * @return void
-	 */
-	public static function subscriptions_matching_product_template( $subscriptions, $product, $scheme ) {
-
-		add_action( 'woocommerce_my_subscriptions_actions', array( __CLASS__, 'add_to_subscription_button_template' ) );
-
-		wc_get_template( 'single-product/product-add-to-subscription-list.php', array(
-			'subscriptions' => $subscriptions,
-			'product'       => $product,
-			'scheme'        => $scheme,
-			'user_id'       => get_current_user_id()
-		), false, WCS_ATT()->plugin_path() . '/templates/' );
-
-		remove_action( 'woocommerce_my_subscriptions_actions', array( __CLASS__, 'add_to_subscription_button_template' ) );
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Template Hooks
-	|--------------------------------------------------------------------------
-	*/
-
-	/**
-	 * 'Add to subscription' view -- wrapper element.
-	 *
-	 * @since  2.1.0
-	 */
-	public static function add_product_to_subscription_template() {
-
-		global $product;
-
-		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' ) ) {
-			return;
-		}
-
-		// Bypass when switching.
-		if ( WCS_ATT_Switch::switching_product( $product ) ) {
-			return;
-		}
-
-		// User must be logged in.
-		if ( ! is_user_logged_in() ) {
-			return;
-		}
-
-		$subscription_options_visible = false;
-
-		/*
-		 * Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
-		 * The add-to-subscription template is displayed when a variation is found.
-		 */
-		if ( ! $product->is_type( 'variable' ) ) {
-
-			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
-			$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
-			$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
-			$default_subscription_scheme          = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $default_subscription_scheme_key );
-
-			$subscription_options_visible = $is_single_scheme_forced_subscription || ( is_object( $default_subscription_scheme ) && ! $default_subscription_scheme->is_prorated() );
-		}
-
-		wp_nonce_field( 'add_product_to_subscription', 'wcsatt_nonce_' . $product->get_id() );
-
-		wc_get_template( 'single-product/product-add-to-subscription.php', array(
-			'product_id' => $product->get_id(),
-			'is_visible' => $subscription_options_visible
-		), false, WCS_ATT()->plugin_path() . '/templates/' );
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Ajax Handlers
-	|--------------------------------------------------------------------------
-	*/
-
-	/**
-	 * Load all user subscriptions matching a product + scheme key (known billing period and interval).
-	 *
-	 * @return void
-	 */
-	public static function load_subscriptions_matching_product() {
-
-		$failure = array(
-			'result' => 'failure',
-			'html'   => ''
-		);
-
-		// User must be logged in.
-		if ( ! is_user_logged_in() ) {
-			wp_send_json( $failure );
-		}
-
-		$product_id = ! empty( $_POST[ 'product_id' ] ) ? absint( $_POST[ 'product_id' ] ) : false;
-		$scheme_key = ! empty( $_POST[ 'scheme_key' ] ) ? wc_clean( $_POST[ 'scheme_key' ] ) : false;
-
-		$product = wc_get_product( $product_id );
-
-		if ( ! $product ) {
-			wp_send_json( $failure );
-		}
-
-		$scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
-
-		if ( ! $scheme ) {
-			wp_send_json( $failure );
-		}
+	public static function get_subscriptions_matching_scheme( $scheme ) {
 
 		// Get all subscriptions of the current user.
 		$subscriptions = wcs_get_subscriptions( array(
@@ -271,6 +157,137 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 			}
 		}
 
+		return $matching_subscriptions;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Template Functions -- Add Product to Subscription
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * 'Add to subscription' view -- wrapper element.
+	 *
+	 * @since  2.1.0
+	 */
+	public static function add_product_to_subscription_template() {
+
+		global $product;
+
+		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' ) ) {
+			return;
+		}
+
+		// Bypass when switching.
+		if ( WCS_ATT_Switch::switching_product( $product ) ) {
+			return;
+		}
+
+		// User must be logged in.
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		$subscription_options_visible = false;
+
+		/*
+		 * Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
+		 * The add-to-subscription template is displayed when a variation is found.
+		 */
+		if ( ! $product->is_type( 'variable' ) ) {
+
+			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
+			$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
+			$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
+			$default_subscription_scheme          = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $default_subscription_scheme_key );
+
+			$subscription_options_visible = $is_single_scheme_forced_subscription || ( is_object( $default_subscription_scheme ) && ! $default_subscription_scheme->is_prorated() );
+		}
+
+		wp_nonce_field( 'add_product_to_subscription', 'wcsatt_nonce_' . $product->get_id() );
+
+		wc_get_template( 'single-product/product-add-to-subscription.php', array(
+			'product_id' => $product->get_id(),
+			'is_visible' => $subscription_options_visible
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+	}
+
+	/**
+	 * 'Add to subscription' view -- 'Add' button template.
+	 *
+	 * @param  WC_Subscription  $subscription
+	 */
+	public static function add_product_to_subscription_button_template( $subscription ) {
+
+		wc_get_template( 'single-product/product-add-to-subscription-button.php', array(
+			'subscription_id' => $subscription->get_id()
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+	}
+
+	/**
+	 * 'Add to subscription' view -- matching list of subscriptions.
+	 *
+	 * @param  array                $subscriptions
+	 * @param  WC_Product           $product
+	 * @param  WCS_ATT_Scheme|null  $scheme
+	 * @return void
+	 */
+	public static function subscriptions_matching_product_template( $subscriptions, $product, $scheme ) {
+
+		add_action( 'woocommerce_my_subscriptions_actions', array( __CLASS__, 'add_product_to_subscription_button_template' ) );
+
+		wc_get_template( 'single-product/product-add-to-subscription-list.php', array(
+			'subscriptions' => $subscriptions,
+			'product'       => $product,
+			'scheme'        => $scheme,
+			'user_id'       => get_current_user_id()
+		), false, WCS_ATT()->plugin_path() . '/templates/' );
+
+		remove_action( 'woocommerce_my_subscriptions_actions', array( __CLASS__, 'add_product_to_subscription_button_template' ) );
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Ajax Handlers
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Load all user subscriptions matching a product + scheme key (known billing period and interval).
+	 *
+	 * @return void
+	 */
+	public static function load_subscriptions_matching_product() {
+
+		$failure = array(
+			'result' => 'failure',
+			'html'   => ''
+		);
+
+		// User must be logged in.
+		if ( ! is_user_logged_in() ) {
+			wp_send_json( $failure );
+		}
+
+		$product_id = ! empty( $_POST[ 'product_id' ] ) ? absint( $_POST[ 'product_id' ] ) : false;
+		$scheme_key = ! empty( $_POST[ 'subscription_scheme' ] ) ? wc_clean( $_POST[ 'subscription_scheme' ] ) : false;
+
+		$product = wc_get_product( $product_id );
+
+		if ( ! $product ) {
+			wp_send_json( $failure );
+		}
+
+		$scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
+
+		if ( ! $scheme ) {
+			wp_send_json( $failure );
+		}
+
+		$matching_subscriptions = self::get_subscriptions_matching_scheme( $scheme );
+
 		/**
 		 * 'wcsatt_subscriptions_matching_product' filter.
 		 *
@@ -295,7 +312,7 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 		 * @param  WC_Product           $product
 		 * @param  WCS_ATT_Scheme|null  $scheme
 		 *
-		 * @hooked WCS_ATT_Add::matching_subscriptions_template - 10
+		 * @hooked WCS_ATT_Add::subscriptions_matching_product_template - 10
 		 */
 		do_action( 'wcsatt_add_product_to_subscription_html', $matching_subscriptions, $product, $scheme );
 
@@ -339,14 +356,32 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 
 			if ( ! empty( $_REQUEST[ 'add-to-subscription' ] ) && is_numeric( $_REQUEST[ 'add-to-subscription' ] ) ) {
 
-				$posted_data[ 'product_id' ] = apply_filters( 'woocommerce_add_to_cart_product_id', absint( $_REQUEST[ 'add-to-subscription' ] ) );
+				if ( ! empty( $_REQUEST[ 'add-product-to-subscription' ] ) && is_numeric( $_REQUEST[ 'add-product-to-subscription' ] ) ) {
 
-				if ( ! empty( $_REQUEST[ 'add_to_sub_' . $posted_data[ 'product_id' ] ] ) && is_numeric( $_REQUEST[ 'add_to_sub_' . $posted_data[ 'product_id' ] ] ) ) {
-
+					$posted_data[ 'product_id' ]          = apply_filters( 'woocommerce_add_to_cart_product_id', absint( $_REQUEST[ 'add-product-to-subscription' ] ) );
 					$posted_data[ 'nonce' ]               = ! empty( $_REQUEST[ 'wcsatt_nonce_' . $posted_data[ 'product_id' ] ] ) ? $_REQUEST[ 'wcsatt_nonce_' . $posted_data[ 'product_id' ] ] : '';
-					$posted_data[ 'subscription_id' ]     = absint( $_REQUEST[ 'add_to_sub_' . $posted_data[ 'product_id' ] ] );
+					$posted_data[ 'subscription_id' ]     = absint( $_REQUEST[ 'add-to-subscription' ] );
 					$posted_data[ 'subscription_scheme' ] = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $posted_data[ 'product_id' ] ) );
 				}
+			}
+
+		} elseif ( 'cart' === $context ) {
+
+			$posted_data = array(
+				'subscription_id'     => false,
+				'subscription_scheme' => false
+			);
+
+		} elseif ( 'update-cart' === $context ) {
+
+			$posted_data = array(
+				'add_to_subscription' => false
+			);
+
+			$key = doing_action( 'wc_ajax_wcsatt_update_cart_option' ) ? 'add_to_subscription' : 'add-to-subscription';
+
+			if ( ! empty( $_REQUEST[ $key ] ) && 'yes' === $_REQUEST[ $key ] ) {
+				$posted_data[ 'add_to_subscription' ] = true;
 			}
 		}
 

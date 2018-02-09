@@ -17,5 +17,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<a class="wcsatt-add-to-subscription-button button add alt" data-subscription_id="<?php echo $subscription->get_id(); ?>" href="#"><?php _e( 'Add', 'woocommerce-subscribe-all-the-things' ); ?></a>
+<button type="submit" class="wcsatt-add-to-subscription-button button add alt" name="add-to-subscription" value="<?php echo $subscription_id; ?>" ><?php _e( 'Add', 'woocommerce-subscribe-all-the-things' ); ?></button>
 
