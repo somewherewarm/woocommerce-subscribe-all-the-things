@@ -59,8 +59,8 @@ class WCS_ATT_Add extends WCS_ATT_Abstract_Module {
 	 */
 	private static function register_ajax_hooks() {
 
-		// Fetch matching subscriptions via ajax.
-		add_action( 'wc_ajax_wcsatt_load_matching_subscriptions', array( __CLASS__, 'load_subscriptions_matching_product' ) );
+		// Fetch subscriptions matching product scheme via ajax.
+		add_action( 'wc_ajax_wcsatt_load_subscriptions_matching_product', array( __CLASS__, 'load_subscriptions_matching_product' ) );
 	}
 
 	/**
