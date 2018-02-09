@@ -25,12 +25,12 @@ jQuery( function( $ ) {
 		} );
 
 		var data = {
-			security:        wcsatt_cart_params.update_cart_option_nonce,
-			selected_scheme: selected_option,
-			action:          'wcsatt_update_cart_option'
+			security:            wcsatt_cart_params.update_cart_option_nonce,
+			subscription_scheme: selected_scheme,
+			action:              'wcsatt_update_cart_option'
 		};
 
-		$.post( wcsatt_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'wcsatt_update_cart_option' ), data, function( response ) {
+		$.post( wcsatt_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', data.action ), data, function( response ) {
 
 			if ( 'success' === response.result ) {
 

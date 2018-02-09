@@ -159,17 +159,17 @@
 				} else {
 
 					var data = {
-						action:    'wcsatt_load_matching_subscriptions',
-						product_id: this.product.get_product_id(),
-						scheme_key: active_scheme_key
+						action:              'wcsatt_load_subscriptions_matching_product',
+						product_id:          this.product.get_product_id(),
+						subscription_scheme: active_scheme_key
 					};
 
 					// Get matching subscriptions list via ajax.
-					this.xhr = $.post( wcsatt_single_product_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'wcsatt_load_matching_subscriptions' ), data, function( response ) {
+					this.xhr = $.post( wcsatt_single_product_params.wc_ajax_url.toString().replace( '%%endpoint%%', data.action ), data, function( response ) {
 
 						if ( 'success' === response.result ) {
 							model.set( { html: response.html } );
-							model.cached_responses[ data.scheme_key ] = response.html;
+							model.cached_responses[ data.subscription_scheme ] = response.html;
 						} else {
 							model.set( { html: false } );
 							model.attributes.period = false;

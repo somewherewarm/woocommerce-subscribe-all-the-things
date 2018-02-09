@@ -73,6 +73,7 @@ class WCS_ATT_Form_Handler {
 			$posted_subscription_scheme_key = null;
 
 			$key = 'selected_scheme';
+			$key = 'subscription_scheme';
 
 			if ( isset( $_POST[ $key ] ) ) {
 				$posted_subscription_scheme_key = wc_clean( $_POST[ $key ] );
