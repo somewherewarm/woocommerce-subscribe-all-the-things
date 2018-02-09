@@ -6,15 +6,18 @@ jQuery( function( $ ) {
 		return false;
 	}
 
-	// Reload cart elements when (de-)selecting a cart subscription option.
-	$( document ).on( 'change', '.wcsatt-options-cart input[type=radio][name^=convert_to_sub]', function() {
+	var $document = $( document );
 
-		var $cart_totals    = $( 'div.cart_totals' ),
-			$cart_table     = $( 'table.shop_table.cart' ),
-			$options        = $( this ).closest( '.wcsatt-options-cart' ),
-			$cart_wrapper   = $cart_table.closest( '.woocommerce' ),
-			selected_option = $( this ).val(),
-			cart_referrer   = $cart_table.find( 'input[name="_wp_http_referer"]' ).val();
+	// Reload cart elements when (de-)selecting a cart subscription option.
+	$document.on( 'change', '.wcsatt-options-cart [name^=convert_to_sub]', function() {
+
+		var $scheme_input        = $( this ),
+			$cart_totals         = $( 'div.cart_totals' ),
+			$cart_table          = $( 'table.shop_table.cart' ),
+			$options             = $scheme_input.closest( '.wcsatt-options-cart' ),
+			$cart_wrapper        = $cart_table.closest( '.woocommerce' ),
+			selected_scheme      = $scheme_input.val(),
+			cart_referrer        = $cart_table.find( 'input[name="_wp_http_referer"]' ).val();
 
 		$cart_wrapper.block( {
 			message: null,
@@ -52,7 +55,14 @@ jQuery( function( $ ) {
 			} else {
 
 				window.alert( wcsatt_cart_params.i18n_update_cart_sub_error );
-				$options.find( 'input[value="' + response.reset_to_scheme + '"]' ).prop( 'checked', true );
+
+				if ( response.reset_to_scheme ) {
+					if ( $scheme_input.is( ':radio' ) ) {
+						$options.find( 'input[value="' + response.reset_to_scheme + '"]' ).prop( 'checked', true );
+					} else {
+						$scheme_input.val( response.reset_to_scheme );
+					}
+				}
 			}
 
 			$cart_wrapper.unblock();
