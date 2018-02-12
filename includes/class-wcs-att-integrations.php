@@ -169,12 +169,6 @@ class WCS_ATT_Integrations {
 		// Bundled cart items inherit the subscription schemes of their parent, with some modifications (first add).
 		add_filter( 'woocommerce_add_cart_item', array( __CLASS__, 'set_child_item_schemes' ), 0, 2 );
 
-		// Modify the validation context when adding a bundle to an order.
-		add_action( 'wcsatt_pre_add_product_to_subscription_validation', array( __CLASS__, 'set_bundle_type_validation_context' ), 10 );
-
-		// Modify the validation context when adding a bundle to an order.
-		add_action( 'wcsatt_post_add_product_to_subscription_validation', array( __CLASS__, 'reset_bundle_type_validation_context' ), 10 );
-
 		/*
 		 * All types: Display/templates integration.
 		 */
@@ -190,7 +184,7 @@ class WCS_ATT_Integrations {
 		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
 
 		/*
-		 * 'My Account > Subscriptions' view.
+		 * Subscriptions management: 'My Account > Subscriptions' view.
 		 */
 
 		// Don't count bundle-type child items and hidden bundle-type container/child items.
@@ -204,6 +198,16 @@ class WCS_ATT_Integrations {
 
 		// Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
 		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
+
+		/*
+		 * Subscriptions management: Add products/carts to subscriptions.
+		 */
+
+		// Modify the validation context when adding a bundle to an order.
+		add_action( 'wcsatt_pre_add_product_to_subscription_validation', array( __CLASS__, 'set_bundle_type_validation_context' ), 10 );
+
+		// Modify the validation context when adding a bundle to an order.
+		add_action( 'wcsatt_post_add_product_to_subscription_validation', array( __CLASS__, 'reset_bundle_type_validation_context' ), 10 );
 
 		// Don't attempt to increment the quantity of bundle-type subscription items when adding to an existing subscription.
 		add_filter( 'wcsatt_add_cart_to_subscription_found_item', array( __CLASS__, 'found_bundle_in_subscription' ), 10, 4 );
@@ -778,75 +782,6 @@ class WCS_ATT_Integrations {
 		return $cart_item;
 	}
 
-	/**
-	 * Modify the validation context when adding a bundle-type product to an order.
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  int  $product_id
-	 */
-	public static function set_bundle_type_validation_context( $product_id ) {
-		add_filter( 'woocommerce_composite_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
-		add_filter( 'woocommerce_bundle_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
-		add_filter( 'woocommerce_add_to_order_bundle_validation', array( __CLASS__, 'validate_bundle_type_stock' ), 10, 4 );
-		add_filter( 'woocommerce_add_to_order_composite_validation', array( __CLASS__, 'validate_bundle_type_stock' ), 10, 4 );
-	}
-
-	/**
-	 * Modify the validation context when adding a bundle-type product to an order.
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  int  $product_id
-	 */
-	public static function reset_bundle_type_validation_context( $product_id ) {
-		remove_filter( 'woocommerce_composite_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
-		remove_filter( 'woocommerce_bundle_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
-		remove_filter( 'woocommerce_add_to_order_bundle_validation', array( __CLASS__, 'validate_bundle_type_stock' ) );
-		remove_filter( 'woocommerce_add_to_order_composite_validation', array( __CLASS__, 'validate_bundle_type_stock' ) );
-	}
-
-	/**
-	 * Sets the validation context to 'add-to-order'.
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  WC_Product_Bundle  $bundle
-	 */
-	public static function set_add_to_order_validation_context( $product ) {
-		return 'add-to-order';
-	}
-
-	/**
-	 * Validates bundle-type stock in 'add-to-order' context.
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  boolean  $is_valid
-	 */
-	public static function validate_bundle_type_stock( $is_valid, $bundle_id, $stock_manager, $configuration ) {
-
-		if ( $is_valid ) {
-
-			try {
-
-				$stock_manager->validate_stock( array( 'throw_exception' => true, 'context' => 'add-to-order' ) );
-
-			} catch ( Exception $e ) {
-
-				$notice = $e->getMessage();
-
-				if ( $notice ) {
-					wc_add_notice( $notice, 'error' );
-				}
-
-				$is_valid = false;
-			}
-		}
-
-		return $is_valid;
-	}
-
 	/*
 	|--------------------------------------------------------------------------
 	| Hooks - Cart Templates
@@ -1107,6 +1042,81 @@ class WCS_ATT_Integrations {
 				}
 			}
 		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Hooks - Add to Subscription
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Modify the validation context when adding a bundle-type product to an order.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  int  $product_id
+	 */
+	public static function set_bundle_type_validation_context( $product_id ) {
+		add_filter( 'woocommerce_composite_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
+		add_filter( 'woocommerce_bundle_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
+		add_filter( 'woocommerce_add_to_order_bundle_validation', array( __CLASS__, 'validate_bundle_type_stock' ), 10, 4 );
+		add_filter( 'woocommerce_add_to_order_composite_validation', array( __CLASS__, 'validate_bundle_type_stock' ), 10, 4 );
+	}
+
+	/**
+	 * Modify the validation context when adding a bundle-type product to an order.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  int  $product_id
+	 */
+	public static function reset_bundle_type_validation_context( $product_id ) {
+		remove_filter( 'woocommerce_composite_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
+		remove_filter( 'woocommerce_bundle_validation_context', array( __CLASS__, 'set_add_to_order_validation_context' ) );
+		remove_filter( 'woocommerce_add_to_order_bundle_validation', array( __CLASS__, 'validate_bundle_type_stock' ) );
+		remove_filter( 'woocommerce_add_to_order_composite_validation', array( __CLASS__, 'validate_bundle_type_stock' ) );
+	}
+
+	/**
+	 * Sets the validation context to 'add-to-order'.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  WC_Product_Bundle  $bundle
+	 */
+	public static function set_add_to_order_validation_context( $product ) {
+		return 'add-to-order';
+	}
+
+	/**
+	 * Validates bundle-type stock in 'add-to-order' context.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  boolean  $is_valid
+	 */
+	public static function validate_bundle_type_stock( $is_valid, $bundle_id, $stock_manager, $configuration ) {
+
+		if ( $is_valid ) {
+
+			try {
+
+				$stock_manager->validate_stock( array( 'throw_exception' => true, 'context' => 'add-to-order' ) );
+
+			} catch ( Exception $e ) {
+
+				$notice = $e->getMessage();
+
+				if ( $notice ) {
+					wc_add_notice( $notice, 'error' );
+				}
+
+				$is_valid = false;
+			}
+		}
+
+		return $is_valid;
 	}
 
 	/**

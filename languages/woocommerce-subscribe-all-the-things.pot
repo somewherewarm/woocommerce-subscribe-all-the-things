@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-dev\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-02-12 11:49:33+00:00\n"
+"POT-Creation-Date: 2018-02-12 12:39:46+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -356,14 +356,14 @@ msgstr ""
 msgid "http://prospress.com/"
 msgstr ""
 
-#: includes/class-wcs-att-integrations.php:1048
+#: includes/class-wcs-att-integrations.php:983
 msgctxt "used in order note"
 msgid ""
 "\"%1$s\" (Product ID: #%2$d) removal triggered by \"%3$s\" via the My "
 "Account page."
 msgstr ""
 
-#: includes/class-wcs-att-integrations.php:1103
+#: includes/class-wcs-att-integrations.php:1038
 msgctxt "used in order note"
 msgid ""
 "\"%1$s\" (Product ID: #%2$d) removal un-done by \"%3$s\" via the My Account "
