@@ -113,7 +113,7 @@
 
 				this.model.set_schemes( this.find_schemes() );
 
-				var active_scheme_option = this.$el_options.find( 'input[value=' + this.model.get_active_scheme_key() + ']' );
+				var active_scheme_option = this.$el_options.find( 'input[value="' + this.model.get_active_scheme_key() + '"]' );
 
 				if ( active_scheme_option.length > 0 ) {
 					active_scheme_option.prop( 'checked', true );
