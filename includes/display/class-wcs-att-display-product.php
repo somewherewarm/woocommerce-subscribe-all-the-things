@@ -145,6 +145,13 @@ class WCS_ATT_Display_Product {
 			$prompt = wpautop( do_shortcode( wp_kses_post( $prompt ) ) );
 		}
 
+		/**
+		 * 'wcsatt_single_product_options' filter.
+		 *
+		 * @param  array       $options
+		 * @param  array       $subscription_schemes
+		 * @param  WC_Product  $product
+		 */
 		$options = apply_filters( 'wcsatt_single_product_options', $options, $subscription_schemes, $product );
 
 		ob_start();
