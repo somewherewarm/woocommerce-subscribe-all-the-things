@@ -42,8 +42,6 @@ class WCS_ATT_Display {
 
 		// Enqueue scripts and styles.
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'frontend_scripts' ) );
-
-		WCS_ATT()->register_module_hooks( 'display' );
 	}
 
 	/*

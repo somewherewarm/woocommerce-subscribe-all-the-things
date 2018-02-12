@@ -21,20 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCS_ATT_Form_Handler {
 
 	/**
-	 * Initialization.
-	 */
-	public static function init() {
-		self::add_hooks();
-	}
-
-	/**
-	 * Hook-in.
-	 */
-	private static function add_hooks() {
-		WCS_ATT()->register_module_hooks( 'form' );
-	}
-
-	/**
 	 * Get the posted subscription scheme key by context.
 	 *
 	 * @param  string  $context
@@ -82,5 +68,3 @@ class WCS_ATT_Form_Handler {
 		return $posted_subscription_scheme_key;
 	}
 }
-
-WCS_ATT_Form_Handler::init();
