@@ -242,6 +242,16 @@ class WCS_ATT_Display_Cart {
 				);
 			}
 
+			/**
+			 * 'wcsatt_cart_options' filter.
+			 *
+			 * @since  2.1.0
+			 *
+			 * @param  array  $options
+			 * @param  array  $subscription_schemes
+			 */
+			$options = apply_filters( 'wcsatt_cart_options', $options, $subscription_schemes );
+
 			wc_get_template( 'cart/cart-subscription-options.php', array(
 				'options' => $options,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
