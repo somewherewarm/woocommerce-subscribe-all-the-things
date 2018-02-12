@@ -345,6 +345,69 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		return 'override' === $this->get_pricing_mode() || ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 );
 	}
 
+	/**
+	 * Indicates whether the billing details of a subscription match the billing details of this scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  WC_Subscription  $subscription
+	 * @return boolean
+	 */
+	public function matches_subscription( $subscription ) {
+
+		$period   = $subscription->get_billing_period();
+		$interval = $subscription->get_billing_interval();
+
+		// Period and interval must match.
+		if ( $period !== $this->get_period() || absint( $interval ) !== $this->get_interval() ) {
+			return false;
+		}
+
+		// The subscription must have an upcoming renewal.
+		if ( ! $subscription->get_time( 'next_payment' ) ) {
+			return false;
+		}
+
+		// The scheme length must match the remaining subscription renewals.
+		if ( $this->get_length() ) {
+
+			$subscription_next_payment = $subscription->get_time( 'next_payment' );
+			$subscription_end          = $subscription->get_time( 'end' );
+
+			// If the scheme has a length but the subscription is endless, dump it.
+			if ( ! $subscription_end ) {
+				return false;
+			}
+
+			$subscription_periods_left = wcs_estimate_periods_between( $subscription_next_payment, $subscription_end, $this->get_period() );
+
+			if ( $subscription_periods_left !== $this->get_length() ) {
+				return false;
+			}
+		}
+
+		// If the scheme is synced, its payment day must match the next subscription renewal payment day.
+		if ( $this->is_synced() ) {
+
+			$scheme_sync_day           = $this->get_sync_date();
+			$subscription_next_payment = $subscription->get_time( 'next_payment' );
+
+			if ( 'week' === $period && $scheme_sync_day !== intval( date( 'N', $subscription_next_payment ) ) ) {
+				return false;
+			}
+
+			if ( 'month' === $period && $scheme_sync_day !== intval( date( 'j', $subscription_next_payment ) ) ) {
+				return false;
+			}
+
+			if ( 'year' === $period && ( $scheme_sync_day[ 'day' ] !== date( 'd', $subscription_next_payment ) || $scheme_sync_day[ 'month' ] !== date( 'm', $subscription_next_payment ) ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Setters.

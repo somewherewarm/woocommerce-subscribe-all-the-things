@@ -206,7 +206,10 @@ class WCS_ATT_Integrations {
 		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
 
 		// Don't attempt to increment the quantity of bundle-type subscription items when adding to an existing subscription.
-		add_filter( 'wcsatt_add_product_to_subscription_found_item', array( __CLASS__, 'found_bundle_in_subscription' ), 10, 3 );
+		add_filter( 'wcsatt_add_cart_to_subscription_found_item', array( __CLASS__, 'found_bundle_in_subscription' ), 10, 4 );
+
+		// Add bundles/composites to subscriptions.
+		add_filter( 'wscatt_add_cart_item_to_subscription_callback', array( __CLASS__, 'add_bundle_to_subscription_callback' ), 10, 3 );
 
 		/*
 		 * Bundles.
@@ -219,9 +222,6 @@ class WCS_ATT_Integrations {
 
 			// Add scheme data to runtime price cache hashes.
 			add_filter( 'woocommerce_bundle_prices_hash', array( __CLASS__, 'bundle_prices_hash' ), 10, 2 );
-
-			// Add bundle to subscription.
-			add_filter( 'wscatt_add_product_to_subscription_callback', array( __CLASS__, 'add_product_bundle_to_subscription_callback' ), 10, 2 );
 		}
 
 		/*
@@ -241,9 +241,6 @@ class WCS_ATT_Integrations {
 
 			// Add scheme data to runtime price cache hashes.
 			add_filter( 'woocommerce_composite_prices_hash', array( __CLASS__, 'composite_prices_hash' ), 10, 2 );
-
-			// Add composite to subscription.
-			add_filter( 'wscatt_add_product_to_subscription_callback', array( __CLASS__, 'add_composite_product_to_subscription_callback' ), 10, 2 );
 		}
 	}
 
@@ -579,11 +576,25 @@ class WCS_ATT_Integrations {
 	 * @since  2.1.0
 	 *
 	 * @param  WC_Subscription  $subscription
-	 * @param  WC_Product       $product
-	 * @param  int              $quantity
+	 * @param  array            $cart_item
+	 * @param  WC_Cart          $recurring_cart
 	 */
-	public static function add_bundle_to_order( $subscription, $product, $quantity ) {
-		return WC_PB()->order->add_bundle_to_order( $product, $subscription, $quantity, array( 'configuration' => WC_PB()->cart->get_posted_bundle_configuration( $product ) ) );
+	public static function add_bundle_to_order( $subscription, $cart_item, $recurring_cart ) {
+
+		$configuration = $cart_item[ 'stamp' ];
+
+		// Copy child item totals over from recurring cart.
+		foreach ( wc_pb_get_bundled_cart_items( $cart_item, $recurring_cart->cart_contents ) as $child_cart_item_key => $child_cart_item ) {
+
+			$bundled_item_id = $child_cart_item[ 'bundled_item_id' ];
+
+			$configuration[ $bundled_item_id ][ 'args' ] = array(
+				'subtotal' => $child_cart_item[ 'line_total' ],
+				'total'    => $child_cart_item[ 'line_subtotal' ]
+			);
+		}
+
+		return WC_PB()->order->add_bundle_to_order( $cart_item[ 'data' ], $subscription, $cart_item[ 'quantity' ], array( 'configuration' => $configuration ) );
 	}
 
 	/**
@@ -592,11 +603,25 @@ class WCS_ATT_Integrations {
 	 * @since  2.1.0
 	 *
 	 * @param  WC_Subscription  $subscription
-	 * @param  WC_Product       $product
-	 * @param  int              $quantity
+	 * @param  array            $cart_item
+	 * @param  WC_Cart          $recurring_cart
 	 */
-	public static function add_composite_to_order( $subscription, $product, $quantity ) {
-		return WC_CP()->order->add_composite_to_order( $product, $subscription, $quantity, array( 'configuration' => WC_CP()->cart->get_posted_composite_configuration( $product ) ) );
+	public static function add_composite_to_order( $subscription, $cart_item, $recurring_cart ) {
+
+		$configuration = $cart_item[ 'composite_data' ];
+
+		// Copy child item totals over from recurring cart.
+		foreach ( wc_cp_get_composited_cart_items( $cart_item, $recurring_cart->cart_contents ) as $child_cart_item_key => $child_cart_item ) {
+
+			$component_id = $child_cart_item[ 'composite_item' ];
+
+			$configuration[ $component_id ][ 'args' ] = array(
+				'subtotal' => $child_cart_item[ 'line_total' ],
+				'total'    => $child_cart_item[ 'line_subtotal' ]
+			);
+		}
+
+		return WC_CP()->order->add_composite_to_order( $cart_item[ 'data' ], $subscription, $cart_item[ 'quantity' ], array( 'configuration' => $configuration ) );
 	}
 
 	/*
@@ -1086,21 +1111,54 @@ class WCS_ATT_Integrations {
 
 	/**
 	 * Don't attempt to increment the quantity of bundle-type subscription items when adding to an existing subscription.
+	 * Also omit child items -- they'll be added by their parent.
 	 *
 	 * @since  2.1.0
 	 *
-	 * @param  false|WC_Order_Item_Product  $found_item
-	 * @param  WC_Product                   $product
+	 * @param  false|WC_Order_Item_Product  $found_order_item
+	 * @param  array                        $matching_cart_item
+	 * @param  WC_Cart                      $recurring_cart
 	 * @param  WC_Subscription              $subscription
 	 * @return false|WC_Order_Item_Product
 	 */
-	public static function found_bundle_in_subscription( $found_item, $product, $subscription ) {
+	public static function found_bundle_in_subscription( $found_order_item, $matching_cart_item, $recurring_cart, $subscription ) {
 
-		if ( $found_item && self::is_bundle_type_product( $product ) ) {
-			$found_item = false;
+		if ( $found_order_item ) {
+			if ( self::is_bundle_type_product( $matching_cart_item[ 'data' ] ) ) {
+				$found_order_item = false;
+			} elseif ( self::is_bundle_type_cart_item( $matching_cart_item,$recurring_cart->cart_contents ) ) {
+				$found_order_item = false;
+			}
 		}
 
-		return $found_item;
+		return $found_order_item;
+	}
+
+	/**
+	 * Return 'add_bundle_to_order' as a callback for adding bundles to subscriptions.
+	 * Do not add child items as they'll be added by their parent.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array    $callback
+	 * @param  array    $cart_item
+	 * @param  WC_Cart  $recurring_cart
+	 */
+	public static function add_bundle_to_subscription_callback( $callback, $cart_item, $recurring_cart ) {
+
+		if ( self::is_bundle_type_container_cart_item( $cart_item, $recurring_cart->cart_contents ) ) {
+
+			if ( $cart_item[ 'data' ]->is_type( 'bundle' ) ) {
+				$callback = array( __CLASS__, 'add_bundle_to_order' );
+			} elseif ( $cart_item[ 'data' ]->is_type( 'composite' ) ) {
+				$callback = array( __CLASS__, 'add_composite_to_order' );
+			}
+
+		} elseif ( self::is_bundle_type_cart_item( $cart_item, $recurring_cart->cart_contents ) ) {
+			$callback = null;
+		}
+
+		return $callback;
 	}
 
 	/*
@@ -1146,23 +1204,6 @@ class WCS_ATT_Integrations {
 		}
 
 		return $hash;
-	}
-
-	/**
-	 * Return 'add_bundle_to_order' as a callback for adding bundles to subscriptions.
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  array       $callback
-	 * @param  WC_Product  $product
-	 */
-	public static function add_product_bundle_to_subscription_callback( $callback, $product ) {
-
-		if ( $product->is_type( 'bundle' ) ) {
-			$callback = array( __CLASS__, 'add_bundle_to_order' );
-		}
-
-		return $callback;
 	}
 
 	/*
@@ -1254,23 +1295,6 @@ class WCS_ATT_Integrations {
 		}
 
 		return $hash;
-	}
-
-	/**
-	 * Return 'add_composite_to_order' as a callback for adding bundles to subscriptions.
-	 *
-	 * @since  2.1.0
-	 *
-	 * @param  array       $callback
-	 * @param  WC_Product  $product
-	 */
-	public static function add_composite_product_to_subscription_callback( $callback, $product ) {
-
-		if ( $product->is_type( 'composite' ) ) {
-			$callback = array( __CLASS__, 'add_composite_to_order' );
-		}
-
-		return $callback;
 	}
 
 	/*

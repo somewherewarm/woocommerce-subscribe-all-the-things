@@ -70,6 +70,7 @@ class WCS_ATT_Display {
 
 			$params = array(
 				'i18n_update_cart_sub_error' => __( 'Failed to update your cart. If this issue persists, please re-load the page and try again.', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_subs_load_error'       => __( 'Failed to load matching subscriptions. If this issue persists, please re-load the page and try again.', 'woocommerce-subscribe-all-the-things' ),
 				'update_cart_option_nonce'   => wp_create_nonce( 'wcsatt_update_cart_option' ),
 				'wc_ajax_url'                => WC_AJAX::get_endpoint( "%%endpoint%%" )
 			);

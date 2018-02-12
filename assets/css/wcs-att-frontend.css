@@ -91,4 +91,69 @@ ul.wcsatt-options-cart {
 	min-width: 180px;
 }
 
+/* Add Cart to Subscription */
+
+.wcsatt-add-cart-to-subscription-wrapper {
+	margin-bottom: 2em;
+}
+
+.wcsatt-add-cart-to-subscription-intro {
+	font-style: italic;
+	letter-spacing: 1px;
+	font-size: 1.25em;
+	line-height: 1.25em;
+	margin: 1.5em;
+	text-align: center;
+	font-weight: 400;
+}
+
+.wcsatt-add-cart-to-subscription-action-wrapper {
+	font-size: 1.3em;
+	position: relative;
+}
+
+.wcsatt-add-cart-to-subscription-action-wrapper label {
+	font-weight: 300;
+	cursor: pointer;
+	display: block;
+}
+
+.wcsatt-add-cart-to-subscription-action-input {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+	margin-right: 0;
+}
+
+.wcsatt-add-cart-to-subscription-options:before {
+	display: table;
+	clear: both;
+	content: '';
+}
+
+.wcsatt-add-cart-to-subscription-options table.my_account_orders {
+	margin-bottom: 0;
+}
+
+.wcsatt-add-cart-to-subscription-options .button.add:after {
+	font-family: FontAwesomeSATT;
+	content: "\f067";
+	margin-left: 0.5em;
+	line-height: 0.9em;
+	font-size: 0.9em;
+}
+
+.wcsatt-add-cart-to-subscription-options .subscription-status {
+	display: none;
+}
+
+.wcsatt-add-cart-to-subscription-options .subscription-actions {
+	min-width: 180px;
+}
+
+form.wcsatt-add-cart-to-subscription-form {
+	margin: 0 !important;
 }
