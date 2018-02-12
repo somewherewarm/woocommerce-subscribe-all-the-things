@@ -32,8 +32,8 @@ class WCS_ATT_Display_Cart {
 	 */
 	private static function add_hooks() {
 
-		// Display a "Subscribe to Cart" section in the cart.
-		add_action( 'woocommerce_before_cart_totals', array( __CLASS__, 'show_subscribe_to_cart_prompt' ) );
+		// Displays a "Subscribe to Cart" section in the cart.
+		add_action( 'woocommerce_before_cart_totals', array( __CLASS__, 'show_cart_subscription_options' ) );
 
 		// Use radio buttons to mark a cart item as a one-time sale or as a subscription.
 		add_filter( 'woocommerce_cart_item_price', array( __CLASS__, 'show_cart_item_subscription_options' ), 1000, 3 );
@@ -191,9 +191,11 @@ class WCS_ATT_Display_Cart {
 	 * Show a "Subscribe to Cart" section in the cart.
 	 * Visible only when all cart items have a common 'cart/order' subscription scheme.
 	 *
+	 * @since  2.1.0
+	 *
 	 * @return void
 	 */
-	public static function show_subscribe_to_cart_prompt() {
+	public static function show_cart_subscription_options() {
 
 		// Show cart/order level options only if all cart items share a common cart/order level subscription scheme.
 		if ( $subscription_schemes = WCS_ATT_Cart::get_cart_subscription_schemes( 'cart-display' ) ) {
@@ -256,6 +258,22 @@ class WCS_ATT_Display_Cart {
 				'options' => $options,
 			), false, WCS_ATT()->plugin_path() . '/templates/' );
 		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Show a "Subscribe to Cart" section in the cart.
+	 *
+	 * @return void
+	 */
+	public static function show_subscribe_to_cart_prompt() {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Display_Cart::show_cart_subscription_options()' );
+		return self::show_cart_subscription_options( $product );
 	}
 }
 
