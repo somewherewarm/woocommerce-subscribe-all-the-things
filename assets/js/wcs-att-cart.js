@@ -79,7 +79,7 @@ jQuery( function( $ ) {
 			$add_to_subscription         = $( this ),
 			$add_to_subscription_wrapper = $add_to_subscription.closest( '.wcsatt-add-cart-to-subscription-wrapper' ),
 			$add_to_subscription_options = $add_to_subscription_wrapper.find( '.wcsatt-add-cart-to-subscription-options' ),
-			$scheme_input                = $cart_totals.find( '.wcsatt-options-cart [name^=convert_to_sub]' )
+			$scheme_input                = $cart_totals.find( '.wcsatt-options-cart [name^=convert_to_sub]' ),
 			is_checked                   = $add_to_subscription.is( ':checked' ),
 			selected_scheme              = $scheme_input.val();
 

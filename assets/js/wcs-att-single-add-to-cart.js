@@ -420,7 +420,7 @@
 
 		this.get_product_id = function() {
 			return $product_form.find( '.wcsatt-add-to-subscription-wrapper' ).data( 'product_id' );
-		}
+		};
 	};
 
 	// Product Bundles integration.
