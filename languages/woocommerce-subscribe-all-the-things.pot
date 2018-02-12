@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-dev\n"
+"Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-beta.1\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-02-12 14:52:05+00:00\n"
+"POT-Creation-Date: 2018-02-12 15:37:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -309,28 +309,28 @@ msgstr ""
 msgid "Choose a subscription plan:"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:75
-#: woocommerce-subscribe-all-the-things.php:84
+#: woocommerce-subscribe-all-the-things.php:78
+#: woocommerce-subscribe-all-the-things.php:87
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:221
+#: woocommerce-subscribe-all-the-things.php:224
 msgid ""
 "WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
 "order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:231
+#: woocommerce-subscribe-all-the-things.php:234
 msgid ""
 "WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
 "version %s+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:297
+#: woocommerce-subscribe-all-the-things.php:300
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:297
+#: woocommerce-subscribe-all-the-things.php:300
 msgid "%s and %s"
 msgstr ""
 
