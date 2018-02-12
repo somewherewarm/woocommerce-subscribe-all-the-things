@@ -23,6 +23,11 @@ li .no-price span.subscription-details:first-letter, li span.one-time-option-det
 	text-transform: uppercase;
 }
 
+a.wcs-switch-link {
+	display: table;
+	margin-top: 1em;
+}
+
 /* Single-Product */
 
 ul.wcsatt-options-product {

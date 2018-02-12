@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				 *
 				 * @since  2.1.0
 				 *
-				 * @hooked WCS_ATT_Add::display_subscriptions_matching_cart - 10
+				 * @hooked WCS_ATT_Manage_Add::display_subscriptions_matching_cart - 10
 				 */
 				do_action( 'wcsatt_display_subscriptions_matching_cart' );
 			?>
