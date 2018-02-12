@@ -40,6 +40,9 @@ class WCS_ATT_Order {
 
 		// Save subscription scheme in subscription item meta so it can be re-applied later.
 		add_action( 'woocommerce_checkout_create_order_line_item', array( __CLASS__, 'save_subscription_scheme_meta' ), 10, 3 );
+
+		// Hide subscription scheme metadata in order line items.
+		add_filter( 'woocommerce_hidden_order_itemmeta', array( __CLASS__, 'hidden_order_item_meta' ) );
 	}
 
 	/*
@@ -147,6 +150,22 @@ class WCS_ATT_Order {
 			$scheme_key = false === $scheme_key ? '0' : $scheme_key;
 			wc_add_order_item_meta( $item_id, '_wcsatt_scheme', $scheme_key );
 		}
+	}
+
+	/**
+	 * Hides subscription scheme metadata.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  array  $hidden
+	 * @return array
+	 */
+	public static function hidden_order_item_meta( $hidden ) {
+
+		$current_meta = array( '_wcsatt_scheme');
+		$legacy_meta  = array( '_wcsatt_scheme_id' );
+
+		return array_merge( $hidden, $current_meta, $legacy_meta );
 	}
 }
 
