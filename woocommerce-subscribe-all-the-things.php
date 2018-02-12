@@ -25,7 +25,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WCS_ATT' ) ) :
 
-class WCS_ATT {
+// Abstract modules container class.
+require_once( 'includes/modules/abstract/class-wcs-att-abstract-module.php' );
+
+class WCS_ATT extends WCS_ATT_Abstract_Module {
 
 	/* Plugin version. */
 	const VERSION = '2.1.0-dev';
@@ -45,13 +48,6 @@ class WCS_ATT {
 	 * @since 1.0.0
 	 */
 	protected static $_instance = null;
-
-	/**
-	 * SATT modules.
-	 *
-	 * @var array
-	 */
-	protected $modules = array();
 
 	/**
 	 * Main WCS_ATT Instance.
@@ -146,9 +142,6 @@ class WCS_ATT {
 	 */
 	public function includes() {
 
-		// Abstract classes.
-		require_once( 'includes/modules/abstract/class-wcs-att-abstract-module.php' );
-
 		// Classes.
 		require_once( 'includes/class-wcs-att-core-compatibility.php' );
 		require_once( 'includes/class-wcs-att-integrations.php' );
@@ -159,19 +152,15 @@ class WCS_ATT {
 		require_once( 'includes/class-wcs-att-sync.php' );
 
 		// Modules.
-		require_once( 'includes/modules/class-wcs-att-management.php' );
-
-		$this->modules = apply_filters( 'wcsatt_modules', array(
-			'WCS_ATT_Management'
-		) );
-
-		foreach ( $this->modules as $module ) {
-			$module::initialize();
-		}
+		$this->register_modules();
+		$this->initialize_modules();
 
 		// Components.
 		require_once( 'includes/class-wcs-att-display.php' );
+		$this->register_component_hooks( 'display' );
+
 		require_once( 'includes/class-wcs-att-form-handler.php' );
+		$this->register_component_hooks( 'form' );
 
 		// Legacy stuff.
 		require_once( 'includes/legacy/class-wcs-att-schemes.php' );
@@ -183,14 +172,32 @@ class WCS_ATT {
 	}
 
 	/**
+	 * Include submodules.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return void
+	 */
+	protected function register_modules() {
+
+		require_once( 'includes/modules/class-wcs-att-management.php' );
+
+		$this->modules = apply_filters( 'wcsatt_modules', array(
+			'WCS_ATT_Management'
+		) );
+	}
+
+	/**
 	 * Register all module hooks associated with a named SATT component.
+	 *
+	 * @since  2.1.0
 	 *
 	 * @param  string  $component
 	 */
-	public function register_module_hooks( $component ) {
+	protected function register_component_hooks( $component ) {
 
 		foreach ( $this->modules as $module ) {
-			$module::register_hooks( $component );
+			$module->register_hooks( $component );
 		}
 	}
 
@@ -258,6 +265,7 @@ class WCS_ATT {
 	 * @return array
 	 */
 	public function get_supported_product_types() {
+
 		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 
@@ -269,6 +277,7 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function log( $message, $level ) {
+
 		$logger = wc_get_logger();
 		$logger->log( $level, $message, array( 'source' => 'wcs_att' ) );
 	}
