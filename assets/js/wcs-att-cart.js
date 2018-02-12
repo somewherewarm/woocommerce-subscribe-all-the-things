@@ -16,6 +16,7 @@ jQuery( function( $ ) {
 			$cart_table          = $( 'table.shop_table.cart' ),
 			$options             = $scheme_input.closest( '.wcsatt-options-cart' ),
 			$cart_wrapper        = $cart_table.closest( '.woocommerce' ),
+			$add_to_subscription = $cart_totals.find( 'input.wcsatt-add-cart-to-subscription-action-input' ),
 			selected_scheme      = $scheme_input.val(),
 			cart_referrer        = $cart_table.find( 'input[name="_wp_http_referer"]' ).val();
 
@@ -28,9 +29,10 @@ jQuery( function( $ ) {
 		} );
 
 		var data = {
-			security:            wcsatt_cart_params.update_cart_option_nonce,
-			subscription_scheme: selected_scheme,
-			action:              'wcsatt_update_cart_option'
+			security:                    wcsatt_cart_params.update_cart_option_nonce,
+			subscription_scheme:         selected_scheme,
+			add_to_subscription_checked: $add_to_subscription.is( ':checked' ) ? 'yes' : 'no',
+			action:                      'wcsatt_update_cart_option'
 		};
 
 		$.post( wcsatt_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', data.action ), data, function( response ) {
@@ -69,4 +71,59 @@ jQuery( function( $ ) {
 
 		} );
 	} );
+
+	// Load matching subscription schemes when checking the "Add to subscription" box.
+	$document.on( 'change', '.wcsatt-add-cart-to-subscription-action-input', function() {
+
+		var $cart_totals                 = $( 'div.cart_totals' ),
+			$add_to_subscription         = $( this ),
+			$add_to_subscription_wrapper = $add_to_subscription.closest( '.wcsatt-add-cart-to-subscription-wrapper' ),
+			$add_to_subscription_options = $add_to_subscription_wrapper.find( '.wcsatt-add-cart-to-subscription-options' ),
+			$scheme_input                = $cart_totals.find( '.wcsatt-options-cart [name^=convert_to_sub]' )
+			is_checked                   = $add_to_subscription.is( ':checked' ),
+			selected_scheme              = $scheme_input.val();
+
+		if ( is_checked ) {
+
+			$add_to_subscription_wrapper.block( {
+				message: null,
+				overlayCSS: {
+					background: '#fff',
+					opacity: 0.6
+				}
+			} );
+
+			var data = {
+				subscription_scheme:         selected_scheme,
+				add_to_subscription_checked: $add_to_subscription.is( ':checked' ) ? 'yes' : 'no',
+				action:                      'wcsatt_load_subscriptions_matching_cart'
+			};
+
+			$.post( wcsatt_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', data.action ), data, function( response ) {
+
+				if ( 'success' === response.result ) {
+
+					$add_to_subscription_options.html( response.html );
+					$add_to_subscription_wrapper.removeClass( 'closed' );
+					$add_to_subscription_wrapper.addClass( 'open' );
+					$add_to_subscription_options.slideDown( 200 );
+
+				} else {
+
+					window.alert( wcsatt_cart_params.i18n_subs_load_error );
+				}
+
+				$add_to_subscription_wrapper.unblock();
+
+			} );
+
+		} else {
+
+			$add_to_subscription_wrapper.removeClass( 'open' );
+			$add_to_subscription_wrapper.addClass( 'closed' );
+			$add_to_subscription_options.slideUp( 200 );
+		}
+
+	} );
+
 } );
