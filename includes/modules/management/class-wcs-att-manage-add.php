@@ -138,6 +138,10 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 					continue;
 				}
 
+				if ( ! $subscription->payment_method_supports( 'subscription_amount_changes' ) ) {
+					continue;
+				}
+
 				$matching_subscriptions[ $subscription_id ] = $subscription;
 			}
 		}
