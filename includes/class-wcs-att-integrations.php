@@ -184,7 +184,7 @@ class WCS_ATT_Integrations {
 		add_filter( 'wcsatt_cart_item_options', array( __CLASS__, 'container_item_options' ), 10, 4 );
 
 		/*
-		 * Subscriptions management: 'My Account > Subscriptions' view.
+		 * Subscriptions management: 'My Account > Subscriptions' actions.
 		 */
 
 		// Don't count bundle-type child items and hidden bundle-type container/child items.
@@ -198,6 +198,9 @@ class WCS_ATT_Integrations {
 
 		// Handle parent subscription line item re-additions under 'My Account > Subscriptions'.
 		add_action( 'wcs_user_readded_item', array( __CLASS__, 'user_readded_parent_subscription_item' ), 10, 2 );
+
+		// Bundle-type products don't support scheme or content switching just yet. OK?
+		add_filter( 'wcsatt_product_supports_feature', array( __CLASS__, 'bundle_supports_switching' ), 10, 4 );
 
 		/*
 		 * Subscriptions management: Add products/carts to subscriptions.
@@ -1042,6 +1045,26 @@ class WCS_ATT_Integrations {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Bundles and Composites don't support switching just yet.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  bool        $is_feature_supported
+	 * @param  WC_Product  $product
+	 * @param  string      $feature
+	 * @param  array       $args
+	 * @return bool
+	 */
+	public static function bundle_supports_switching( $is_feature_supported, $product, $feature, $args ) {
+
+		if ( 'subscription_scheme_switching' === $feature && self::is_bundle_type_product( $product ) ) {
+			$is_feature_supported = false;
+		}
+
+		return $is_feature_supported;
 	}
 
 	/*
