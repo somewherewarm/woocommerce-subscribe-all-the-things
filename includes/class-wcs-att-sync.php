@@ -37,9 +37,6 @@ class WCS_ATT_Sync {
 			// Subscription scheme synchronization options.
 			add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_sync_content' ), 20, 3 );
 
-			// Reword "Do not synchronise" to "Disabled".
-			add_filter( 'woocommerce_subscription_billing_period_ranges', array( __CLASS__, 'rename_subscription_billing_period_range_data' ) );
-
 			// Process and save the necessary meta.
 			add_filter( 'wcsatt_processed_scheme_data', array( __CLASS__, 'process_scheme_sync_data' ), 10, 2 );
 
@@ -85,6 +82,7 @@ class WCS_ATT_Sync {
 		// Synchronization.
 		if ( class_exists( 'WC_Subscriptions_Synchroniser' ) && WC_Subscriptions_Synchroniser::is_syncing_enabled() ) {
 
+			$billing_period_ranges     = self::rename_subscription_billing_period_range_data( WC_Subscriptions_Synchroniser::get_billing_period_ranges( $subscription_period ) );
 			$display_week_month_select = ! in_array( $subscription_period, array( 'month', 'week' ) ) ? 'display: none;' : '';
 			$display_annual_select     = 'year' !== $subscription_period ? 'display: none;' : '';
 
@@ -103,7 +101,7 @@ class WCS_ATT_Sync {
 						'id'          => '_satt_subscription_payment_sync_date_' . $index,
 						'class'       => 'wc_input_subscription_payment_sync select short',
 						'label'       => __( 'Synchronization', 'woocommerce-subscribe-all-the-things' ),
-						'options'     => WC_Subscriptions_Synchroniser::get_billing_period_ranges( $subscription_period ),
+						'options'     => $billing_period_ranges,
 						'name'        => 'wcsatt_schemes[' . $index . '][subscription_payment_sync_date]',
 						'description' => WC_Subscriptions_Synchroniser::$sync_description,
 						'desc_tip'    => true,
@@ -139,10 +137,14 @@ class WCS_ATT_Sync {
 	 * @param  array  $range_data
 	 * @return array
 	 */
-	public static function rename_subscription_billing_period_range_data( $range_data ) {
+	private static function rename_subscription_billing_period_range_data( $range_data ) {
 
-		foreach ( $range_data as $key => $data ) {
-			$range_data[ $key ][ 0 ] = __( 'Disabled', 'woocommerce-subscribe-all-the-things' );
+		if ( isset( $range_data[ 0 ] ) ) {
+			$range_data[ 0 ] = __( 'Disabled', 'woocommerce-subscribe-all-the-things' );
+		} elseif ( is_array( $range_data ) ) {
+			foreach ( $range_data as $key => $data ) {
+				$range_data[ $key ] = self::rename_subscription_billing_period_range_data( $data );
+			}
 		}
 
 		return $range_data;
@@ -188,7 +190,7 @@ class WCS_ATT_Sync {
 
 		if ( $screen_id === 'woocommerce_page_wc-settings' && isset( $_GET[ 'tab' ] ) && $_GET[ 'tab' ] === 'subscriptions' ) {
 
-			$billing_period_strings = WC_Subscriptions_Synchroniser::get_billing_period_ranges();
+			$billing_period_strings = self::rename_subscription_billing_period_range_data( WC_Subscriptions_Synchroniser::get_billing_period_ranges() );
 
 			$script_parameters[ 'syncOptions' ] = array(
 				'week'  => $billing_period_strings[ 'week' ],
