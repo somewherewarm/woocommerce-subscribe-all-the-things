@@ -1,0 +1,39 @@
+language: php
+
+notifications:
+    email: false
+
+branches:
+    only:
+        - master
+
+matrix:
+    fast_finish: true
+    include:
+    - php: 5.2
+      dist: precise
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=0
+    - php: 5.6
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=0
+    - php: 7.0
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=1
+    - php: 7.1
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=0
+
+before_script:
+    - bash tests/bin/install.sh wcsat_test root '' localhost $WP_VERSION release/3.2
+    - bash tests/bin/travis.sh before
+
+script:
+    - bash tests/bin/phpunit.sh
+
+    # Search for PHP syntax errors.
+    - find . \( -path ./tmp -o -path ./tests \) -prune -o \( -name '*.php' \) -exec php -lf {} \;
+
+after_script:
+    - bash tests/bin/travis.sh after
+
+env:
+    global:
+      secure: wWgfoUBaZmoW+QboxOD5d4Dw6+37e3Wafq/FaSSU9CEzE8/5bsRG/w1NCjmw7VsDMLp1h/MJiUNovuBEeYZR7asWAXqhWsTdYvI2jwUsXwJJtXeUnLcKavpQxKwNUL4pqVpLINv9eqav/gtF28voLs5VC40UK3LV2NHwEPyl8TV4wQRdIFThAEqilT76Cz4x63u5wICiPQlmZLTM9VRqK4IBd+1j+66Ut/R9bQlvbi1r6MKzI8s7xX29FtjFiKyLTMrqIKO2nm2jtLnykaREO2yvcVYZGErzm10gIJxFM86hkK11kiwz9vNy2b7kqv55Pe2MkwWfLjpxXtCKRHfYyKpXd9AjRp/dWD/DGiyPRTIY2QpfRLIifgjSw3h/c2Ce/Ybbx+maMuUVLjqfugv04JGa9FUfWV3xUqhZZCza3kYxsQp3fww5mYz2HeRkYRFmapIPu3ASGOVO/7sy3wSGQIrPJqFlulkEFM+l2EzLXceohnnF/Rm3ziAgweyhFosxxjLQEIluMDl8Mbk14dErmM5gqom7cVYMGoHiRa2KRlmVuGJPuiEaeIXUR63YxiUsHkTdUxWhsKG+Bd65dyjglzcobMAZkAKZFTtJqt/mVWeiAOG8Sm1ii9CU47TefiwbuDpjrfiQXTakwkElg3mBHZdiXxNr5FQWgicUZri9U5g=
+
