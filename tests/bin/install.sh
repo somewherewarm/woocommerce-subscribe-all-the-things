@@ -138,7 +138,7 @@ install_wcs() {
 	cd $INITIAL_DIR
 
 	if [ ! -d ../woocommerce-subscriptions ]; then
-        git clone https://github.com/Prospress/woocommerce-subscriptions.git ../woocommerce-subscriptions -b $WCS_VERSION
+        git clone https://$GITHUB_TOKEN@github.com/Prospress/woocommerce-subscriptions.git ../woocommerce-subscriptions -b $WCS_VERSION
     fi
 }
 
