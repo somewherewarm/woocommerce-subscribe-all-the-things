@@ -16,7 +16,7 @@
 class WCS_ATT_Product_Tests extends WCS_ATT_Test_Case {
 
 	/**
-	 * @covers WCS_ATT_Product_Schemes::is_subscription
+	 * @covers WCS_ATT_Product::is_subscription
 	 *
 	 * @since 2.0.0
 	 */
@@ -37,8 +37,8 @@ class WCS_ATT_Product_Tests extends WCS_ATT_Test_Case {
 	}
 
 	/**
-	 * @covers WCS_ATT_Product_Schemes::set_runtime_meta
-	 * @covers WCS_ATT_Product_Schemes::get_runtime_meta
+	 * @covers WCS_ATT_Product::set_runtime_meta
+	 * @covers WCS_ATT_Product::get_runtime_meta
 	 *
 	 * @since 2.0.0
 	 */
@@ -64,7 +64,7 @@ class WCS_ATT_Product_Tests extends WCS_ATT_Test_Case {
 	}
 
 	/**
-	 * @covers WCS_ATT_Product_Schemes::delete_runtime_meta
+	 * @covers WCS_ATT_Product::delete_runtime_meta
 	 *
 	 * @since 2.0.0
 	 */

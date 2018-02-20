@@ -1,0 +1,34 @@
+language: php
+
+notifications:
+    email: false
+
+branches:
+    only:
+        - master
+
+matrix:
+    fast_finish: true
+    include:
+    - php: 5.2
+      dist: precise
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=0 WP_TESTS_DIR=/tmp/wordpress-tests-lib
+    - php: 5.6
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=0 WP_TESTS_DIR=/tmp/wordpress-tests-lib
+    - php: 7.0
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=1 WP_TESTS_DIR=/tmp/wordpress-tests-lib
+    - php: 7.1
+      env: WP_VERSION=latest RUN_CODE_COVERAGE=0 WP_TESTS_DIR=/tmp/wordpress-tests-lib
+
+before_script:
+    - bash tests/bin/install.sh wcsat_test root '' localhost $WP_VERSION release/3.2
+    - bash tests/bin/travis.sh before
+
+script:
+    - bash tests/bin/phpunit.sh
+
+    # Search for PHP syntax errors.
+    - find . \( -path ./tmp -o -path ./tests \) -prune -o \( -name '*.php' \) -exec php -lf {} \;
+
+after_script:
+    - bash tests/bin/travis.sh after
