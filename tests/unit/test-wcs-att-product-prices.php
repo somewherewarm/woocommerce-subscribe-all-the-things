@@ -16,9 +16,9 @@
 class WCS_ATT_Product_Prices_Tests extends WCS_ATT_Test_Case {
 
 	/**
-	 * @covers WCS_ATT_Product_Price_Filters::filter_get_price
-	 * @covers WCS_ATT_Product_Price_Filters::filter_get_sale_price
-	 * @covers WCS_ATT_Product_Price_Filters::filter_get_regular_price
+	 * @covers WCS_ATT_Product_Price_Filters::filter_price
+	 * @covers WCS_ATT_Product_Price_Filters::filter_sale_price
+	 * @covers WCS_ATT_Product_Price_Filters::filter_regular_price
 	 * @covers WCS_ATT_Product_Prices::get_price
 	 * @covers WCS_ATT_Product_Prices::get_sale_price
 	 * @covers WCS_ATT_Product_Prices::get_regular_price
@@ -105,7 +105,7 @@ class WCS_ATT_Product_Prices_Tests extends WCS_ATT_Test_Case {
 	}
 
 	/**
-	 * @covers WCS_ATT_Product_Price_Filters::filter_get_price_html
+	 * @covers WCS_ATT_Product_Price_Filters::filter_price_html
 	 * @covers WCS_ATT_Product_Prices::get_price_html
 	 *
 	 * @since 2.0.0
