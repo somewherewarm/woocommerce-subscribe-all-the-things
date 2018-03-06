@@ -62,9 +62,10 @@ class WCS_ATT_Meta_Box_Product_Data {
 	public static function satt_product_data_tab( $tabs ) {
 
 		$tabs[ 'satt' ] = array(
-			'label'  => __( 'Subscriptions', 'woocommerce-subscribe-all-the-things' ),
-			'target' => 'wcsatt_data',
-			'class'  => array( 'cart_subscription_options', 'cart_subscriptions_tab', 'show_if_simple', 'show_if_variable', 'show_if_bundle', 'hide_if_subscription', 'hide_if_variable-subscription' )
+			'label'    => __( 'Subscriptions', 'woocommerce-subscribe-all-the-things' ),
+			'target'   => 'wcsatt_data',
+			'priority' => 100,
+			'class'    => array( 'cart_subscription_options', 'cart_subscriptions_tab', 'show_if_simple', 'show_if_variable', 'show_if_bundle', 'hide_if_subscription', 'hide_if_variable-subscription' )
 		);
 
 		return $tabs;
