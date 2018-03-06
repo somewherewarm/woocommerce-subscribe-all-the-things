@@ -259,6 +259,7 @@ class WCS_ATT_Admin {
 			$params = array(
 				'add_subscription_scheme_nonce' => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
 				'subscription_lengths'          => wcs_get_subscription_ranges(),
+				'i18n_do_no_sync'               => __( 'Disabled', 'woocommerce-subscribe-all-the-things' ),
 				'wc_ajax_url'                   => admin_url( 'admin-ajax.php' ),
 				'post_id'                       => is_object( $post ) ? $post->ID : '',
 				'wc_plugin_url'                 => WC()->plugin_url()

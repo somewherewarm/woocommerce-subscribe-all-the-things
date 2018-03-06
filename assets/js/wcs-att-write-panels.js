@@ -124,6 +124,9 @@ jQuery( function($) {
 				$syncWeekMonthSelect.empty();
 
 				$.each( WCSubscriptions.syncOptions[ billingPeriod ], function( key, description ) {
+					if ( ! key ) {
+						description = wcsatt_admin_params.i18n_do_no_sync;
+					}
 					$syncWeekMonthSelect.append( $('<option></option>' ).attr( 'value', key ).text( description ) );
 				} );
 
