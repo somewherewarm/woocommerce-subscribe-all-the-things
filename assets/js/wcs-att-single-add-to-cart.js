@@ -222,7 +222,8 @@
 		var View = Backbone.View.extend( {
 
 			$el_content: false,
-			product:     false,
+
+			product: false,
 
 			block_params: {
 				message:    null,
@@ -235,7 +236,7 @@
 			},
 
 			events: {
-				'click .wcsatt-add-to-subscription-action': 'action_link_clicked'
+				'click .wcsatt-add-to-subscription-action-input': 'action_link_clicked'
 			},
 
 			// 'Add to subscription' link 'click' event handler.
