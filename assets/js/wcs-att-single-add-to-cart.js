@@ -76,6 +76,8 @@
 
 			$el_options: false,
 
+			variation: false,
+
 			events: {
 				'change .wcsatt-options-wrapper input': 'active_scheme_changed',
 				'show_variation': 'variation_found',
@@ -86,23 +88,35 @@
 				this.model.set_active_scheme( e.currentTarget.value );
 			},
 
-			variation_found: function() {
+			variation_found: function( event, variation ) {
+				this.variation = variation;
 				this.initialize( { $el_options: this.$el.find( '.wcsatt-options-wrapper' ) } );
 			},
 
+			variation_selected: function() {
+				return false !== this.variation;
+			},
+
 			reset_schemes: function() {
+				this.variation = false;
 				this.model.set_schemes( {} );
 				this.model.set_active_scheme( false );
+			},
+
+			has_schemes: function() {
+				return this.$el_options.length > 0;
 			},
 
 			find_schemes: function() {
 
 				var schemes = {};
 
-				this.$el_options.find( '.subscription-option input' ).each( function() {
-					var scheme_data = $( this ).data( 'custom_data' );
-					schemes[ scheme_data.subscription_scheme.key ] = scheme_data.subscription_scheme;
-				} );
+				if ( this.has_schemes() ) {
+					this.$el_options.find( '.subscription-option input' ).each( function() {
+						var scheme_data = $( this ).data( 'custom_data' );
+						schemes[ scheme_data.subscription_scheme.key ] = scheme_data.subscription_scheme;
+					} );
+				}
 
 				return schemes;
 			},
@@ -113,12 +127,25 @@
 
 				this.model.set_schemes( this.find_schemes() );
 
-				var active_scheme_option = this.$el_options.find( 'input[value="' + this.model.get_active_scheme_key() + '"]' );
+				if ( this.variation_selected() ) {
 
-				if ( active_scheme_option.length > 0 ) {
-					active_scheme_option.prop( 'checked', true );
+					if ( this.has_schemes() ) {
+
+						// Maintain the selected scheme between variation changes.
+						var active_scheme_option = this.$el_options.find( 'input[value="' + this.model.get_active_scheme_key() + '"]' );
+
+						if ( active_scheme_option.length > 0 ) {
+							active_scheme_option.prop( 'checked', true );
+						} else {
+							this.$el_options.find( 'input:checked' ).change();
+						}
+
+					} else {
+						this.model.set_active_scheme( null );
+					}
+
 				} else {
-					this.$el_options.find( 'input:checked' ).change();
+					this.model.set_active_scheme( false );
 				}
 			}
 
@@ -270,13 +297,14 @@
 			// Active scheme changed.
 			active_scheme_changed: function() {
 
-				var view = this;
+				var view         = this,
+					update_model = true;
 
 				if ( false === this.product.schemes_model.get_active_scheme_key() || this.product.schemes_model.is_active_scheme_prorated() ) {
+					update_model = false;
+				}
 
-					this.$el.slideUp( 200 );
-
-				} else {
+				if ( update_model ) {
 
 					if ( view.$el.hasClass( 'open' ) && view.model.get_period() !== view.product.schemes_model.get_active_scheme_period() ) {
 
@@ -294,6 +322,10 @@
 					setTimeout( function() {
 						view.$el.slideDown( 200 );
 					}, 50 );
+
+				} else {
+
+					this.$el.slideUp( 200 );
 				}
 			},
 

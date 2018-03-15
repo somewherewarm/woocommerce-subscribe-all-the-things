@@ -97,13 +97,19 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 			return;
 		}
 
-		$subscription_options_visible = false;
+		$subscription_options_visible = true;
 
 		/*
 		 * Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
 		 * The add-to-subscription template is displayed when a variation is found.
 		 */
-		if ( ! $product->is_type( 'variable' ) ) {
+		if ( $product->is_type( 'variable' ) ) {
+
+			$subscription_options_visible = false;
+
+		} elseif ( WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_matching_subscription' ) ) {
+
+			$subscription_options_visible = false;
 
 			$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
 			$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
@@ -188,9 +194,15 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 			wp_send_json( $failure );
 		}
 
+		// Keep the sneaky folks out.
+		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' ) ) {
+			wp_send_json( $failure );
+		}
+
 		$scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
 
-		if ( ! $scheme ) {
+		// We expect a scheme key to be posted when it's only possible to add the product to matching subscriptions.
+		if ( ! $scheme && WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_matching_subscription' ) ) {
 			wp_send_json( $failure );
 		}
 
@@ -250,10 +262,6 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 		}
 
 		if ( empty( $posted_data[ 'subscription_id' ] ) ) {
-			return;
-		}
-
-		if ( empty( $posted_data[ 'subscription_scheme' ] ) ) {
 			return;
 		}
 
@@ -319,6 +327,32 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 		$subscription_scheme = $posted_data[ 'subscription_scheme' ];
 		$product             = self::$add_to_subscription_args[ 'product' ];
 		$args                = array_diff_key( self::$add_to_subscription_args, array( 'product' => 1 ) );
+
+		// Keep the sneaky folks out.
+		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_subscription' ) ) {
+			return;
+		}
+
+		// A subscription scheme key should be posted already if we are supposed to do any matching.
+		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_matching_subscription' ) ) {
+			if ( empty( $subscription_scheme ) ) {
+				return;
+			}
+		// Extract the scheme details from the subscription and create a dummy scheme.
+		} else {
+
+			$subscription_scheme_object = new WCS_ATT_Scheme( array(
+				'context' => 'product',
+				'data'    => array(
+					'subscription_period'          => $subscription->get_billing_period(),
+					'subscription_period_interval' => $subscription->get_billing_interval()
+				)
+			) );
+
+			$subscription_scheme = $subscription_scheme_object->get_key();
+
+			WCS_ATT_Product_Schemes::set_subscription_schemes( $product, array( $subscription_scheme => $subscription_scheme_object ) );
+		}
 
 		// Set scheme on product object for later reference.
 		WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $subscription_scheme );

@@ -134,7 +134,7 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 		if ( ! empty( $subscriptions ) ) {
 			foreach ( $subscriptions as $subscription_id => $subscription ) {
 
-				if ( ! $scheme->matches_subscription( $subscription ) ) {
+				if ( is_object( $scheme ) && ! $scheme->matches_subscription( $subscription ) ) {
 					continue;
 				}
 

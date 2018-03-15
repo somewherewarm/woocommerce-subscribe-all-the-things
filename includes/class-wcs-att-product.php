@@ -126,15 +126,38 @@ class WCS_ATT_Product {
 			break;
 			case 'subscription_management_add_to_subscription':
 
+				/*
+				 * By default, any product can be added to any subscription as long as it's purchasable.
+				 * To prevent this, use the 'wcsatt_product_supports_feature' filter and require that:
+				 *
+				 * if ( 'subscription_management_add_to_subscription' === $feature ) {
+				 *     $is_feature_supported = $is_feature_supported && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+				 * }
+				 */
+
 				if ( $product->is_purchasable() ) {
-					$is_feature_supported = false === $product->is_type( 'mix-and-match' ) && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+					$is_feature_supported = false === $product->is_type( 'mix-and-match' );
 				}
+
+			break;
+			case 'subscription_management_add_to_matching_subscription':
+
+				$is_feature_supported = self::supports_feature( $product, 'subscription_management_add_to_subscription' ) && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
 
 			break;
 		}
 
-		// Only possible to turn off features :)
-		return $is_feature_supported ? apply_filters( 'wcsatt_product_supports_feature', $is_feature_supported, $product, $feature, $args ) : $is_feature_supported;
+		/**
+		 * 'wcsatt_product_supports_feature' filter.
+		 *
+		 * @since  2.1.0
+		 *
+		 * @param  bool        $is_feature_supported
+		 * @param  WC_Product  $product
+		 * @param  string      $feature
+		 * @param  array       $args
+		 */
+		return apply_filters( 'wcsatt_product_supports_feature', $is_feature_supported, $product, $feature, $args );
 	}
 
 	/*
