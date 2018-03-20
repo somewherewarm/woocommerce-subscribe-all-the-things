@@ -1,87 +1,121 @@
-# WooCommerce Subscribe All the Things
-
-WooCommerce Subscribe All the Things is a mini-extension for [WooCommerce Subscriptions](http://woocommerce.com/products/woocommerce-subscriptions/) that allows you to add subscription options to non-subscription product types, such as Simple and Variable products.
+# WooCommerce Subscribe All The Things
 
 [![Build Status](https://travis-ci.org/Prospress/woocommerce-subscribe-all-the-things.svg?branch=master)](https://travis-ci.org/Prospress/woocommerce-subscribe-all-the-things)
 [![codecov](https://codecov.io/gh/Prospress/woocommerce-subscribe-all-the-things/branch/master/graph/badge.svg)](https://codecov.io/gh/Prospress/woocommerce-subscribe-all-the-things)
 
-The plugin has been tested and can be used to add subscription options to [Product Bundles](http://woocommerce.com/products/product-bundles/), [Composite Products](http://woocommerce.com/products/composite-products/) and [Mix and Match Products](http://woocommerce.com/products/woocommerce-mix-and-match-products/).
+WooCommerce Subscribe All The Things is a mini-extension for [WooCommerce Subscriptions](http://woocommerce.com/products/woocommerce-subscriptions/) that allows you to add subscription options to non-subscription product types, such as Simple and Variable products. The plugin has been tested with and can be used to add subscription options to [Product Bundles](http://woocommerce.com/products/product-bundles/), [Composite Products](http://woocommerce.com/products/composite-products/) and [Mix and Match Products](http://woocommerce.com/products/woocommerce-mix-and-match-products/).
 
-![Simple Product with Subscription Options](https://cloud.githubusercontent.com/assets/235523/11986954/8a6cd3d2-a98b-11e5-9bf8-77f2c31480b8.png)
+<p align="center">
+	<figure>
+		<img src="https://user-images.githubusercontent.com/1783726/37648362-6aaeab16-2c37-11e8-84c1-aec208e9f447.png" alt="Simple Product with Subscription Options"/>
+		<figcaption>Simple Product with Subscription Options.</figcaption>
+	</figure>
+</p>
 
-## Cart Subscriptions
+## Features
 
-In addition to adding subscription options to individual products, Subscribe All the Things can be used to **offer options for subscribing to an entire cart** before checkout.
+Capture more residual revenue by offering existing products on a recurring basis. Subscribe All The Things allows you to add subscription options to:
 
-![Example Cart Subscription Options](https://cldup.com/brEjbe3wDX.png)
+* Any Simple or Variable product -- no need to introduce new SKUs or complicate inventory management.
+* Grouped product types such as [Composite Products](https://woocommerce.com/products/composite-products/) and [Product Bundles](https://woocommerce.com/products/product-bundles/).
+* The cart page -- give customers the option to purchase their entire cart on a recurring billing and shipping schedule.
+
+<p align="center">
+	<figure>
+		<img src="https://user-images.githubusercontent.com/1783726/37654834-1e213f24-2c4c-11e8-85ee-c1605325bb92.png" alt="Subscription Options Offered in the Cart"/>
+		<figcaption>Subscription Options Offered in the Cart.</figcaption>
+	</figure>
+</p>
+
+To incentivize customers to subscribe, you can even assign a different/discounted product price to each subscription option:
+
+<p align="center">
+	<figure>
+		<img src="https://user-images.githubusercontent.com/1783726/37655470-11cab4c4-2c4e-11e8-8d24-6106c88c742d.png" alt="Simple Product with Discounted Subscription Options"/>
+		<figcaption>Simple Product with Discounted Subscription Options.</figcaption>
+	</figure>
+</p>
+
+Additionally, Subscribe All The Things makes it possible to **add products and entire carts to existing subscriptions**:
+
+* Products without subscription options can be added to **any active subscription**.
+* Products with subscription options can be added only to active subscriptions with a **matching billing schedule**.
+
+<p align="center">
+	<figure>
+		<img src="https://user-images.githubusercontent.com/1783726/37660715-b4447bc4-2c5b-11e8-85bd-629630754850.png" alt="Adding a Product to an Existing Susbcription."/>
+		<figcaption>Adding a Product to an Existing Susbcription.</figcaption>
+	</figure>
+</p>
+
 
 # Guide
 
 ### Requirements
 
-In order to use the extension, you will need:
+To use the plugin, you will need:
 
 * WooCommerce Subscriptions 2.1 or newer.
 * WooCommerce 3.0 or newer.
 * A sense of adventure.
 
-**Note:** We do not recommend using Subscribe All the Things on live sites. While we do our best to add new features, squash bugs, and keep the plugin up-to-date, **commercial use of the plugin is strongly discouraged**: Support inquiries may not be answered in a timely manner and critical issues may not be resolved promptly, as all development/support time is currently being donated.
+**Note:** While we do our best to add new features, squash bugs and keep the plugin updated, we currently **do not offer a dedicated, premium support channel** for Subscribe All The Things. If you decide to install it on a production site, please remember that general support inquiries may not be answered in a timely manner and critical issues may not be resolved promptly.
 
 ### Installation
 
-1. Upload the plugin's files to the `/wp-content/plugins/` directory of your WordPress site.
-1. Activate the plugin through the **Plugins** menu in WordPress.
+1. Go to **WordPress Admin &gt; Plugins &gt; Add New**.
+2. Click **Upload Plugin** at the top.
+3. **Choose File** and select the .zip file you downloaded in Step 1.
+4. Click **Install Now** and **Activate** the plugin.
 
-## Usage: Product Subscription Schemes
+### Product Subscription Options
 
 To add subscription options to a non-subscription product:
 
-1. Go to the **WooCommerce > Product > Add/Edit Product** administration screen.
-1. Enter product details after choosing a supported product type (subscription product types are unsupported).
 1. Navigate to **Product Data > Subscriptions**.
-1. Add subscription options.
-1. **Optional**: Choose whether the product should default to a one-time or recurring purchase.
-1. **Optional**: Enter custom prompt, this is the text displayed above the subscription options to the customer on the product page.
-
-![Example Subscription Options on Simple Product](https://cloud.githubusercontent.com/assets/235523/11986952/860ba32c-a98b-11e5-84c5-b1035d4d3be1.png)
+2. Click **Add Option** to add subscription options.
+3. **Optional**: Check **Force Subscription** if the product must be available on a recurring basis only.
+4. **Optional**: If applicable, define whether the product should default to a one-time or recurring purchase using the **Default to** option.
+5. **Optional**: Enter a custom **Subscription prompt** -- this is the text displayed above the subscription options on the product page.
 
 #### Subscription Discounts
 
-You can optionally offer a discounted price unique to each subscription option. This is a great way to provide an incentive for the customer to subscribe to a product.
+You can optionally offer a discounted price that's unique to each subscription option. This is a great way to provide an incentive for customers to subscribe to a product.
 
-To offer subscription discounts:
+To offer subscription discounts locate the **Price** option and select either **Inherit from product** or **Override product**:
 
-1. Go to the **WooCommerce > Product > Add/Edit Product** administration screen.
-1. Click the **Subscriptions** tab in the **Product Data** meta box.
-1. Click **Subscription Price** select.
-1. Select the **Inherit from product** or **Override product** option:
-	* If you choose **Inherit from product**, enter a discounted amount as a percentage (without the `%` symbol), for example, to offer a price discounted by 10%, enter `10`.
-	* If you choose **Override product**, enter a new price and optional sale price.
+* **Inherit from product** allows you to enter a discounted amount as a percentage (without the `%` symbol) -- for example, to offer a price discounted by 10%, enter `10`.
+* **Override product** allows you to override the default **Regular Price** and **Sale Price** of the product.
 
-![Example Custom Prices for Subscription Options on a Simple Product](https://cldup.com/a_dlYS0yFr.png)
+<p align="center">
+	<figure>
+		<img src="https://user-images.githubusercontent.com/1783726/37664257-996da444-2c63-11e8-8b6b-c24aedd92ef3.png" alt="Adding and Configuring Subscription Options"/>
+		<figcaption>Adding and Configuring Subscription Options.</figcaption>
+	</figure>
+</p>
 
-## Usage: Subscribe to Cart
+
+### Cart Subscription Options
 
 To offer cart subscription options:
 
-1. Go to the **WooCommerce > Settings** administration screen.
-1. Click the **Subscriptions** tab to open the subscription settings page.
-1. Scroll down to the **Subscribe to Cart** section.
-1. Add subscription options.
-
-![Administration Screen for Subscribe to Cart Settings](https://cldup.com/QMFX5DUlnY.png)
+1. Go to **WooCommerce > Settings**.
+2. Click the **Subscriptions** tab to open the subscription settings page.
+3. Scroll down to the **Subscribe to Cart** section.
+4. Click **Add Option** to add some subscription options.
 
 **Note:** If you do not wish to offer cart subscription options, leave this section empty.
 
+
 # Support
 
-Subscribe All the Things is released freely and openly to get feedback on experimental ideas and approaches to solving known limitations in the WooCommerce Subscriptions plugin. A lot of features available in Subscriptions are not supported, and you may have questions about how to use certain features with it.
+Subscribe All The Things is released freely and openly to get feedback on experimental ideas and approaches to solving known limitations in WooCommerce Subscriptions. However, some features available in WooCommerce Subscriptions are not supported by Subscribe All The Things.
 
-These questions and other issues with this plugin are not supported via the [WooCommerce Helpdesk](http://woocommerce.com/). As the extension is not sold via Woocommerce.com, the support team at WooCommerce.com is not familiar with it and may not be able to assist.
+Subscribe All The Things is not supported via the [WooCommerce Helpdesk](http://woocommerce.com/). As the extension is not sold via Woocommerce.com, the support team at WooCommerce.com is not familiar with it and may not be able to assist.
 
 If you think you have found a bug in the extension, a problem with the documentation, or want to see a new feature added, please [open a new issue](https://github.com/Prospress/woocommerce-subscribe-all-the-things/issues/new) and one of the developers or other users from its tiny community will do their best to help you out.
 
-Please understand this is a non-commercial extension. As such:
+At present we **do not offer a dedicated, premium support channel** for Subscribe All The Things. Please understand this is a non-commercial extension. As such:
 
 * Development time for it is effectively being donated and is therefore, limited.
 * Support inquiries may not be answered in a timely manner.
@@ -89,7 +123,7 @@ Please understand this is a non-commercial extension. As such:
 
 #### Further Reading
 
-Want to learn more? Check out the excellent post about [Subscribe All the Things on SellWithWP.com](https://www.sellwithwp.com/woocommerce-subscribe-all-the-things/).
+Want to learn more? Check out the excellent post about [Subscribe All The Things on SellWithWP.com](https://www.sellwithwp.com/woocommerce-subscribe-all-the-things/).
 
 #### License
 
@@ -102,5 +136,5 @@ This extension is developed and maintained as a collaboration between the teams 
 ---
 
 <p align="center">
-<img src="https://cloud.githubusercontent.com/assets/235523/11986380/bb6a0958-a983-11e5-8e9b-b9781d37c64a.png" width="160">
+	<img src="https://cloud.githubusercontent.com/assets/235523/11986380/bb6a0958-a983-11e5-8e9b-b9781d37c64a.png" width="160">
 </p>
