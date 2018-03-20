@@ -137,7 +137,7 @@ class WCS_ATT_Admin {
 
 			array(
 				'name' => __( 'Cart Subscription Options', 'woocommerce-subscribe-all-the-things' ),
-				'desc' => __( 'Options for purchasing cart contents on a recurring basis.', 'woocommerce-subscribe-all-the-things' ),
+				'desc' => __( 'Options to allow purchasing the entire cart on a recurring basis.', 'woocommerce-subscribe-all-the-things' ),
 				'id'   => 'wcsatt_subscribe_to_cart_schemes',
 				'type' => 'subscription_schemes',
 			),

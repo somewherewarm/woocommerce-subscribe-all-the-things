@@ -88,12 +88,12 @@
 
 #wcsatt_data .subscription_scheme {
 	border-radius: 0;
-	padding: 5px 0 0 90px;
+	padding: 2px 0 0 90px;
 }
 
 #wcsatt_data .subscription_scheme .handle {
 	float: left;
-	padding: 1em 0;
+	padding: 15px 0;
 	margin-left: -9999em;
 	width: 65px;
 }
@@ -188,4 +188,8 @@
 .forminp #wcsatt_data input.satt_subscription_payment_sync_date_day {
 	float: right;
 	height: 28px;
+}
+
+.forminp #wcsatt_data .subscription_scheme_data {
+	padding: 12px;
 }
