@@ -5,10 +5,10 @@
 
 WooCommerce Subscribe All The Things is a mini-extension for [WooCommerce Subscriptions](http://woocommerce.com/products/woocommerce-subscriptions/) that allows you to add subscription options to non-subscription product types, such as Simple and Variable products. The plugin has been tested with and can be used to add subscription options to [Product Bundles](http://woocommerce.com/products/product-bundles/), [Composite Products](http://woocommerce.com/products/composite-products/) and [Mix and Match Products](http://woocommerce.com/products/woocommerce-mix-and-match-products/).
 
-<figure align="center">
+<p align="center">
 	<img src="https://user-images.githubusercontent.com/1783726/37648362-6aaeab16-2c37-11e8-84c1-aec208e9f447.png" alt="Simple Product with Subscription Options"/>
-	<figcaption><em>Simple Product with Subscription Options.</em></figcaption>
-</figure>
+	<em>Simple Product with Subscription Options.</em>
+</p>
 
 ## Features
 
@@ -18,27 +18,27 @@ Capture more residual revenue by offering existing products on a recurring basis
 * Grouped product types such as [Composite Products](https://woocommerce.com/products/composite-products/) and [Product Bundles](https://woocommerce.com/products/product-bundles/).
 * The cart page -- give customers the option to purchase their entire cart on a recurring billing and shipping schedule.
 
-<figure align="center">
+<p align="center">
 	<img src="https://user-images.githubusercontent.com/1783726/37654834-1e213f24-2c4c-11e8-85ee-c1605325bb92.png" alt="Subscription Options Offered in the Cart"/>
-	<figcaption><em>Subscription Options Offered in the Cart.</em></figcaption>
-</figure>
+	<em>Subscription Options Offered in the Cart.</em>
+</p>
 
 To incentivize customers to subscribe, you can even assign a different/discounted product price to each subscription option:
 
-<figure align="center">
+<p align="center">
 	<img src="https://user-images.githubusercontent.com/1783726/37655470-11cab4c4-2c4e-11e8-8d24-6106c88c742d.png" alt="Simple Product with Discounted Subscription Options"/>
-	<figcaption><em>Simple Product with Discounted Subscription Options.</em></figcaption>
-</figure>
+	<em>Simple Product with Discounted Subscription Options.</em>
+</p>
 
 Additionally, Subscribe All The Things makes it possible to **add products and entire carts to existing subscriptions**:
 
 * Products without subscription options can be added to **any active subscription**.
 * Products with subscription options can be added only to active subscriptions with a **matching billing schedule**.
 
-<figure align="center">
+<p align="center">
 	<img src="https://user-images.githubusercontent.com/1783726/37660715-b4447bc4-2c5b-11e8-85bd-629630754850.png" alt="Adding a Product to an Existing Susbcription."/>
-	<figcaption><em>Adding a Product to an Existing Susbcription.</em></figcaption>
-</figure>
+	<em>Adding a Product to an Existing Susbcription.</em>
+</p>
 
 
 # Guide
@@ -79,10 +79,10 @@ To offer subscription discounts locate the **Price** option and select either **
 * **Inherit from product** allows you to enter a discounted amount as a percentage (without the `%` symbol) -- for example, to offer a price discounted by 10%, enter `10`.
 * **Override product** allows you to override the default **Regular Price** and **Sale Price** of the product.
 
-<figure align="center">
+<p align="center">
 	<img src="https://user-images.githubusercontent.com/1783726/37664257-996da444-2c63-11e8-8b6b-c24aedd92ef3.png" alt="Adding and Configuring Subscription Options"/>
-	<figcaption><em>Adding and Configuring Subscription Options.</em></figcaption>
-</figure>
+	<em>Adding and Configuring Subscription Options.</em>
+</p>
 
 
 ### Cart Subscription Options
