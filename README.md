@@ -9,7 +9,7 @@ WooCommerce Subscribe All The Things is a mini-extension for [WooCommerce Subscr
 	<img width="800" src="https://user-images.githubusercontent.com/1783726/37648362-6aaeab16-2c37-11e8-84c1-aec208e9f447.png" alt="Simple Product with Subscription Options"/>
 </p>
 
-## Features
+# Features
 
 Capture more residual revenue by offering existing products on a recurring basis. Subscribe All The Things allows you to add subscription options to:
 
@@ -33,7 +33,7 @@ Additionally, Subscribe All The Things makes it possible to **add products and e
 * Products with subscription options can be added only to active subscriptions with a **matching billing schedule**.
 
 <p align="center">
-	<img width="800" src="https://user-images.githubusercontent.com/1783726/37660715-b4447bc4-2c5b-11e8-85bd-629630754850.png" alt="Adding a Product to an Existing Susbcription."/>
+	<img width="800" src="https://user-images.githubusercontent.com/1783726/37670668-8b587e9c-2c72-11e8-8260-efcceb8b5eee.png" alt="Adding a Product to an Existing Susbcription."/>
 </p>
 
 
