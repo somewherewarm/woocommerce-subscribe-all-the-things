@@ -127,25 +127,21 @@
 
 				this.model.set_schemes( this.find_schemes() );
 
-				if ( this.variation_selected() ) {
+				if ( this.has_schemes() ) {
 
-					if ( this.has_schemes() ) {
+					// Maintain the selected scheme between variation changes.
+					var active_scheme_option = this.$el_options.find( 'input[value="' + this.model.get_active_scheme_key() + '"]' );
 
-						// Maintain the selected scheme between variation changes.
-						var active_scheme_option = this.$el_options.find( 'input[value="' + this.model.get_active_scheme_key() + '"]' );
-
-						if ( active_scheme_option.length > 0 ) {
-							active_scheme_option.prop( 'checked', true );
-						} else {
-							this.$el_options.find( 'input:checked' ).change();
-						}
-
+					if ( active_scheme_option.length > 0 ) {
+						active_scheme_option.prop( 'checked', true );
 					} else {
-						this.model.set_active_scheme( null );
+						this.$el_options.find( 'input:checked' ).change();
 					}
 
-				} else {
+				} else if ( ! this.variation_selected() ) {
 					this.model.set_active_scheme( false );
+				} else {
+					this.model.set_active_scheme( null );
 				}
 			}
 
@@ -403,6 +399,8 @@
 					if ( this.matching_subscriptions_visible() ) {
 						this.toggle();
 					}
+
+					this.$el.find( 'input.wcsatt-add-to-subscription-action-input' ).prop( 'checked', false );
 
 				} else {
 
