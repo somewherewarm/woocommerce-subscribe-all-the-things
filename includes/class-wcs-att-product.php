@@ -127,7 +127,7 @@ class WCS_ATT_Product {
 			case 'subscription_management_add_to_subscription':
 
 				/*
-				 * By default, any product can be added to any subscription as long as it's purchasable.
+				 * By default, any product can be added to any subscription (as long as it's purchasable and its type is supported).
 				 * To prevent this, use the 'wcsatt_product_supports_feature' filter and require that:
 				 *
 				 * if ( 'subscription_management_add_to_subscription' === $feature ) {
@@ -135,9 +135,7 @@ class WCS_ATT_Product {
 				 * }
 				 */
 
-				if ( $product->is_purchasable() ) {
-					$is_feature_supported = false === $product->is_type( 'mix-and-match' );
-				}
+				$is_feature_supported = self::supports_feature( $product, 'subscription_schemes' ) && false === $product->is_type( 'mix-and-match' ) && $product->is_purchasable();
 
 			break;
 			case 'subscription_management_add_to_matching_subscription':
