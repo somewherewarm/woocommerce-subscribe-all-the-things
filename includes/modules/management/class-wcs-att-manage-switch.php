@@ -51,7 +51,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 	 *
 	 * @return boolean
 	 */
-	public static function switching() {
+	public static function is_switch_request() {
 		return isset( $_GET[ 'switch-subscription' ] ) && isset( $_GET[ 'item' ] );
 	}
 
@@ -61,18 +61,18 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 	 * @param  WC_Product  $product_switched
 	 * @return boolean
 	 */
-	public static function switching_product( $product_switched ) {
+	public static function is_switch_request_for_product( $product_switched ) {
 
-		$switching = false;
+		$is_switch_request_for_product = false;
 
-		if ( self::switching() ) {
+		if ( self::is_switch_request() ) {
 
 			if ( is_product() ) {
 
 				global $product;
 
 				if ( $product->get_id() === $product_switched->get_id() ) {
-					$switching = true;
+					$is_switch_request_for_product = true;
 				}
 
 			} elseif ( ! empty( $_REQUEST[ 'add-to-cart' ] ) && is_numeric( $_REQUEST[ 'add-to-cart' ] ) ) {
@@ -82,12 +82,12 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 				$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
 
 				if ( null !== $posted_subscription_scheme_key ) {
-					$switching = ! empty( $posted_subscription_scheme_key );
+					$is_switch_request_for_product = ! empty( $posted_subscription_scheme_key );
 				}
 			}
 		}
 
-		return $switching;
+		return $is_switch_request_for_product;
 	}
 
 	/*
@@ -121,8 +121,8 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 	 */
 	public static function force_subscription( $is_forced, $product ) {
 
-		if ( ! $is_forced && self::switching() ) {
-			$is_forced = self::switching_product( $product );
+		if ( ! $is_forced && self::is_switch_request() ) {
+			$is_forced = self::is_switch_request_for_product( $product );
 		}
 
 		return $is_forced;
@@ -136,7 +136,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 	 */
 	public static function add_is_subscription_filter( $is_valid ) {
 
-		if ( self::switching() ) {
+		if ( self::is_switch_request() ) {
 			add_filter( 'woocommerce_is_subscription', array( __CLASS__, 'filter_is_subscription' ), 11, 3 );
 		}
 
@@ -151,7 +151,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 	 */
 	public static function remove_is_subscription_filter( $is_valid ) {
 
-		if ( self::switching() ) {
+		if ( self::is_switch_request() ) {
 			remove_filter( 'woocommerce_is_subscription', array( __CLASS__, 'filter_is_subscription' ), 11, 3 );
 		}
 
@@ -168,7 +168,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 	 */
 	public static function filter_is_subscription( $is, $product_id, $product ) {
 
-		if ( self::switching() ) {
+		if ( self::is_switch_request() ) {
 
 			if ( ! is_a( $product, 'WC_Product' ) ) {
 				$product = wc_get_product( $product_id );
@@ -178,7 +178,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 				return $is;
 			}
 
-			if ( self::switching_product( $product ) && WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
+			if ( self::is_switch_request_for_product( $product ) && WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
 				$is = true;
 			}
 		}

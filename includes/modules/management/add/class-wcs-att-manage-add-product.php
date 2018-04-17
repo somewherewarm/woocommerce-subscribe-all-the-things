@@ -88,7 +88,7 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 		}
 
 		// Bypass when switching.
-		if ( WCS_ATT_Manage_Switch::switching_product( $product ) ) {
+		if ( WCS_ATT_Manage_Switch::is_switch_request_for_product( $product ) ) {
 			return;
 		}
 
