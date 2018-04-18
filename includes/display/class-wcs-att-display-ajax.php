@@ -33,7 +33,7 @@ class WCS_ATT_Display_Ajax {
 	private static function add_hooks() {
 
 		// Ajax handler for saving the subscription scheme chosen at cart-level.
-		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_scheme' ) );
+		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_subscription_scheme' ) );
 	}
 
 	/*
@@ -47,7 +47,7 @@ class WCS_ATT_Display_Ajax {
 	 *
 	 * @return void
 	 */
-	public static function update_cart_scheme() {
+	public static function update_cart_subscription_scheme() {
 
 		$current_scheme_key = WCS_ATT_Cart::get_cart_subscription_scheme();
 
@@ -65,7 +65,7 @@ class WCS_ATT_Display_Ajax {
 			define( 'WOOCOMMERCE_CART', true );
 		}
 
-		$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart' );
+		$posted_subscription_scheme_key = WCS_ATT_Cart::get_posted_cart_subscription_scheme();
 
 		if ( is_null( $posted_subscription_scheme_key ) ) {
 			wp_send_json( $failure );
