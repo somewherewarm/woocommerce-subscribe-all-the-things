@@ -74,7 +74,7 @@ class WCS_ATT_Display_Product {
 		$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
 		$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
 		$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
-		$posted_subscription_scheme_key       = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
+		$posted_subscription_scheme_key       = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 		$options                              = array();
 
 		// Option selected by default.

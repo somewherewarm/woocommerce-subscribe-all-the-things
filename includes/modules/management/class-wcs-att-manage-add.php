@@ -76,7 +76,7 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 					$posted_data[ 'product_id' ]          = apply_filters( 'woocommerce_add_to_cart_product_id', absint( $_REQUEST[ 'add-product-to-subscription' ] ) );
 					$posted_data[ 'nonce' ]               = ! empty( $_REQUEST[ 'wcsatt_nonce_' . $posted_data[ 'product_id' ] ] ) ? $_REQUEST[ 'wcsatt_nonce_' . $posted_data[ 'product_id' ] ] : '';
 					$posted_data[ 'subscription_id' ]     = absint( $_REQUEST[ 'add-to-subscription' ] );
-					$posted_data[ 'subscription_scheme' ] = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $posted_data[ 'product_id' ] ) );
+					$posted_data[ 'subscription_scheme' ] = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $posted_data[ 'product_id' ] );
 				}
 			}
 

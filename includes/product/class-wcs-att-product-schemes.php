@@ -296,6 +296,28 @@ class WCS_ATT_Product_Schemes {
 		return apply_filters( 'wcsatt_get_base_scheme', $base_scheme, $product );
 	}
 
+	/**
+	 * Get the posted product subscription scheme from the single-product page.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  mixed  $product_id
+	 * @return string
+	 */
+	public static function get_posted_subscription_scheme( $product_id = '' ) {
+
+		$posted_subscription_scheme_key = null;
+
+		$key = ! empty( $product_id ) ? 'convert_to_sub_' . absint( $product_id ) : 'convert_to_sub';
+
+		if ( isset( $_REQUEST[ $key ] ) ) {
+			$posted_subscription_scheme_option = wc_clean( $_REQUEST[ $key ] );
+			$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
+		}
+
+		return $posted_subscription_scheme_key;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Setters

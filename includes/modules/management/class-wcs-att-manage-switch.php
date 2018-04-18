@@ -79,7 +79,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 
 				$product_id = apply_filters( 'woocommerce_add_to_cart_product_id', absint( $_REQUEST[ 'add-to-cart' ] ) );
 
-				$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
+				$posted_subscription_scheme_key = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 
 				if ( null !== $posted_subscription_scheme_key ) {
 					$is_switch_request_for_product = ! empty( $posted_subscription_scheme_key );
@@ -201,7 +201,7 @@ class WCS_ATT_Manage_Switch extends WCS_ATT_Abstract_Module {
 
 		if ( $is_identical ) {
 
-			$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
+			$posted_subscription_scheme_key = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 
 			if ( null !== $posted_subscription_scheme_key ) {
 

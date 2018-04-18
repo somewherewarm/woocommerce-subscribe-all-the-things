@@ -158,11 +158,11 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 		$this->register_modules();
 		$this->initialize_modules();
 
-		// Components.
+		// Load display components.
 		require_once( 'includes/class-wcs-att-display.php' );
 		$this->register_component_hooks( 'display' );
 
-		require_once( 'includes/class-wcs-att-form-handler.php' );
+		// Load form handling components.
 		$this->register_component_hooks( 'form' );
 
 		// Legacy stuff.

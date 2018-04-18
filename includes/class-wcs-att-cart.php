@@ -85,6 +85,26 @@ class WCS_ATT_Cart {
 	}
 
 	/**
+	 * Get the posted cart-item subscription scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  string  $cart_item_key
+	 * @return string
+	 */
+	public static function get_posted_subscription_scheme( $cart_item_key ) {
+
+		$posted_subscription_scheme_key = null;
+
+		$key = 'convert_to_sub';
+
+		$posted_subscription_scheme_option = isset( $_POST[ 'cart' ][ $cart_item_key ][ $key ] ) ? wc_clean( $_POST[ 'cart' ][ $cart_item_key ][ $key ] ) : null;
+		$posted_subscription_scheme_key    = '0' !== $posted_subscription_scheme_option ? $posted_subscription_scheme_option : false;
+
+		return $posted_subscription_scheme_key;
+	}
+
+	/**
 	 * Returns cart-level subscription schemes, available only if there are no cart-items with product-level subscription schemes.
 	 * Subscription options defined at product-level and "legacy" subscription-type products "block" the display of cart-level subscription options.
 	 *
@@ -155,6 +175,24 @@ class WCS_ATT_Cart {
 	}
 
 	/**
+	 * Get the posted cart subscription scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return string
+	 */
+	public static function get_posted_cart_subscription_scheme() {
+
+		$posted_subscription_scheme_key = null;
+
+		if ( isset( $_POST[ 'subscription_scheme' ] ) ) {
+			$posted_subscription_scheme_key = wc_clean( $_POST[ 'subscription_scheme' ] );
+		}
+
+		return $posted_subscription_scheme_key;
+	}
+
+	/**
 	 * Returns the active cart-level subscription scheme id, or false if none is set.
 	 *
 	 * @since  2.0.0
@@ -206,7 +244,7 @@ class WCS_ATT_Cart {
 
 		if ( self::is_supported_product_type( $product_id ) && ! isset( $cart_item[ 'wcsatt_data' ] ) ) { // Might be set - @see 'WCS_ATT_Order::restore_cart_item_from_order_item'.
 
-			$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'product', array( 'product_id' => $product_id ) );
+			$posted_subscription_scheme_key = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 
 			$cart_item[ 'wcsatt_data' ] = array(
 				'active_subscription_scheme' => $posted_subscription_scheme_key,
@@ -431,7 +469,7 @@ class WCS_ATT_Cart {
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
 
-				$posted_subscription_scheme_key = WCS_ATT_Form_Handler::get_posted_subscription_scheme( 'cart-item', array( 'cart_item_key' => $cart_item_key, 'cart_item' => $cart_item ) );
+				$posted_subscription_scheme_key = self::get_posted_subscription_scheme( $cart_item_key );
 
 				if ( null !== $posted_subscription_scheme_key ) {
 					WC()->cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $posted_subscription_scheme_key;
