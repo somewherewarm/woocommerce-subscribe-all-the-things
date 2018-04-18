@@ -308,7 +308,7 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 		$_REQUEST[ 'add-to-cart' ] = false;
 
 		/**
-		 * 'wcsatt_pre_add_product_to_subscription_validation' action.
+		 * 'wcsatt_post_add_product_to_subscription_validation' action.
 		 *
 		 * @param  int  $product_id
 		 * @param  int  $subscription_id
