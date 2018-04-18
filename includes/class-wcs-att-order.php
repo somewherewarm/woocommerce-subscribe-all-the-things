@@ -162,7 +162,7 @@ class WCS_ATT_Order {
 	 */
 	public static function hidden_order_item_meta( $hidden ) {
 
-		$current_meta = array( '_wcsatt_scheme');
+		$current_meta = array( '_wcsatt_scheme' );
 		$legacy_meta  = array( '_wcsatt_scheme_id' );
 
 		return array_merge( $hidden, $current_meta, $legacy_meta );
