@@ -188,7 +188,6 @@ class WCS_ATT_Product_Price_Filters {
 
 		$active_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
 
-
 		if ( ! empty( $active_scheme ) ) {
 			$hash[] = $active_scheme ? $active_scheme : '0';
 		}
