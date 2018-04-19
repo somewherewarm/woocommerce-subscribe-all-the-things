@@ -108,24 +108,13 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		$this->data[ 'key' ] = $this->data[ 'id' ] = $this->key;
 
 		/*
-		 * Syncing & Proration.
+		 * Syncing.
 		 */
 
-		$this->data[ 'is_synced' ]   = false;
-		$this->data[ 'is_prorated' ] = false;
+		$this->data[ 'is_synced' ] = false;
 
-		if ( class_exists( 'WC_Subscriptions_Synchroniser' ) ) {
-
-			$dummy_product = new WC_Product( 0 );
-
-			WCS_ATT_Product_Schemes::set_subscription_schemes( $dummy_product, array(
-				$this->get_key() => $this
-			) );
-
-			WCS_ATT_Product_Schemes::set_subscription_scheme( $dummy_product, $this->get_key() );
-
-			$this->data[ 'is_prorated' ] = WC_Subscriptions_Synchroniser::is_product_prorated( $dummy_product );
-			$this->data[ 'is_synced' ]   = WC_Subscriptions_Synchroniser::is_product_synced( $dummy_product );
+		if ( 'day' !== $this->data[ 'period' ] && WC_Subscriptions_Synchroniser::is_syncing_enabled() ) {
+			$this->data[ 'is_synced' ] = ( ! is_array( $this->data[ 'sync_date' ] ) && $this->data[ 'sync_date' ] > 0 ) || ( isset( $this->data[ 'sync_date' ][ 'day' ] ) && $this->data[ 'sync_date' ][ 'day' ] > 0 );
 		}
 	}
 

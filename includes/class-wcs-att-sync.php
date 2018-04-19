@@ -49,6 +49,58 @@ class WCS_ATT_Sync {
 		add_action( 'wcsatt_set_product_subscription_scheme', array( __CLASS__, 'set_product_subscription_scheme_sync_date' ), 0, 3 );
 	}
 
+	/**
+	 * Determines if the first payment of a product is prorated, assuming a scheme is set on it.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  WC_Product             $product  Product object to check.
+	 * @param  string|WCS_ATT_Scheme  $scheme   Optional scheme key when checking against one of the schemes already tied to the object, or an arbitrary 'WCS_ATT_Scheme' object to check against.
+	 * @return boolean                          Result.
+	 */
+	public static function is_first_payment_prorated( $product, $scheme = '' ) {
+
+		$is_first_payment_prorated = false;
+
+		$schemes           = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
+		$active_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
+
+		if ( is_a( $scheme, 'WCS_ATT_Scheme' ) ) {
+
+			$scheme_key_to_set = $scheme->get_key();
+
+			// Apply scheme.
+			WCS_ATT_Product_Schemes::set_subscription_schemes( $product, array( $scheme_key_to_set => $scheme ) );
+			WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key_to_set );
+
+			// Check if prorated.
+			$is_first_payment_prorated = WC_Subscriptions_Synchroniser::is_product_prorated( $product );
+
+			// Restore state.
+			WCS_ATT_Product_Schemes::set_subscription_schemes( $product, $schemes );
+			WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $active_scheme_key );
+
+		} else {
+
+			$scheme_key_to_check = '' === $scheme ? $active_scheme_key : $scheme;
+
+			// Attempt to switch scheme.
+			$scheme_switch_required = $scheme_key_to_check !== $active_scheme_key;
+			$switched_scheme        = $scheme_switch_required ? WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key_to_check ) : false;
+
+			// Check if prorated.
+			$is_first_payment_prorated = WC_Subscriptions_Synchroniser::is_product_prorated( $product );
+
+			// Restore state.
+			if ( $switched_scheme ) {
+				WCS_ATT_Product_Schemes::set_subscription_schemes( $product, $schemes );
+				WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $active_scheme_key );
+			}
+		}
+
+		return $is_first_payment_prorated;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Hooks

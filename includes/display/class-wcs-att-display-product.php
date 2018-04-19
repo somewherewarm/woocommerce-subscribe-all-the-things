@@ -125,7 +125,7 @@ class WCS_ATT_Display_Product {
 			$sub_price_html = '<span class="' . $price_class . ' subscription-price">' . $sub_price_html . '</span>';
 
 			$option_data = array(
-				'subscription_scheme'   => $subscription_scheme->get_data(),
+				'subscription_scheme'   => array_merge( $subscription_scheme->get_data(), array( 'is_prorated' => WCS_ATT_Sync::is_first_payment_prorated( $product, $subscription_scheme->get_key() ) ) ),
 				'overrides_price'       => $subscription_scheme->has_price_filter(),
 				'discount_from_regular' => apply_filters( 'wcsatt_discount_from_regular', false )
 			);
