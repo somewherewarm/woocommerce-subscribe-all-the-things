@@ -133,7 +133,7 @@ ul.wcsatt-options-cart {
 	margin-right: 0;
 }
 
-.wcsatt-add-cart-to-subscription-options:before {
+.wcsatt-add-cart-to-subscription-wrapper:after, .wcsatt-add-cart-to-subscription-options:before {
 	display: table;
 	clear: both;
 	content: '';
