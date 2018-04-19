@@ -330,8 +330,8 @@ class WCS_ATT_Product_Schemes {
 	 * Can be used to append or otherwise modify schemes -- e.g. it is used by 'WCS_ATT_Cart::apply_subscription_schemes' to conditionally attach cart-level schemes on session load.
 	 *
 	 * @param  WC_Product  $product  Product object.
-	 * @param  string      $context  Context of schemes. Values: 'cart', 'product', 'any'.
-	 * @return array
+	 * @param  array       $schemes  Schemes.
+	 * @return void
 	 */
 	public static function set_subscription_schemes( $product, $schemes ) {
 		WCS_ATT_Product::set_runtime_meta( $product, 'subscription_schemes', $schemes );
