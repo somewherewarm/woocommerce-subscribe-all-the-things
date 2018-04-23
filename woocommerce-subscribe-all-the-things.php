@@ -2,18 +2,21 @@
 /*
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
-* Description: Experimental extension for linking WooCommerce Subscriptions with simple products, variable products and product types created by WooCommerce extensions, such as Composite Products and Product Bundles.
-* Version: 2.0.2-dev
+* Description: Mini-extension for WooCommerce Subscriptions that allows you to add subscription options to non-subscription product types.
+* Version: 2.1.0-beta.2
 * Author: Prospress Inc.
 * Author URI: http://prospress.com/
 *
 * Text Domain: woocommerce-subscribe-all-the-things
 * Domain Path: /languages/
 *
-* Requires at least: 4.1
-* Tested up to: 4.8
+* Requires at least: 4.4
+* Tested up to: 4.9
 *
-* Copyright: © 2009-2017 Prospress, Inc.
+* WC requires at least: 3.0
+* WC tested up to: 3.3
+*
+* Copyright: © 2009-2018 Prospress, Inc.
 * License: GNU General Public License v3.0
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
@@ -25,10 +28,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'WCS_ATT' ) ) :
 
-class WCS_ATT {
+// Abstract modules container class.
+require_once( 'includes/modules/abstract/class-wcs-att-abstract-module.php' );
+
+class WCS_ATT extends WCS_ATT_Abstract_Module {
 
 	/* Plugin version. */
-	const VERSION = '2.0.2-dev';
+	const VERSION = '2.1.0-beta.2';
 
 	/* Required WC version. */
 	const REQ_WC_VERSION = '3.0.0';
@@ -139,13 +145,25 @@ class WCS_ATT {
 	 */
 	public function includes() {
 
+		// Classes.
 		require_once( 'includes/class-wcs-att-core-compatibility.php' );
 		require_once( 'includes/class-wcs-att-integrations.php' );
 		require_once( 'includes/class-wcs-att-scheme.php' );
 		require_once( 'includes/class-wcs-att-product.php' );
 		require_once( 'includes/class-wcs-att-cart.php' );
-		require_once( 'includes/class-wcs-att-display.php' );
 		require_once( 'includes/class-wcs-att-order.php' );
+		require_once( 'includes/class-wcs-att-sync.php' );
+
+		// Modules.
+		$this->register_modules();
+		$this->initialize_modules();
+
+		// Load display components.
+		require_once( 'includes/class-wcs-att-display.php' );
+		$this->register_component_hooks( 'display' );
+
+		// Load form handling components.
+		$this->register_component_hooks( 'form' );
 
 		// Legacy stuff.
 		require_once( 'includes/legacy/class-wcs-att-schemes.php' );
@@ -153,6 +171,36 @@ class WCS_ATT {
 		// Admin includes.
 		if ( is_admin() ) {
 			$this->admin_includes();
+		}
+	}
+
+	/**
+	 * Include submodules.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return void
+	 */
+	protected function register_modules() {
+
+		require_once( 'includes/modules/class-wcs-att-management.php' );
+
+		$this->modules = apply_filters( 'wcsatt_modules', array(
+			'WCS_ATT_Management'
+		) );
+	}
+
+	/**
+	 * Register all module hooks associated with a named SATT component.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  string  $component
+	 */
+	protected function register_component_hooks( $component ) {
+
+		foreach ( $this->modules as $module ) {
+			$module->register_hooks( $component );
 		}
 	}
 
@@ -220,6 +268,7 @@ class WCS_ATT {
 	 * @return array
 	 */
 	public function get_supported_product_types() {
+
 		return apply_filters( 'wcsatt_supported_product_types', array( 'simple', 'variable', 'variation', 'mix-and-match', 'bundle', 'composite' ) );
 	}
 
@@ -231,6 +280,7 @@ class WCS_ATT {
 	 * @return void
 	 */
 	public function log( $message, $level ) {
+
 		$logger = wc_get_logger();
 		$logger->log( $level, $message, array( 'source' => 'wcs_att' ) );
 	}

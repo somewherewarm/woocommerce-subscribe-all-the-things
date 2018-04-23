@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Subscription scheme object. May extend the WC_Data class or handle CRUD in the future, if schemes are moved out of meta.
  *
- * @class  WCS_ATT_Scheme
- * @since  2.0.0
+ * @class    WCS_ATT_Scheme
+ * @version  2.1.0
  */
 class WCS_ATT_Scheme implements ArrayAccess {
 
@@ -37,16 +37,17 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 * @var array
 	 */
 	private $offset_map = array(
-		'subscription_period'          => 'period',
-		'subscription_period_interval' => 'interval',
-		'subscription_length'          => 'length',
-		'subscription_trial_period'    => 'trial_period',
-		'subscription_trial_length'    => 'trial_length',
-		'subscription_pricing_method'  => 'pricing_mode',
-		'subscription_discount'        => 'discount',
-		'subscription_regular_price'   => 'regular_price',
-		'subscription_sale_price'      => 'sale_price',
-		'subscription_price'           => 'price'
+		'subscription_period'            => 'period',
+		'subscription_period_interval'   => 'interval',
+		'subscription_length'            => 'length',
+		'subscription_payment_sync_date' => 'sync_date',
+		'subscription_trial_period'      => 'trial_period',
+		'subscription_trial_length'      => 'trial_length',
+		'subscription_pricing_method'    => 'pricing_mode',
+		'subscription_discount'          => 'discount',
+		'subscription_regular_price'     => 'regular_price',
+		'subscription_sale_price'        => 'sale_price',
+		'subscription_price'             => 'price'
 	);
 
 	/**
@@ -69,6 +70,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			$this->data[ 'pricing_mode' ] = isset( $args[ 'data' ][ 'subscription_pricing_method' ] ) && in_array( $args[ 'data' ][ 'subscription_pricing_method' ], array( 'inherit', 'override' ) ) ? strval( $args[ 'data' ][ 'subscription_pricing_method' ] ) : 'inherit';
 
 			if ( 'override' === $this->data[ 'pricing_mode' ] ) {
+
 				$this->data[ 'regular_price' ] = isset( $args[ 'data' ][ 'subscription_regular_price' ] ) ? wc_format_decimal( $args[ 'data' ][ 'subscription_regular_price' ] ) : '';
 				$this->data[ 'sale_price' ]    = isset( $args[ 'data' ][ 'subscription_sale_price' ] ) ? wc_format_decimal( $args[ 'data' ][ 'subscription_sale_price' ] ) : '';
 				$this->data[ 'price' ]         = '' !== $this->data[ 'sale_price' ] && $this->data[ 'sale_price' ] < $this->data[ 'regular_price' ] ? $this->data[ 'sale_price' ] : $this->data[ 'regular_price' ];
@@ -81,11 +83,39 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			if ( 'inherit' === $this->data[ 'pricing_mode' ] ) {
 				$this->data[ 'discount' ] = isset( $args[ 'data' ][ 'subscription_discount' ] ) ? wc_format_decimal( $args[ 'data' ][ 'subscription_discount' ] ) : '';
 			}
+
+			$this->data[ 'sync_date' ] = 0;
+
+			if ( isset( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) ) {
+
+				if ( is_array( $args[ 'data' ][ 'subscription_payment_sync_date' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ] ) && isset( $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ] ) ) {
+
+					$this->data[ 'sync_date' ] = array(
+						'day'   => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'day' ],
+						'month' => $args[ 'data' ][ 'subscription_payment_sync_date' ][ 'month' ]
+					);
+
+				} else {
+					$this->data[ 'sync_date' ] = absint( $args[ 'data' ][ 'subscription_payment_sync_date' ] );
+				}
+			}
 		}
 
 		$this->data[ 'context' ] = isset( $args[ 'context' ] ) ? strval( $args[ 'context' ] ) : 'product';
 
 		$this->key = implode( '_', array_filter( array( $this->data[ 'interval' ], $this->data[ 'period' ], $this->data[ 'length' ] ) ) );
+
+		$this->data[ 'key' ] = $this->data[ 'id' ] = $this->key;
+
+		/*
+		 * Syncing.
+		 */
+
+		$this->data[ 'is_synced' ] = false;
+
+		if ( 'day' !== $this->data[ 'period' ] && WC_Subscriptions_Synchroniser::is_syncing_enabled() ) {
+			$this->data[ 'is_synced' ] = ( ! is_array( $this->data[ 'sync_date' ] ) && $this->data[ 'sync_date' ] > 0 ) || ( isset( $this->data[ 'sync_date' ][ 'day' ] ) && $this->data[ 'sync_date' ][ 'day' ] > 0 );
+		}
 	}
 
 	/**
@@ -120,7 +150,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 *
 	 * @return string  A string representation of the period, either Day, Week, Month or Year.
 	 */
-	public function get_period( $product ) {
+	public function get_period() {
 		return $this->data[ 'period' ];
 	}
 
@@ -158,6 +188,35 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 */
 	public function get_trial_length() {
 		return $this->data[ 'trial_length' ];
+	}
+
+	/**
+	 * Returns the sync day (integer) or sync month/day (array) of this scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return mixed
+	 */
+	public function get_sync_date() {
+		return $this->data[ 'sync_date' ];
+	}
+
+	/**
+	 * Whether the first payment is processed at the time of sign-up but prorated to the sync day.
+	 *
+	 * @since  2.1.0
+	 */
+	public function is_prorated() {
+		return $this->data[ 'is_prorated' ];
+	}
+
+	/**
+	 * Whether the first payment needs to be processed on a specific day (instead of at the time of sign-up).
+	 *
+	 * @since  2.1.0
+	 */
+	public function is_synced() {
+		return $this->data[ 'is_synced' ];
 	}
 
 	/**
@@ -273,6 +332,69 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 */
 	public function has_price_filter() {
 		return 'override' === $this->get_pricing_mode() || ( 'inherit' === $this->get_pricing_mode() && $this->get_discount() > 0 );
+	}
+
+	/**
+	 * Indicates whether the billing details of a subscription match the billing details of this scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  WC_Subscription  $subscription
+	 * @return boolean
+	 */
+	public function matches_subscription( $subscription ) {
+
+		$period   = $subscription->get_billing_period();
+		$interval = $subscription->get_billing_interval();
+
+		// Period and interval must match.
+		if ( $period !== $this->get_period() || absint( $interval ) !== $this->get_interval() ) {
+			return false;
+		}
+
+		// The subscription must have an upcoming renewal.
+		if ( ! $subscription->get_time( 'next_payment' ) ) {
+			return false;
+		}
+
+		// The scheme length must match the remaining subscription renewals.
+		if ( $this->get_length() ) {
+
+			$subscription_next_payment = $subscription->get_time( 'next_payment' );
+			$subscription_end          = $subscription->get_time( 'end' );
+
+			// If the scheme has a length but the subscription is endless, dump it.
+			if ( ! $subscription_end ) {
+				return false;
+			}
+
+			$subscription_periods_left = wcs_estimate_periods_between( $subscription_next_payment, $subscription_end, $this->get_period() );
+
+			if ( $subscription_periods_left !== $this->get_length() ) {
+				return false;
+			}
+		}
+
+		// If the scheme is synced, its payment day must match the next subscription renewal payment day.
+		if ( $this->is_synced() ) {
+
+			$scheme_sync_day           = $this->get_sync_date();
+			$subscription_next_payment = $subscription->get_time( 'next_payment' );
+
+			if ( 'week' === $period && $scheme_sync_day !== intval( date( 'N', $subscription_next_payment ) ) ) {
+				return false;
+			}
+
+			if ( 'month' === $period && $scheme_sync_day !== intval( date( 'j', $subscription_next_payment ) ) ) {
+				return false;
+			}
+
+			if ( 'year' === $period && ( $scheme_sync_day[ 'day' ] !== date( 'd', $subscription_next_payment ) || $scheme_sync_day[ 'month' ] !== date( 'm', $subscription_next_payment ) ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/*

@@ -122,7 +122,7 @@ class WCS_ATT_Product_Price_Filters {
 	 */
 	public static function filter_price_html( $price_html, $product ) {
 
-		if ( WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
+		if ( $price_html && WCS_ATT_Product_Schemes::has_subscription_schemes( $product ) ) {
 			$price_html = WCS_ATT_Product_Prices::get_price_html( $product, '', array( 'price' => $price_html ) );
 		}
 
@@ -187,7 +187,6 @@ class WCS_ATT_Product_Price_Filters {
 	public static function filter_variation_prices_hash( $hash, $product ) {
 
 		$active_scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product );
-
 
 		if ( ! empty( $active_scheme ) ) {
 			$hash[] = $active_scheme ? $active_scheme : '0';

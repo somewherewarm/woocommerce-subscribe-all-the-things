@@ -57,7 +57,7 @@ class WCS_ATT_Product_Schemes {
 			WCS_ATT_Product::set_runtime_meta( $product, 'has_forced_subscription', $forced );
 		}
 
-		return 'yes' === $forced;
+		return apply_filters( 'wcsatt_force_subscription', 'yes' === $forced, $product );
 	}
 
 	/**
@@ -91,10 +91,9 @@ class WCS_ATT_Product_Schemes {
 		// If not explicitly set on object, initialize with schemes defined at product-level.
 		if ( '' === $schemes ) {
 
-			$supported_types = WCS_ATT()->get_supported_product_types();
-			$schemes         = array();
+			$schemes = array();
 
-			if ( in_array( $product->get_type(), $supported_types ) ) {
+			if ( WCS_ATT_Product::supports_feature( $product, 'subscription_schemes' ) ) {
 
 				$product_schemes_meta = $product->get_meta( '_wcsatt_schemes', true );
 
@@ -297,6 +296,28 @@ class WCS_ATT_Product_Schemes {
 		return apply_filters( 'wcsatt_get_base_scheme', $base_scheme, $product );
 	}
 
+	/**
+	 * Get the posted product subscription scheme from the single-product page.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  mixed  $product_id
+	 * @return string
+	 */
+	public static function get_posted_subscription_scheme( $product_id = '' ) {
+
+		$posted_subscription_scheme_key = null;
+
+		$key = ! empty( $product_id ) ? 'convert_to_sub_' . absint( $product_id ) : 'convert_to_sub';
+
+		if ( isset( $_REQUEST[ $key ] ) ) {
+			$posted_subscription_scheme_option = wc_clean( $_REQUEST[ $key ] );
+			$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
+		}
+
+		return $posted_subscription_scheme_key;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Setters
@@ -309,8 +330,8 @@ class WCS_ATT_Product_Schemes {
 	 * Can be used to append or otherwise modify schemes -- e.g. it is used by 'WCS_ATT_Cart::apply_subscription_schemes' to conditionally attach cart-level schemes on session load.
 	 *
 	 * @param  WC_Product  $product  Product object.
-	 * @param  string      $context  Context of schemes. Values: 'cart', 'product', 'any'.
-	 * @return array
+	 * @param  array       $schemes  Schemes.
+	 * @return void
 	 */
 	public static function set_subscription_schemes( $product, $schemes ) {
 		WCS_ATT_Product::set_runtime_meta( $product, 'subscription_schemes', $schemes );
@@ -352,9 +373,9 @@ class WCS_ATT_Product_Schemes {
 			 * The price strings of many product types depend on more than the values returned by the abstract class price getters.
 			 * If we are going to apply filters anyway, there's no need to permanently set raw prices here.
 			 */
-			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period', $scheme_to_set[ 'subscription_period' ] );
-			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period_interval', $scheme_to_set[ 'subscription_period_interval' ] );
-			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_length', $scheme_to_set[ 'subscription_length' ] );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period', $scheme_to_set->get_period() );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_period_interval', $scheme_to_set->get_interval() );
+			WCS_ATT_Product::set_runtime_meta( $product, 'subscription_length', $scheme_to_set->get_length() );
 
 			$scheme_set = true;
 

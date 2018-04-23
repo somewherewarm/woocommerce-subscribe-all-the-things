@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Product meta-box data for SATT-enabled product types.
  *
  * @class    WCS_ATT_Meta_Box_Product_Data
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Meta_Box_Product_Data {
 
@@ -43,11 +43,14 @@ class WCS_ATT_Meta_Box_Product_Data {
 		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
 		add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_content' ), 10, 3 );
 
-		// Subscription scheme options displayed on the 'wcsatt_subscription_scheme_product_content' action.
+		// Product-specific subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+		add_action( 'wcsatt_subscription_scheme_content', array( __CLASS__, 'subscription_scheme_product_content_display' ), 100, 3 );
+
+		// Product-specific subscription scheme options content.
 		add_action( 'wcsatt_subscription_scheme_product_content', array( __CLASS__, 'subscription_scheme_product_content' ), 10, 3 );
 
 		// Process and save the necessary meta.
-		add_action( 'woocommerce_process_product_meta', array( __CLASS__, 'process_product_meta' ), 15, 1 );
+		add_action( 'woocommerce_admin_process_product_object', array( __CLASS__, 'save_subscription_data' ), 10, 1 );
 	}
 
 	/**
@@ -59,9 +62,10 @@ class WCS_ATT_Meta_Box_Product_Data {
 	public static function satt_product_data_tab( $tabs ) {
 
 		$tabs[ 'satt' ] = array(
-			'label'  => __( 'Subscriptions', 'woocommerce-subscribe-all-the-things' ),
-			'target' => 'wcsatt_data',
-			'class'  => array( 'cart_subscription_options', 'cart_subscriptions_tab', 'show_if_simple', 'show_if_variable', 'show_if_bundle', 'hide_if_subscription', 'hide_if_variable-subscription' )
+			'label'    => __( 'Subscriptions', 'woocommerce-subscribe-all-the-things' ),
+			'target'   => 'wcsatt_data',
+			'priority' => 100,
+			'class'    => array( 'cart_subscription_options', 'cart_subscriptions_tab', 'show_if_simple', 'show_if_variable', 'show_if_bundle', 'hide_if_subscription', 'hide_if_variable-subscription' )
 		);
 
 		return $tabs;
@@ -160,19 +164,18 @@ class WCS_ATT_Meta_Box_Product_Data {
 			$subscription_length          = '';
 		}
 
-
 		// Subscription Price, Interval and Period.
-		?><p class="form-field _satt_subscription_details">
-			<label for="_satt_subscription_details"><?php esc_html_e( 'Interval', 'woocommerce-subscribe-all-the-things' ); ?></label>
+		?><p class="form-field _satt_subscription_details_<?php echo $index; ?>">
+			<label for="_satt_subscription_details_<?php echo $index; ?>"><?php esc_html_e( 'Interval', 'woocommerce-subscribe-all-the-things' ); ?></label>
 			<span class="wrap">
-				<label for="_satt_subscription_period_interval" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
-				<select id="_satt_subscription_period_interval" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
+				<label for="_satt_subscription_period_interval_<?php echo $index; ?>" class="wcs_hidden_label"><?php esc_html_e( 'Subscription interval', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period_interval_<?php echo $index; ?>" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period_interval]" class="wc_input_subscription_period_interval">
 				<?php foreach ( wcs_get_subscription_period_interval_strings() as $value => $label ) { ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period_interval, true ) ?>><?php echo esc_html( $label ); ?></option>
 				<?php } ?>
 				</select>
-				<label for="_satt_subscription_period" class="wcs_hidden_label"><?php esc_html_e( 'Subscription period', 'woocommerce-subscriptions' ); ?></label>
-				<select id="_satt_subscription_period" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period]" class="wc_input_subscription_period last" >
+				<label for="_satt_subscription_period_<?php echo $index; ?>" class="wcs_hidden_label"><?php esc_html_e( 'Subscription period', 'woocommerce-subscriptions' ); ?></label>
+				<select id="_satt_subscription_period_<?php echo $index; ?>" name="wcsatt_schemes[<?php echo $index; ?>][subscription_period]" class="wc_input_subscription_period last" >
 				<?php foreach ( wcs_get_subscription_period_strings() as $value => $label ) { ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $subscription_period, true ) ?>><?php echo esc_html( $label ); ?></option>
 				<?php } ?>
@@ -183,7 +186,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 
 		// Subscription Length.
 		woocommerce_wp_select( array(
-			'id'          => '_satt_subscription_length',
+			'id'          => '_satt_subscription_length_' . $index,
 			'class'       => 'wc_input_subscription_length',
 			'label'       => __( 'Length', 'woocommerce-subscribe-all-the-things' ),
 			'value'       => $subscription_length,
@@ -196,7 +199,24 @@ class WCS_ATT_Meta_Box_Product_Data {
 	}
 
 	/**
-	 * Subscription scheme options displayed on the 'wcsatt_subscription_scheme_content' action.
+	 * Show product-specific subscription scheme options on the 'wcsatt_subscription_scheme_content' action.
+	 *
+	 * @param  int     $index
+	 * @param  array   $scheme_data
+	 * @param  int     $post_id
+	 * @return void
+	 */
+	public static function subscription_scheme_product_content_display( $index, $scheme_data, $post_id ) {
+
+		if ( $post_id > 0 ) {
+			?><div class="subscription_scheme_product_data"><?php
+				do_action( 'wcsatt_subscription_scheme_product_content', $index, $scheme_data, $post_id );
+			?></div><?php
+		}
+	}
+
+	/**
+	 * Product-specific subscription scheme options.
 	 *
 	 * @param  int     $index
 	 * @param  array   $scheme_data
@@ -338,16 +358,12 @@ class WCS_ATT_Meta_Box_Product_Data {
 	/**
 	 * Save subscription options.
 	 *
-	 * @param  int  $post_id
+	 * @param  WC_Product  $product
 	 * @return void
 	 */
-	public static function process_product_meta( $post_id ) {
+	public static function save_subscription_data( $product ) {
 
-		// Get type.
-		$product_type    = empty( $_POST[ 'product-type' ] ) ? 'simple' : sanitize_title( stripslashes( $_POST[ 'product-type' ] ) );
-		$supported_types = WCS_ATT()->get_supported_product_types();
-
-		if ( in_array( $product_type, $supported_types ) ) {
+		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_schemes' ) ) {
 
 			$schemes = array();
 
@@ -359,7 +375,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 				foreach ( $posted_schemes as $posted_scheme ) {
 
 					// Copy variable type fields.
-					if ( 'variable' === $product_type ) {
+					if ( $product->is_type( 'variable' ) ) {
 						if ( isset( $posted_scheme[ 'subscription_regular_price_variable' ] ) ) {
 							$posted_scheme[ 'subscription_regular_price' ] = $posted_scheme[ 'subscription_regular_price_variable' ];
 						}
@@ -420,11 +436,24 @@ class WCS_ATT_Meta_Box_Product_Data {
 						$posted_scheme[ 'subscription_pricing_method' ] = 'inherit';
 					}
 
-					// Construct scheme id.
-					$scheme_id = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+					/**
+					 * Allow third parties to add custom data to schemes.
+					 *
+					 * @since  2.1.0
+					 *
+					 * @param  array       $posted_scheme
+					 * @param  WC_Product  $product
+					 */
+					$posted_scheme = apply_filters( 'wcsatt_processed_scheme_data', $posted_scheme, $product );
 
-					$schemes[ $scheme_id ]         = $posted_scheme;
-					$schemes[ $scheme_id ][ 'id' ] = $scheme_id;
+					// Don't store multiple schemes with the same billing schedule.
+					$scheme_key = $posted_scheme[ 'subscription_period_interval' ] . '_' . $posted_scheme[ 'subscription_period' ] . '_' . $posted_scheme[ 'subscription_length' ];
+
+					if ( isset( $schemes[ $scheme_key ] ) ) {
+						continue;
+					}
+
+					$schemes[ $scheme_key ] = $posted_scheme;
 				}
 			}
 
@@ -440,54 +469,69 @@ class WCS_ATT_Meta_Box_Product_Data {
 			// Process prompt text.
 			$prompt = ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ? wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) ) : false;
 
-			$product = wc_get_product( $post_id );
+			/*
+			 * Add/update meta.
+			 */
 
-			if ( $product ) {
+			// Save scheme options.
+			if ( ! empty( $schemes ) ) {
 
-				// Save scheme options.
-				if ( ! empty( $schemes ) ) {
-					$product->update_meta_data( '_wcsatt_schemes', $schemes );
-				} else {
-					$product->delete_meta_data( '_wcsatt_schemes' );
-				}
+				$product->update_meta_data( '_wcsatt_schemes', array_values( $schemes ) );
 
-				// Save one-time shipping option.
-				$product->update_meta_data( '_subscription_one_time_shipping', $one_time_shipping );
-
-				// Save default status.
-				$product->update_meta_data( '_wcsatt_default_status', $default_status );
-
-				// Save force-sub status.
-				$product->update_meta_data( '_wcsatt_force_subscription', $force_subscription );
-
-				// Set regular price as ZERO should the shop owner forget.
-				// This helps make WooCommerce think it's still available for purchase.
+				// Set regular price to zero should the shop owner forget.
 				if ( 'yes' === $force_subscription && empty( $_POST[ '_regular_price' ] ) ) {
 					$product->set_regular_price( 0 );
 					$product->set_price( 0 );
 				}
 
-				// Save prompt.
-				if ( false === $prompt ) {
-					$product->delete_meta_data( '_wcsatt_subscription_prompt' );
-				} else {
-					$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
-				}
+			} else {
+				$product->delete_meta_data( '_wcsatt_schemes' );
+			}
 
-				$product->save();
+			// Save one-time shipping option.
+			$product->update_meta_data( '_subscription_one_time_shipping', $one_time_shipping );
+
+			// Save default status.
+			$product->update_meta_data( '_wcsatt_default_status', $default_status );
+
+			// Save force-sub status.
+			$product->update_meta_data( '_wcsatt_force_subscription', $force_subscription );
+
+			// Save prompt.
+			if ( false === $prompt ) {
+				$product->delete_meta_data( '_wcsatt_subscription_prompt' );
+			} else {
+				$product->update_meta_data( '_wcsatt_subscription_prompt', $prompt );
 			}
 
 		} else {
 
-			$product = wc_get_product( $post_id );
+			$product->delete_meta_data( '_wcsatt_schemes' );
+			$product->delete_meta_data( '_wcsatt_force_subscription' );
+			$product->delete_meta_data( '_wcsatt_default_status' );
+			$product->delete_meta_data( '_wcsatt_subscription_prompt' );
+		}
+	}
 
-			if ( $product ) {
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated
+	|--------------------------------------------------------------------------
+	*/
 
-				$product->delete_meta_data( '_wcsatt_schemes' );
-				$product->delete_meta_data( '_wcsatt_force_subscription' );
-				$product->delete_meta_data( '_wcsatt_default_status' );
-				$product->delete_meta_data( '_wcsatt_subscription_prompt' );
-			}
+	/**
+	 * WC 2.X way of saving product data.
+	 *
+	 * @deprecated  2.1.0   No longer used internally.
+	 *
+	 * @param  int  $post_id
+	 * @return void
+	 */
+	public static function process_product_meta( $post_id ) {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Meta_Box_Product_Data::save_subscription_data()' );
+		$product = wc_get_product( $post_id );
+		if ( is_a( $product, 'WC_Product' ) ) {
+			self::save_subscription_data( $product );
 		}
 	}
 }

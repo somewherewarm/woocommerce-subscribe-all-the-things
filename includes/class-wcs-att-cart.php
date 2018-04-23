@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Cart support.
  *
  * @class    WCS_ATT_Cart
- * @version  2.0.1
+ * @version  2.1.0
  */
 class WCS_ATT_Cart {
 
@@ -32,23 +32,20 @@ class WCS_ATT_Cart {
 	 */
 	private static function add_hooks() {
 
-		// Add scheme data to cart items that can be pruchased on a recurring basis.
+		// Add scheme data to cart items that can be purchased on a recurring basis.
 		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 10, 3 );
 
-		// Load saved session data of cart items that can be pruchased on a recurring basis.
+		// Load saved session data of cart items that can be purchased on a recurring basis.
 		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'load_cart_item_data_from_session' ), 5, 2 );
 
 		// Inspect product-level/cart-level session data and apply subscription schemes to cart items as needed.
 		add_action( 'woocommerce_cart_loaded_from_session', array( __CLASS__, 'apply_subscription_schemes' ), 5 );
 
 		// Inspect product-level/cart-level session data on add-to-cart and apply subscription schemes to cart items as needed. Then, recalculate totals.
-		add_action( 'woocommerce_add_to_cart', array( __CLASS__, 'apply_subscription_schemes_on_add_to_cart' ), 1000, 6 );
+		add_action( 'woocommerce_add_to_cart', array( __CLASS__, 'apply_subscription_schemes_on_add_to_cart' ), 19, 6 );
 
 		// Update the subscription scheme saved on a cart item when chosing a new option.
 		add_filter( 'woocommerce_update_cart_action_cart_updated', array( __CLASS__, 'update_cart_item_data' ), 10 );
-
-		// Ajax handler for saving the subscription scheme chosen at cart-level.
-		add_action( 'wc_ajax_wcsatt_update_cart_option', array( __CLASS__, 'update_cart_scheme' ) );
 
 		// Check successful application of subscription schemes.
 		add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'check_applied_subscription_schemes' ), 10 );
@@ -85,6 +82,26 @@ class WCS_ATT_Cart {
 		$active_scheme = isset( $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] ) ? $cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] : null;
 
 		return $active_scheme;
+	}
+
+	/**
+	 * Get the posted cart-item subscription scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @param  string  $cart_item_key
+	 * @return string
+	 */
+	public static function get_posted_subscription_scheme( $cart_item_key ) {
+
+		$posted_subscription_scheme_key = null;
+
+		$key = 'convert_to_sub';
+
+		$posted_subscription_scheme_option = isset( $_POST[ 'cart' ][ $cart_item_key ][ $key ] ) ? wc_clean( $_POST[ 'cart' ][ $cart_item_key ][ $key ] ) : null;
+		$posted_subscription_scheme_key    = '0' !== $posted_subscription_scheme_option ? $posted_subscription_scheme_option : false;
+
+		return $posted_subscription_scheme_key;
 	}
 
 	/**
@@ -135,7 +152,7 @@ class WCS_ATT_Cart {
 			}
 
 			// When getting cart subscription schemes for display, do not return anything when renewing/resubscribing.
-			if ( 'display' === $context ) {
+			if ( in_array( $context, array( 'display', 'cart-display' ) ) ) {
 				if ( isset( $cart_item[ 'subscription_renewal' ] ) || isset( $cart_item[ 'subscription_initial_payment' ] ) || isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
 					return false;
 				}
@@ -155,6 +172,24 @@ class WCS_ATT_Cart {
 	public static function get_cart_subscription_scheme() {
 
 		return WC()->session->get( 'wcsatt-active-scheme', null );
+	}
+
+	/**
+	 * Get the posted cart subscription scheme.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return string
+	 */
+	public static function get_posted_cart_subscription_scheme() {
+
+		$posted_subscription_scheme_key = null;
+
+		if ( isset( $_POST[ 'subscription_scheme' ] ) ) {
+			$posted_subscription_scheme_key = wc_clean( $_POST[ 'subscription_scheme' ] );
+		}
+
+		return $posted_subscription_scheme_key;
 	}
 
 	/**
@@ -209,12 +244,7 @@ class WCS_ATT_Cart {
 
 		if ( self::is_supported_product_type( $product_id ) && ! isset( $cart_item[ 'wcsatt_data' ] ) ) { // Might be set - @see 'WCS_ATT_Order::restore_cart_item_from_order_item'.
 
-			$posted_subscription_scheme_key = null;
-
-			if ( isset( $_POST[ 'convert_to_sub_' . $product_id ] ) ) {
-				$posted_subscription_scheme_option = wc_clean( $_POST[ 'convert_to_sub_' . $product_id ] );
-				$posted_subscription_scheme_key    = ! empty( $posted_subscription_scheme_option ) ? $posted_subscription_scheme_option : false;
-			}
+			$posted_subscription_scheme_key = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 
 			$cart_item[ 'wcsatt_data' ] = array(
 				'active_subscription_scheme' => $posted_subscription_scheme_key,
@@ -223,7 +253,6 @@ class WCS_ATT_Cart {
 
 		return $cart_item;
 	}
-
 
 	/**
 	 * Load saved session data of cart items that can be pruchased on a recurring basis.
@@ -351,8 +380,21 @@ class WCS_ATT_Cart {
 						WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $cart->cart_contents[ $cart_item_key ][ 'data' ], true );
 					}
 				}
+
+				/**
+				 * 'wcsatt_applied_cart_item_subscription_scheme' action.
+				 *
+				 * @since  2.1.0
+				 *
+				 * @param  array   $cart_item
+				 * @param  string  $cart_item_key
+				 */
+				do_action( 'wcsatt_applied_cart_item_subscription_scheme', $cart_item, $cart_item_key );
 			}
 		}
+
+		// If the cart is empty, reset the cart-level scheme stored in session data.
+		self::maybe_reset_cart_subscription_scheme();
 	}
 
 	/**
@@ -370,7 +412,7 @@ class WCS_ATT_Cart {
 		 * Currently a cart item can only have product-level or cart-level schemes, not both - @see 'WCS_ATT_Cart::get_cart_subscription_schemes'.
 		 * Note that if there are no cart-level schemes on display, we shouldn't apply any cart-level scheme in the background.
 		 */
-		if ( ! empty( $cart_level_schemes ) && self::get_cart_subscription_schemes( 'display' ) ) {
+		if ( ! empty( $cart_level_schemes ) && self::get_cart_subscription_schemes( 'cart-display' ) ) {
 
 			// Read active cart scheme from session.
 			$scheme_key_to_apply = self::get_cart_subscription_scheme();
@@ -413,10 +455,7 @@ class WCS_ATT_Cart {
 	 * @return void
 	 */
 	public static function apply_subscription_schemes_on_add_to_cart( $item_key, $product_id, $quantity, $variation_id, $variation, $item_data ) {
-
 		self::apply_subscription_schemes( WC()->cart );
-
-		WC()->cart->calculate_totals();
 	}
 
 	/**
@@ -430,57 +469,15 @@ class WCS_ATT_Cart {
 		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
 
-				$selected_scheme_option = isset( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) ? wc_clean( $_POST[ 'cart' ][ $cart_item_key ][ 'convert_to_sub' ] ) : null;
-				$selected_scheme_key    = '0' !== $selected_scheme_option ? $selected_scheme_option : false;
-				$selected_scheme_key    = apply_filters( 'wcsatt_updated_cart_item_scheme_id', $selected_scheme_key, $cart_item, $cart_item_key );
+				$posted_subscription_scheme_key = self::get_posted_subscription_scheme( $cart_item_key );
 
-				if ( null !== $selected_scheme_key ) {
-					WC()->cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme_key;
+				if ( null !== $posted_subscription_scheme_key ) {
+					WC()->cart->cart_contents[ $cart_item_key ][ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $posted_subscription_scheme_key;
 				}
 			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * Ajax handler for saving the subscription scheme chosen at cart-level.
-	 *
-	 * @return void
-	 */
-	public static function update_cart_scheme() {
-
-		check_ajax_referer( 'wcsatt_update_cart_option', 'security' );
-
-		if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
-			define( 'WOOCOMMERCE_CART', true );
-		}
-
-		$selected_scheme = false;
-
-		if ( ! empty( $_POST[ 'selected_scheme' ] ) ) {
-			$selected_scheme = wc_clean( $_POST[ 'selected_scheme' ] );
-		}
-
-		foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
-			if ( ! empty( $cart_item[ 'wcsatt_data' ] ) ) {
-				// Save scheme key on cart item.
-				$cart_item[ 'wcsatt_data' ][ 'active_subscription_scheme' ] = $selected_scheme;
-				// Apply scheme.
-				self::apply_subscription_scheme( $cart_item );
-			}
-		}
-
-		// Save chosen scheme.
-		self::set_cart_subscription_scheme( $selected_scheme );
-
-		// Recalculate totals.
-		WC()->cart->calculate_totals();
-
-		// Update the cart table apart from the totals in order to show modified price html strings with sub details.
-		wc_get_template( 'cart/cart.php' );
-
-		die();
 	}
 
 	/**
@@ -567,11 +564,36 @@ class WCS_ATT_Cart {
 		}
 	}
 
+	/**
+	 * Reset stored cart subscription scheme when the cart is empty.
+	 *
+	 * @since  2.1.0
+	 *
+	 * @return void
+	 */
+	public static function maybe_reset_cart_subscription_scheme() {
+		if ( ! WC()->cart->get_cart_contents_count() ) {
+			self::set_cart_subscription_scheme( false );
+		}
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Deprecated
 	|--------------------------------------------------------------------------
 	*/
+
+	/**
+	 * Ajax handler for saving the subscription scheme chosen at cart-level.
+	 *
+	 * @deprecated  2.1.0  Moved to WCS_ATT_Display_Ajax class.
+	 *
+	 * @return void
+	 */
+	public static function update_cart_scheme() {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Display_Ajax::update_cart_subscription_scheme()' );
+		WCS_ATT_Display_Ajax::update_cart_subscription_scheme();
+	}
 
 	/**
 	 * Returns modified raw prices based on subscription scheme settings.

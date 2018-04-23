@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin includes and hooks.
  *
  * @class    WCS_ATT_Admin
- * @version  2.0.0
+ * @version  2.1.0
  */
 class WCS_ATT_Admin {
 
@@ -50,7 +50,7 @@ class WCS_ATT_Admin {
 		 */
 
 		// Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
-		add_filter( 'woocommerce_subscription_settings', array( __CLASS__, 'cart_level_admin_settings' ) );
+		add_filter( 'woocommerce_subscription_settings', array( __CLASS__, 'add_settings' ), 100 );
 
 		// Save posted cart subscription scheme settings.
 		add_action( 'woocommerce_update_options_subscriptions', array( __CLASS__, 'save_cart_level_settings' ) );
@@ -76,7 +76,7 @@ class WCS_ATT_Admin {
 	/**
 	 * Subscriptions schemes admin metaboxes.
 	 *
-	 * @param  array $values
+	 * @param  array  $values
 	 * @return void
 	 */
 	public static function subscription_schemes_content( $values ) {
@@ -119,10 +119,12 @@ class WCS_ATT_Admin {
 	/**
 	 * Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
 	 *
-	 * @param  array $settings
+	 * @since  2.1.0
+	 *
+	 * @param  array  $settings
 	 * @return array
 	 */
-	public static function cart_level_admin_settings( $settings ) {
+	public static function add_settings( $settings ) {
 
 		// Insert before miscellaneous settings.
 		$misc_section_start = wp_list_filter( $settings, array( 'id' => 'woocommerce_subscriptions_miscellaneous', 'type' => 'title' ) );
@@ -132,20 +134,51 @@ class WCS_ATT_Admin {
 				'name' => __( 'Subscribe to Cart', 'woocommerce-subscribe-all-the-things' ),
 				'type' => 'title',
 				'desc' => '',
-				'id'   => 'wcsatt_subscribe_to_cart_options',
+				'id'   => 'wcsatt_subscribe_to_cart_options'
 			),
-
 			array(
 				'name' => __( 'Cart Subscription Options', 'woocommerce-subscribe-all-the-things' ),
-				'desc' => __( 'Options for purchasing cart contents on a recurring basis.', 'woocommerce-subscribe-all-the-things' ),
+				'desc' => __( 'Options to allow purchasing the entire cart on a recurring basis.', 'woocommerce-subscribe-all-the-things' ),
 				'id'   => 'wcsatt_subscribe_to_cart_schemes',
-				'type' => 'subscription_schemes',
+				'type' => 'subscription_schemes'
 			),
-
 			array(
 				'type' => 'sectionend',
-				'id'   => 'wcsatt_subscribe_to_cart_options',
+				'id'   => 'wcsatt_subscribe_to_cart_options'
 			),
+			array(
+				'name' => __( 'Add to Subscription', 'woocommerce-subscribe-all-the-things' ),
+				'type' => 'title',
+				'desc' => '',
+				'id'   => 'wcsatt_add_to_subscription_options'
+			),
+			array(
+				'name'     => __( 'Products', 'woocommerce-subscribe-all-the-things' ),
+				'desc'     => __( 'Allow customers to add products to existing subscriptions.', 'woocommerce-subscribe-all-the-things' ),
+				'id'       => 'wcsatt_add_product_to_subscription',
+				'type'     => 'select',
+				'options'  => array(
+					'off'              => _x( 'Off', 'adding a product to an existing suscription', 'woocommerce-subscribe-all-the-things' ),
+					'matching_schemes' => _x( 'On For Products With Subscription Options', 'adding a product to an existing suscription', 'woocommerce-subscribe-all-the-things' ),
+					'on'               => _x( 'On', 'adding a product to an existing suscription', 'woocommerce-subscribe-all-the-things' ),
+				),
+				'desc_tip' => true
+			),
+			array(
+				'name'     => __( 'Carts', 'woocommerce-subscribe-all-the-things' ),
+				'desc'     => __( 'Allow customers to add entire carts to existing subscriptions.', 'woocommerce-subscribe-all-the-things' ),
+				'id'       => 'wcsatt_add_cart_to_subscription',
+				'type'     => 'select',
+				'options'  => array(
+					'off'      => _x( 'Off', 'adding a cart\'s contents to an existing suscription', 'woocommerce-subscribe-all-the-things' ),
+					'on'       => _x( 'On', 'adding a cart\'s contents to an existing suscription', 'woocommerce-subscribe-all-the-things' ),
+				),
+				'desc_tip' => true
+			),
+			array(
+				'type' => 'sectionend',
+				'id'   => 'wcsatt_add_to_subscription_options'
+			)
 		) );
 
 		return $settings;
@@ -259,6 +292,7 @@ class WCS_ATT_Admin {
 			$params = array(
 				'add_subscription_scheme_nonce' => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
 				'subscription_lengths'          => wcs_get_subscription_ranges(),
+				'i18n_do_no_sync'               => __( 'Disabled', 'woocommerce-subscribe-all-the-things' ),
 				'wc_ajax_url'                   => admin_url( 'admin-ajax.php' ),
 				'post_id'                       => is_object( $post ) ? $post->ID : '',
 				'wc_plugin_url'                 => WC()->plugin_url()
@@ -266,6 +300,25 @@ class WCS_ATT_Admin {
 
 			wp_localize_script( 'wcsatt-writepanel', 'wcsatt_admin_params', $params );
 		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
+	 *
+	 * @deprecated  2.1.0  No longer used internally.
+	 *
+	 * @param  array  $settings
+	 * @return array
+	 */
+	public static function cart_level_admin_settings( $settings ) {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Admin::add_settings()' );
+		return self::add_settings( $settings );
 	}
 }
 
