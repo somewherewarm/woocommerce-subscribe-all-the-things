@@ -107,7 +107,7 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 
 			$subscription_options_visible = false;
 
-		} elseif ( WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_matching_subscription' ) ) {
+		} elseif ( WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
 
 			$subscription_options_visible = false;
 
@@ -202,7 +202,7 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 		$scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $product, 'object', $scheme_key );
 
 		// We expect a scheme key to be posted when it's only possible to add the product to matching subscriptions.
-		if ( ! $scheme && WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_matching_subscription' ) ) {
+		if ( ! $scheme && WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
 			wp_send_json( $failure );
 		}
 
@@ -334,7 +334,7 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 		}
 
 		// A subscription scheme key should be posted already if we are supposed to do any matching.
-		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_management_add_to_matching_subscription' ) ) {
+		if ( WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
 			if ( empty( $subscription_scheme ) ) {
 				return;
 			}

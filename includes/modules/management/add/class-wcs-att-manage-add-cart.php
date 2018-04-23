@@ -78,6 +78,10 @@ class WCS_ATT_Manage_Add_Cart extends WCS_ATT_Abstract_Module {
 	 */
 	public static function options_template() {
 
+		if ( 'off' === get_option( 'wcsatt_add_cart_to_subscription', 'off' ) ) {
+			return;
+		}
+
 		$subscription_options_visible = false;
 		$active_cart_scheme_key       = WCS_ATT_Cart::get_cart_subscription_scheme();
 		$posted_data                  = WCS_ATT_Manage_Add::get_posted_data( 'update-cart' );

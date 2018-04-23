@@ -126,21 +126,22 @@ class WCS_ATT_Product {
 			break;
 			case 'subscription_management_add_to_subscription':
 
-				/*
-				 * By default, any product can be added to any subscription (as long as it's purchasable and its type is supported).
-				 * To prevent this, use the 'wcsatt_product_supports_feature' filter and require that:
-				 *
-				 * if ( 'subscription_management_add_to_subscription' === $feature ) {
-				 *     $is_feature_supported = $is_feature_supported && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
-				 * }
-				 */
+				$add_to_subscription_option = get_option( 'wcsatt_add_product_to_subscription', 'off' );
+				$is_feature_supported       = false;
 
-				$is_feature_supported = self::supports_feature( $product, 'subscription_schemes' ) && false === $product->is_type( 'mix-and-match' ) && $product->is_purchasable();
+				if ( 'off' !== $add_to_subscription_option ) {
 
-			break;
-			case 'subscription_management_add_to_matching_subscription':
+					$is_feature_supported = self::supports_feature( $product, 'subscription_schemes' ) && false === $product->is_type( 'mix-and-match' ) && $product->is_purchasable();
 
-				$is_feature_supported = self::supports_feature( $product, 'subscription_management_add_to_subscription' ) && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+					/**
+					 * Important: Products with subscription schemes are matched to existing subscriptions with the same billing schedule as the chosen one.
+					 * This behavior can be customized using the 'wcsatt_subscriptions_matching_product' filter - see 'WCS_ATT_Manage_Add_Product::load_matching_subscriptions'.
+					 */
+
+					if ( 'matching_schemes' === $add_to_subscription_option ) {
+						$is_feature_supported = $is_feature_supported && self::supports_feature( $product, 'subscription_scheme_options_product_single' );
+					}
+				}
 
 			break;
 		}

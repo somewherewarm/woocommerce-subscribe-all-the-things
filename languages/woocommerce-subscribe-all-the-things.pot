@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.0-beta.2\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues\n"
-"POT-Creation-Date: 2018-04-19 10:36:47+00:00\n"
+"POT-Creation-Date: 2018-04-23 13:52:12+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,19 +19,39 @@ msgstr ""
 msgid "Add Option"
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:132
+#: includes/admin/class-wcs-att-admin.php:134
 msgid "Subscribe to Cart"
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:139
+#: includes/admin/class-wcs-att-admin.php:140
 msgid "Cart Subscription Options"
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:140
+#: includes/admin/class-wcs-att-admin.php:141
 msgid "Options to allow purchasing the entire cart on a recurring basis."
 msgstr ""
 
-#: includes/admin/class-wcs-att-admin.php:262
+#: includes/admin/class-wcs-att-admin.php:150
+msgid "Add to Subscription"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:156
+msgid "Products"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:157
+msgid "Allow customers to add products to existing subscriptions."
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:168
+msgid "Carts"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:169
+msgid "Allow customers to add entire carts to existing subscriptions."
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:295
 #: includes/class-wcs-att-sync.php:195
 msgid "Disabled"
 msgstr ""
@@ -213,14 +233,14 @@ msgstr ""
 msgid "Select options"
 msgstr ""
 
-#: includes/modules/management/add/class-wcs-att-manage-add-cart.php:227
+#: includes/modules/management/add/class-wcs-att-manage-add-cart.php:231
 #: includes/modules/management/add/class-wcs-att-manage-add-product.php:277
 msgid ""
 "Subscription #%d cannot be edited. Please get in touch with us for "
 "assistance."
 msgstr ""
 
-#: includes/modules/management/add/class-wcs-att-manage-add-cart.php:236
+#: includes/modules/management/add/class-wcs-att-manage-add-cart.php:240
 msgid ""
 "Your cart cannot be added to subscription #%d. Please get in touch with us "
 "for assistance."
@@ -355,6 +375,31 @@ msgstr ""
 
 #. Author URI of the plugin/theme
 msgid "http://prospress.com/"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:161
+msgctxt "adding a product to an existing suscription"
+msgid "Off"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:162
+msgctxt "adding a product to an existing suscription"
+msgid "On For Products With Subscription Options"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:163
+msgctxt "adding a product to an existing suscription"
+msgid "On"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:173
+msgctxt "adding a cart's contents to an existing suscription"
+msgid "Off"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:174
+msgctxt "adding a cart's contents to an existing suscription"
+msgid "On"
 msgstr ""
 
 #: includes/class-wcs-att-integrations.php:986
