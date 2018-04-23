@@ -311,6 +311,8 @@ class WCS_ATT_Admin {
 	/**
 	 * Append "Subscribe to Cart/Order" section in the Subscriptions settings tab.
 	 *
+	 * @deprecated  2.1.0  No longer used internally.
+	 *
 	 * @param  array  $settings
 	 * @return array
 	 */

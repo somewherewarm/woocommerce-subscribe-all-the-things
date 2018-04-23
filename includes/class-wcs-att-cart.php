@@ -584,6 +584,18 @@ class WCS_ATT_Cart {
 	*/
 
 	/**
+	 * Ajax handler for saving the subscription scheme chosen at cart-level.
+	 *
+	 * @deprecated  2.1.0  Moved to WCS_ATT_Display_Ajax class.
+	 *
+	 * @return void
+	 */
+	public static function update_cart_scheme() {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Display_Ajax::update_cart_subscription_scheme()' );
+		WCS_ATT_Display_Ajax::update_cart_subscription_scheme();
+	}
+
+	/**
 	 * Returns modified raw prices based on subscription scheme settings.
 	 *
 	 * @deprecated 2.0.0

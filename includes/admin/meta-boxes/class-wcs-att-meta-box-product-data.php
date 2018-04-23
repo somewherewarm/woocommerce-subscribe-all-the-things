@@ -512,6 +512,28 @@ class WCS_ATT_Meta_Box_Product_Data {
 			$product->delete_meta_data( '_wcsatt_subscription_prompt' );
 		}
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Deprecated
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * WC 2.X way of saving product data.
+	 *
+	 * @deprecated  2.1.0   No longer used internally.
+	 *
+	 * @param  int  $post_id
+	 * @return void
+	 */
+	public static function process_product_meta( $post_id ) {
+		_deprecated_function( __METHOD__ . '()', '2.1.0', 'WCS_ATT_Meta_Box_Product_Data::save_subscription_data()' );
+		$product = wc_get_product( $post_id );
+		if ( is_a( $product, 'WC_Product' ) ) {
+			self::save_subscription_data( $product );
+		}
+	}
 }
 
 WCS_ATT_Meta_Box_Product_Data::init();
