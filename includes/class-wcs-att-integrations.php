@@ -539,8 +539,6 @@ class WCS_ATT_Integrations {
 	/**
 	 * Calculates bundle container item subtotals.
 	 *
-	 * TODO: Maybe calculate this from recurring carts to account for discounts?
-	 *
 	 * @since  2.1.0
 	 *
 	 * @param  array   $cart_item
@@ -649,7 +647,7 @@ class WCS_ATT_Integrations {
 		if ( self::is_bundle_type_product( $product ) ) {
 			if ( $product->is_type( 'bundle' ) && self::bundle_contains_subscription( $product ) ) {
 				$schemes = array();
-			} elseif ( $product->is_type( 'mix-and-match' ) && $product->is_priced_per_product() ) { // TODO: Add support for Per-Item Pricing.
+			} elseif ( $product->is_type( 'mix-and-match' ) && $product->is_priced_per_product() ) {
 				$schemes = array();
 			}
 		}
