@@ -83,7 +83,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 		$subscription_schemes = $product_object->get_meta( '_wcsatt_schemes', true );
 
 		?><div id="wcsatt_data" class="panel woocommerce_options_panel wc-metaboxes-wrapper">
-			<div class="options_group"><?php
+			<div class="options_group general_scheme_options"><?php
 
 				// Subscription Status.
 				woocommerce_wp_checkbox( array( 'id' => '_wcsatt_force_subscription', 'label' => __( 'Force subscription', 'woocommerce-subscribe-all-the-things' ), 'desc_tip' => true, 'description' => __( 'Check this option to prevent one-time purchases of this product. In effect when at least one Subscription Option has been added below.', 'woocommerce-subscribe-all-the-things' ) ) );
@@ -98,14 +98,13 @@ class WCS_ATT_Meta_Box_Product_Data {
 				woocommerce_wp_textarea_input( array( 'id' => '_wcsatt_subscription_prompt', 'label' => __( 'Subscription prompt', 'woocommerce-subscribe-all-the-things' ), 'description' => __( 'Custom html/text to display before the available Subscription Options. In effect when at least one Subscription Option has been added below.', 'woocommerce-subscribe-all-the-things' ), 'desc_tip' => true ) );
 
 			?></div>
-
 			<p class="form-field">
 				<label>
 					<?php
 						echo __( 'Subscription Options', 'woocommerce-subscribe-all-the-things' );
 						echo wc_help_tip( __( 'Add one or more subscription options for this product.', 'woocommerce-subscribe-all-the-things' ) );
 			?></label></p>
-			<div class="subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
+			<div class="options_group subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
 				if ( $subscription_schemes ) {
 

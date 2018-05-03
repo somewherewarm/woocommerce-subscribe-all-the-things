@@ -1,9 +1,10 @@
 /* global wcsatt_admin_params */
 jQuery( function($) {
 
-	var $wcsatt_data_tab    = $( '#wcsatt_data' );
-	var $wcsatt_schemes     = $wcsatt_data_tab.find( '.subscription_schemes' );
-	var wcsatt_block_params = {
+	var $wcsatt_data_tab        = $( '#wcsatt_data' ),
+		$wcsatt_schemes         = $wcsatt_data_tab.find( '.subscription_schemes' ),
+		$general_scheme_options = $wcsatt_data_tab.find( '.general_scheme_options' ),
+		wcsatt_block_params     = {
 		message:    null,
 		overlayCSS: {
 			background: wcsatt_admin_params.post_id !== '' ? '#fff' : '#f1f1f1',
@@ -135,8 +136,20 @@ jQuery( function($) {
 		}
 	};
 
-	// One-time shipping toggle. Shows the one time shipping option only if the product contains any subscription schemes.
-	function one_time_shipping_toggle() {
+	// Toggle general subscription scheme options. Shows the options only if the product contains some subscription schemes.
+	function toggle_general_subscription_scheme_options() {
+
+		var schemes_count = $wcsatt_schemes.find( '.subscription_scheme' ).length;
+
+		if ( schemes_count > 0 ) {
+			$general_scheme_options.show();
+		} else {
+			$general_scheme_options.hide();
+		}
+	}
+
+	// Toggle one-time shipping. Shows the one time shipping option only if the product contains subscription schemes.
+	function toggle_one_time_shipping() {
 
 		var product_type  = $( 'select#product-type' ).val(),
 			schemes_count = $wcsatt_schemes.find( '.subscription_scheme' ).length;
@@ -152,12 +165,14 @@ jQuery( function($) {
 
 	// Trigger one-time shipping option toggle when switching product type.
 	$( 'select#product-type' ).change( function() {
-		one_time_shipping_toggle();
+		toggle_general_subscription_scheme_options();
+		toggle_one_time_shipping();
 	} ).change();
 
 	// Toggle one-time shipping.
 	$wcsatt_data_tab.on( 'woocommerce_subscription_schemes_changed', function() {
-		one_time_shipping_toggle();
+		toggle_general_subscription_scheme_options();
+		toggle_one_time_shipping();
 	} );
 
 	// Toggle suitable price override method fields.
@@ -238,9 +253,6 @@ jQuery( function($) {
 
 			// Run scripts against added markup.
 			added.wcsatt_scripts();
-
-			// Trigger 'change' event to show/hide type-dependent inputs.
-			$( 'input#_virtual' ).change();
 
 			// Trigger 'change' event to show/hide price override method options.
 			added.find( 'select.subscription_pricing_method_input' ).change();
