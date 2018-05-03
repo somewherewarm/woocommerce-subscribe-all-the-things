@@ -461,13 +461,13 @@ class WCS_ATT_Meta_Box_Product_Data {
 			$one_time_shipping = isset( $_POST[ '_subscription_one_time_shipping' ] ) ? 'yes' : 'no';
 
 			// Process default status option.
-			$default_status = isset( $_POST[ '_wcsatt_default_status' ] ) ? stripslashes( $_POST[ '_wcsatt_default_status' ] ) : 'one-time';
+			$default_status = ! empty( $schemes ) && isset( $_POST[ '_wcsatt_default_status' ] ) ? stripslashes( $_POST[ '_wcsatt_default_status' ] ) : 'one-time';
 
 			// Process force-sub status.
-			$force_subscription = isset( $_POST[ '_wcsatt_force_subscription' ] ) ? 'yes' : 'no';
+			$force_subscription = ! empty( $schemes ) && isset( $_POST[ '_wcsatt_force_subscription' ] ) ? 'yes' : 'no';
 
 			// Process prompt text.
-			$prompt = ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ? wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) ) : false;
+			$prompt = ! empty( $schemes ) && ! empty( $_POST[ '_wcsatt_subscription_prompt' ] ) ? wp_kses_post( stripslashes( $_POST[ '_wcsatt_subscription_prompt' ] ) ) : false;
 
 			/*
 			 * Add/update meta.
