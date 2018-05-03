@@ -102,7 +102,7 @@ class WCS_ATT_Meta_Box_Product_Data {
 				<label>
 					<?php
 						echo __( 'Subscription Options', 'woocommerce-subscribe-all-the-things' );
-						echo wc_help_tip( __( 'Add one or more subscription options for this product.', 'woocommerce-subscribe-all-the-things' ) );
+						echo wc_help_tip( __( 'Add subscription options to this product.', 'woocommerce-subscribe-all-the-things' ) );
 			?></label></p>
 			<div class="options_group subscription_schemes wc-metaboxes ui-sortable" data-count=""><?php
 
