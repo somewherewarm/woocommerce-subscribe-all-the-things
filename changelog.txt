@@ -10,6 +10,7 @@
 * Tweak - Template tweaks for consistency, styling flexibility and more freedom to change things using filters.
 * Tweak - Define the selected subscription scheme when adding a product to the cart using an 'add-to-cart' query string.
 * Tweak - Improved support for Product Bundles and Composite Products.
+* Tweak - Hide 'Force subscription', 'Default to', and 'Subscription prompt' fields until there's at least 1 subscription scheme.
 
 2017.11.02 - version 2.0.1
 * Fix - Custom single-product subscription scheme selection prompt not saving/displaying correctly.
