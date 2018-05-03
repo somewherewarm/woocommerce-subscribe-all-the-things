@@ -70,6 +70,7 @@
 
 #wcsatt_data .toolbar {
 	border-top: none;
+	border-bottom: none;
 }
 
 #wcsatt_data .subscription_schemes {
@@ -80,6 +81,10 @@
 	margin: 0;
 	padding: 4px 20px 8px 150px !important;
 	line-height: 26px;
+}
+
+#wcsatt_data .general_scheme_options p.form-field:last-of-type {
+	margin-bottom: 14px;
 }
 
 #wcsatt_data select {
