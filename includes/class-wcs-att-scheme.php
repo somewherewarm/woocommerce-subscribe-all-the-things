@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Subscription scheme object. May extend the WC_Data class or handle CRUD in the future, if schemes are moved out of meta.
  *
  * @class    WCS_ATT_Scheme
- * @version  2.1.0
+ * @version  2.1.1
  */
 class WCS_ATT_Scheme implements ArrayAccess {
 
@@ -134,6 +134,17 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 */
 	public function get_data() {
 		return $this->data;
+	}
+
+	/**
+	 * Returns a md5 hash of the scheme's data array.
+	 *
+	 * @since  2.1.1
+	 *
+	 * @return array
+	 */
+	public function get_hash() {
+		return md5( json_encode( $this->data ) );
 	}
 
 	/**
