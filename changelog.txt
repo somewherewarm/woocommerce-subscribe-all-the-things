@@ -1,5 +1,8 @@
 *** WooCommerce Subscribe All the Things ***
 
+2018.xx.xx - version 2.1.1
+* Fix - Bundled product subscription schemes not inherited from parent product correctly if the schemes tied to both have identical billing schedules.
+
 2018.05.03 - version 2.1.0
 * Feature - Added synchronization options to subscription schemes.
 * Feature - Introduced subscription switching for Simple and Variable products with subscription schemes. Bundles and Composites can't be switched just yet :)

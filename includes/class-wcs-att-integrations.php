@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Compatibility with other extensions.
  *
  * @class    WCS_ATT_Integrations
- * @version  2.1.0
+ * @version  2.1.1
  */
 class WCS_ATT_Integrations {
 
@@ -729,8 +729,19 @@ class WCS_ATT_Integrations {
 		$container_schemes       = WCS_ATT_Product_Schemes::get_subscription_schemes( $container_product );
 		$bundled_product_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $bundled_product );
 
+		$container_schemes_hash       = '';
+		$bundled_product_schemes_hash = '';
+
+		foreach ( $container_schemes as $scheme_key => $scheme ) {
+			$container_schemes_hash .= $scheme->get_hash();
+		}
+
+		foreach ( $bundled_product_schemes as $scheme_key => $scheme ) {
+			$bundled_product_schemes_hash .= $scheme->get_hash();
+		}
+
 		// Copy container schemes to child.
-		if ( array_keys( $container_schemes ) !== array_keys( $bundled_product_schemes ) ) {
+		if ( $container_schemes_hash !== $bundled_product_schemes_hash ) {
 
 			$bundled_product_schemes = array();
 
