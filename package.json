@@ -3,10 +3,10 @@
 	"title": "WooCommerce Subscribe All The Things",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things.git"
+		"url": "https://github.com/Prospress/woocommerce-subscribe-all-the-things.git"
 	},
 	"version": "2.1.0",
-	"homepage": "https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/",
+	"homepage": "https://github.com/Prospress/woocommerce-subscribe-all-the-things/",
 	"main": "Gruntfile.js",
 	"devDependencies": {
 		"grunt": "~1.0.1",

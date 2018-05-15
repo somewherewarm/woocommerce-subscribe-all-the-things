@@ -83,8 +83,8 @@ module.exports = function( grunt ) {
 				type: 'wp-plugin',
 				domainPath: 'languages',
 				potHeaders: {
-					'report-msgid-bugs-to': 'https://github.com/Prospress/woocommerce-subscribe-to-all-the-things/issues',
-					'language-team': 'LANGUAGE <EMAIL@ADDRESS>'
+					'report-msgid-bugs-to': 'https://github.com/Prospress/woocommerce-subscribe-all-the-things/issues',
+					'language-team': 'English (US) <support@prospress.com>'
 				}
 			},
 			go: {
