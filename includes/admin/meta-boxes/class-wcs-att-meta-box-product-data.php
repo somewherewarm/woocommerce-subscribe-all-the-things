@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Product meta-box data for SATT-enabled product types.
  *
  * @class    WCS_ATT_Meta_Box_Product_Data
- * @version  2.1.0
+ * @version  2.1.1
  */
 class WCS_ATT_Meta_Box_Product_Data {
 
@@ -236,122 +236,62 @@ class WCS_ATT_Meta_Box_Product_Data {
 			$subscription_discount       = '';
 		}
 
-		?><div class="hide_if_variable"><?php
+		// Subscription Price Override Method.
+		woocommerce_wp_select( array(
+			'id'      => '_subscription_pricing_method_input',
+			'class'   => 'subscription_pricing_method_input',
+			'label'   => __( 'Price', 'woocommerce-subscribe-all-the-things' ),
+			'value'   => $subscription_pricing_method,
+			'options' => array(
+					'inherit'  => __( 'Inherit from product', 'woocommerce-subscribe-all-the-things' ),
+					'override' => __( 'Override product', 'woocommerce-subscribe-all-the-things' ),
+				),
+			'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method]'
+			)
+		);
 
-			// Subscription Price Override Method.
-			woocommerce_wp_select( array(
-				'id'      => '_subscription_pricing_method_input',
-				'class'   => 'subscription_pricing_method_input',
-				'label'   => __( 'Price', 'woocommerce-subscribe-all-the-things' ),
-				'value'   => $subscription_pricing_method,
-				'options' => array(
-						'inherit'  => __( 'Inherit from product', 'woocommerce-subscribe-all-the-things' ),
-						'override' => __( 'Override product', 'woocommerce-subscribe-all-the-things' ),
-					),
-				'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method]'
-				)
-			);
+		?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
 
-			?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
+			// Price.
+			woocommerce_wp_text_input( array(
+				'id'            => '_override_subscription_regular_price',
+				'name'          => 'wcsatt_schemes[' . $index . '][subscription_regular_price]',
+				'value'         => $subscription_regular_price,
+				'wrapper_class' => 'override_subscription_regular_price',
+				'class'         => 'short',
+				'label'         => __( 'Regular Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+				'data_type'     => 'price'
+			) );
 
-				// Price.
-				woocommerce_wp_text_input( array(
-					'id'            => '_override_subscription_regular_price',
-					'name'          => 'wcsatt_schemes[' . $index . '][subscription_regular_price]',
-					'value'         => $subscription_regular_price,
-					'wrapper_class' => 'override_subscription_regular_price',
-					'class'         => 'short',
-					'label'         => __( 'Regular Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
-					'data_type'     => 'price'
-				) );
+			// Sale Price.
+			woocommerce_wp_text_input( array(
+				'id'            => '_override_subscription_sale_price',
+				'name'          => 'wcsatt_schemes[' . $index . '][subscription_sale_price]',
+				'value'         => $subscription_sale_price,
+				'wrapper_class' => 'override_subscription_sale_price',
+				'class'         => 'short',
+				'label'         => __( 'Sale Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+				'data_type'     => 'price'
+			) );
 
-				// Sale Price.
-				woocommerce_wp_text_input( array(
-					'id'            => '_override_subscription_sale_price',
-					'name'          => 'wcsatt_schemes[' . $index . '][subscription_sale_price]',
-					'value'         => $subscription_sale_price,
-					'wrapper_class' => 'override_subscription_sale_price',
-					'class'         => 'short',
-					'label'         => __( 'Sale Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
-					'data_type'     => 'price'
-				) );
+		?></div>
+		<div class="subscription_pricing_method subscription_pricing_method_inherit"><?php
 
-			?></div>
-			<div class="subscription_pricing_method subscription_pricing_method_inherit"><?php
+			// Discount.
+			woocommerce_wp_text_input( array(
+				'id'            => '_subscription_price_discount',
+				'name'          => 'wcsatt_schemes[' . $index . '][subscription_discount]',
+				'value'         => $subscription_discount,
+				'wrapper_class' => 'subscription_price_discount',
+				'class'         => 'short',
+				'label'         => __( 'Discount %', 'woocommerce-subscribe-all-the-things' ),
+				'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', 'woocommerce-subscribe-all-the-things' ),
+				'desc_tip'      => true,
+				'data_type'     => 'decimal'
+			) );
 
-				// Discount.
-				woocommerce_wp_text_input( array(
-					'id'            => '_subscription_price_discount',
-					'name'          => 'wcsatt_schemes[' . $index . '][subscription_discount]',
-					'value'         => $subscription_discount,
-					'wrapper_class' => 'subscription_price_discount',
-					'class'         => 'short',
-					'label'         => __( 'Discount %', 'woocommerce-subscribe-all-the-things' ),
-					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', 'woocommerce-subscribe-all-the-things' ),
-					'desc_tip'      => true,
-					'data_type'     => 'decimal'
-				) );
-
-			?></div>
-		</div>
-		<div class="show_if_variable" style="display:none"><?php
-
-			// Subscription Price Override Method.
-			woocommerce_wp_select( array(
-				'id'      => '_subscription_pricing_method_input_variable',
-				'class'   => 'subscription_pricing_method_input',
-				'label'   => __( 'Price', 'woocommerce-subscribe-all-the-things' ),
-				'value'   => $subscription_pricing_method,
-				'options' => array(
-						'inherit'  => __( 'Inherit from chosen variation', 'woocommerce-subscribe-all-the-things' ),
-						'override' => __( 'Override all variations', 'woocommerce-subscribe-all-the-things' ),
-					),
-				'name'    => 'wcsatt_schemes[' . $index . '][subscription_pricing_method_variable]'
-				)
-			);
-
-			?><div class="subscription_pricing_method subscription_pricing_method_override"><?php
-
-				// Price.
-				woocommerce_wp_text_input( array(
-					'id'            => '_override_subscription_regular_price_variable',
-					'name'          => 'wcsatt_schemes[' . $index . '][subscription_regular_price_variable]',
-					'value'         => $subscription_regular_price,
-					'wrapper_class' => 'override_subscription_regular_price',
-					'class'         => 'short',
-					'label'         => __( 'Regular Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
-					'data_type'     => 'price'
-				) );
-
-				// Sale Price.
-				woocommerce_wp_text_input( array(
-					'id'            => '_override_subscription_sale_price_variable',
-					'name'          => 'wcsatt_schemes[' . $index . '][subscription_sale_price_variable]',
-					'value'         => $subscription_sale_price,
-					'wrapper_class' => 'override_subscription_sale_price',
-					'class'         => 'short',
-					'label'         => __( 'Sale Price', 'woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
-					'data_type'     => 'price'
-				) );
-
-			?></div>
-			<div class="subscription_pricing_method subscription_pricing_method_inherit"><?php
-
-				// Discount.
-				woocommerce_wp_text_input( array(
-					'id'            => '_subscription_price_discount_variable',
-					'name'          => 'wcsatt_schemes[' . $index . '][subscription_discount_variable]',
-					'value'         => $subscription_discount,
-					'wrapper_class' => 'subscription_price_discount',
-					'class'         => 'short',
-					'label'         => __( 'Discount %', 'woocommerce-subscribe-all-the-things' ),
-					'description'   => __( 'Discount applied on the <strong>Regular Price</strong> of the chosen variation.', 'woocommerce-subscribe-all-the-things' ),
-					'desc_tip'      => true,
-					'data_type'     => 'decimal'
-				) );
-
-			?></div>
-		</div><?php
+		?></div>
+		<?php
 	}
 
 	/**
@@ -372,22 +312,6 @@ class WCS_ATT_Meta_Box_Product_Data {
 				$posted_schemes = stripslashes_deep( $_POST[ 'wcsatt_schemes' ] );
 
 				foreach ( $posted_schemes as $posted_scheme ) {
-
-					// Copy variable type fields.
-					if ( $product->is_type( 'variable' ) ) {
-						if ( isset( $posted_scheme[ 'subscription_regular_price_variable' ] ) ) {
-							$posted_scheme[ 'subscription_regular_price' ] = $posted_scheme[ 'subscription_regular_price_variable' ];
-						}
-						if ( isset( $posted_scheme[ 'subscription_sale_price_variable' ] ) ) {
-							$posted_scheme[ 'subscription_sale_price' ] = $posted_scheme[ 'subscription_sale_price_variable' ];
-						}
-						if ( isset( $posted_scheme[ 'subscription_discount_variable' ] ) ) {
-							$posted_scheme[ 'subscription_discount' ] = $posted_scheme[ 'subscription_discount_variable' ];
-						}
-						if ( isset( $posted_scheme[ 'subscription_pricing_method_variable' ] ) ) {
-							$posted_scheme[ 'subscription_pricing_method' ] = $posted_scheme[ 'subscription_pricing_method_variable' ];
-						}
-					}
 
 					// Format subscription prices.
 					if ( isset( $posted_scheme[ 'subscription_regular_price' ] ) ) {

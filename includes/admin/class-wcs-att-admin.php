@@ -280,12 +280,18 @@ class WCS_ATT_Admin {
 			wp_enqueue_script( 'wcsatt-writepanel' );
 
 			$params = array(
-				'add_subscription_scheme_nonce' => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
-				'subscription_lengths'          => wcs_get_subscription_ranges(),
-				'i18n_do_no_sync'               => __( 'Disabled', 'woocommerce-subscribe-all-the-things' ),
-				'wc_ajax_url'                   => admin_url( 'admin-ajax.php' ),
-				'post_id'                       => is_object( $post ) ? $post->ID : '',
-				'wc_plugin_url'                 => WC()->plugin_url()
+				'add_subscription_scheme_nonce'      => wp_create_nonce( 'wcsatt_add_subscription_scheme' ),
+				'subscription_lengths'               => wcs_get_subscription_ranges(),
+				'i18n_do_no_sync'                    => __( 'Disabled', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_inherit_option'                => __( 'Inherit from product', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_inherit_option_variable'       => __( 'Inherit from chosen variation', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_override_option'               => __( 'Override product', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_override_option_variable'      => __( 'Override all variations', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_discount_description'          => __( 'Discount applied on the <strong>Regular Price</strong> of the product.', 'woocommerce-subscribe-all-the-things' ),
+				'i18n_discount_description_variable' => __( 'Discount applied on the <strong>Regular Price</strong> of the chosen variation.', 'woocommerce-subscribe-all-the-things' ),
+				'wc_ajax_url'                        => admin_url( 'admin-ajax.php' ),
+				'post_id'                            => is_object( $post ) ? $post->ID : '',
+				'wc_plugin_url'                      => WC()->plugin_url()
 			);
 
 			wp_localize_script( 'wcsatt-writepanel', 'wcsatt_admin_params', $params );
