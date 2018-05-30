@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Single-product template modifications.
  *
  * @class    WCS_ATT_Display_Product
- * @version  2.1.0
+ * @version  2.1.1
  */
 class WCS_ATT_Display_Product {
 
@@ -72,7 +72,6 @@ class WCS_ATT_Display_Product {
 		$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
 		$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
 		$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
-		$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
 		$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
 		$posted_subscription_scheme_key       = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 		$options                              = array();
@@ -87,12 +86,11 @@ class WCS_ATT_Display_Product {
 		// Non-recurring (one-time) option.
 		if ( false === $force_subscription ) {
 
-			$none_string                 = _x( 'none', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
-			$one_time_option_description = $product->is_type( 'variation' ) ? sprintf( __( '%1$s &ndash; %2$s', 'woocommerce-subscribe-all-the-things' ), $none_string, '<span class="price one-time-option-price">' . WCS_ATT_Product_Prices::get_price_html( $product, false ) . '</span>' ) : $none_string;
+			$none_string = _x( 'none', 'product subscription selection - negative response', 'woocommerce-subscribe-all-the-things' );
 
 			$options[] = array(
 				'class'       => 'one-time-option',
-				'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $one_time_option_description, $product ),
+				'description' => apply_filters( 'wcsatt_single_product_one_time_option_description', $none_string, $product ),
 				'value'       => '0',
 				'selected'    => '0' === $default_subscription_scheme_option_value,
 				'data'        => apply_filters( 'wcsatt_single_product_one_time_option_data', array(), $product )
@@ -187,7 +185,51 @@ class WCS_ATT_Display_Product {
 
 		if ( is_a( $product, 'WC_Product' ) && $variable_product->get_id() === $product->get_id() && ! did_action( 'wc_ajax_woocommerce_show_composited_product' ) ) {
 			if ( $subscription_options_content = self::get_subscription_options_content( $variation_product, $variable_product ) ) {
-				$variation_data[ 'price_html' ] = $subscription_options_content;
+
+				$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $variable_product );
+				$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $variable_product );
+				$price_filter_exists                  = WCS_ATT_Product_Schemes::price_filter_exists( $subscription_schemes );
+				$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
+				$has_equal_variation_prices           = '' === $variation_data[ 'price_html' ];
+
+				/*
+				 * When should we keep the existing price string?
+				 *
+				 * - When dealing with a single-scheme, force-subscription case (non-empty price string with subscription details).
+				 * - When no scheme overrides the original variation price and all variation prices are equal and hidden (empty price string).
+				 */
+				if ( $is_single_scheme_forced_subscription || ( false === $price_filter_exists && $has_equal_variation_prices ) ) {
+
+					$variation_data[ 'price_html' ] = $variation_data[ 'price_html' ] . $subscription_options_content;
+
+				} else {
+
+					/*
+					 * At this point, the variation price string will include subscription details because it has been filtered by 'WCS_ATT_Product_Prices::get_price_html'.
+					 * We need to somehow generate the original, subscription-less price string.
+					 */
+
+					if ( $force_subscription ) {
+						// To get the subscription-less price string, we need to enable the one-time option.
+						WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $variation_product, false );
+					}
+
+					// Back up the currently applied scheme key.
+					$active_scheme_key = WCS_ATT_Product_Schemes::get_subscription_scheme( $variation_product );
+
+					// Set the one-time scheme on the object.
+					WCS_ATT_Product_Schemes::set_subscription_scheme( $variation_product, false );
+
+					// Get the price string :)
+					$variation_data[ 'price_html' ] = '<span class="price">' . $variation_product->get_price_html() . '</span>' . $subscription_options_content;
+
+					// Un-do.
+					WCS_ATT_Product_Schemes::set_subscription_scheme( $variation_product, $active_scheme_key );
+
+					if ( $force_subscription ) {
+						WCS_ATT_Product_Schemes::set_forced_subscription_scheme( $variation_product, true );
+					}
+				}
 			}
 		}
 
