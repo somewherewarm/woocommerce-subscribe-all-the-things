@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin includes and hooks.
  *
  * @class    WCS_ATT_Admin
- * @version  2.1.0
+ * @version  2.1.1
  */
 class WCS_ATT_Admin {
 
@@ -81,17 +81,7 @@ class WCS_ATT_Admin {
 	 */
 	public static function subscription_schemes_content( $values ) {
 
-		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array(
-
-			// Default to "every month" scheme.
-			apply_filters( 'wcsatt_default_subscription_scheme', array(
-				'subscription_period_interval' => 1,
-				'subscription_period'          => 'month',
-				'subscription_length'          => 0,
-				'id'                           => '1_month_0',
-				'position'                     => 0,
-			) )
-		) );
+		$subscription_schemes = get_option( 'wcsatt_subscribe_to_cart_schemes', array() );
 
 		?><tr valign="top">
 			<th scope="row" class="titledesc"><?php echo esc_html( $values[ 'title' ] ) ?></th>
