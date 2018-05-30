@@ -17,7 +17,7 @@ jQuery( function($) {
 	/* Subscription Schemes
 	/* ------------------------------------*/
 
-	$.fn.wcsatt_scripts = function() {
+	$.fn.wcsatt_init_help_tips = function() {
 
 		$( this ).find( '.help_tip, .tips, .woocommerce-help-tip' ).tipTip( {
 			'attribute': 'data-tip',
@@ -25,6 +25,18 @@ jQuery( function($) {
 			'fadeOut':   50,
 			'delay':     200
 		} );
+	};
+
+	$.fn.wcsatt_init_type_dependent_inputs = function() {
+
+		var product_type = $( 'select#product-type' ).val(),
+			override_option_text = 'variable' === product_type ? wcsatt_admin_params.i18n_override_option_variable : wcsatt_admin_params.i18n_override_option,
+			inherit_option_text  = 'variable' === product_type ? wcsatt_admin_params.i18n_inherit_option_variable : wcsatt_admin_params.i18n_inherit_option,
+			discount_description = 'variable' === product_type ? wcsatt_admin_params.i18n_discount_description_variable : wcsatt_admin_params.i18n_discount_description;
+
+		$( this ).find( '.subscription_pricing_method_input [value="inherit"]' ).text( inherit_option_text );
+		$( this ).find( '.subscription_pricing_method_input [value="override"]' ).text( override_option_text );
+		$( this ).find( '.subscription_price_discount .woocommerce-help-tip' ).attr( 'data-tip', discount_description ).wcsatt_init_help_tips();
 	};
 
 	$.fn.wcsatt_refresh_scheme_lengths = function() {
@@ -148,6 +160,16 @@ jQuery( function($) {
 		}
 	}
 
+	// Populate type-specific inputs.
+	function initialize_type_dependent_scheme_inputs() {
+
+		var $schemes = $wcsatt_schemes.find( '.subscription_scheme' );
+
+		if ( $schemes.length > 0 ) {
+			$schemes.wcsatt_init_type_dependent_inputs();
+		}
+	}
+
 	// Toggle one-time shipping. Shows the one time shipping option only if the product contains subscription schemes.
 	function toggle_one_time_shipping() {
 
@@ -165,6 +187,7 @@ jQuery( function($) {
 
 	// Trigger one-time shipping option toggle when switching product type.
 	$( 'select#product-type' ).change( function() {
+		initialize_type_dependent_scheme_inputs();
 		toggle_general_subscription_scheme_options();
 		toggle_one_time_shipping();
 	} ).change();
@@ -249,13 +272,14 @@ jQuery( function($) {
 			// Append markup.
 			$wcsatt_schemes.append( response.markup );
 
-			var added = $wcsatt_schemes.find( '.subscription_scheme' ).last();
+			var $added_scheme = $wcsatt_schemes.find( '.subscription_scheme' ).last();
 
 			// Run scripts against added markup.
-			added.wcsatt_scripts();
+			$added_scheme.wcsatt_init_type_dependent_inputs();
+			$added_scheme.wcsatt_init_help_tips();
 
 			// Trigger 'change' event to show/hide price override method options.
-			added.find( 'select.subscription_pricing_method_input' ).change();
+			$added_scheme.find( 'select.subscription_pricing_method_input' ).change();
 
 			// Add indexes.
 			subscription_schemes_row_indexes();

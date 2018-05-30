@@ -3,6 +3,8 @@
 2018.xx.xx - version 2.1.1
 * Fix - Bundled product subscription schemes not inherited from parent product correctly if the schemes tied to both have identical billing schedules.
 * Fix - Wrong repository name in .pot file.
+* Fix - Edge case issues with saving newly created schemes after changing the product type.
+* Fix - When adding a new scheme to a Variable product, some Price fields appear mislabelled.
 * Tweak - Do not default global cart-level scheme options to non-empty set.
 
 2018.05.03 - version 2.1.0
