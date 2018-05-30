@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Product meta-box data for SATT-enabled product types.
  *
  * @class    WCS_ATT_Meta_Box_Product_Data
- * @version  2.1.0
+ * @version  2.1.1
  */
 class WCS_ATT_Meta_Box_Product_Data {
 
