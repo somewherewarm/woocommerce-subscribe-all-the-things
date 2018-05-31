@@ -5,6 +5,7 @@
 * Fix - Wrong repository name in .pot file.
 * Fix - Edge case issues with saving newly created schemes after changing the product type.
 * Fix - When adding a new scheme to a Variable product, some Price fields appear mislabelled.
+* Fix - When choosing a variation with susbcription schemes, its price string is always replaced by the subscription scheme options. Unless all variations have the same price, this behavior leaves the user wondering what the variation price might be.
 * Tweak - Do not default global cart-level scheme options to non-empty set.
 
 2018.05.03 - version 2.1.0

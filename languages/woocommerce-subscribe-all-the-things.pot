@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All the Things 2.1.1-dev\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-all-the-things/issues\n"
-"POT-Creation-Date: 2018-05-30 07:22:53+00:00\n"
+"POT-Creation-Date: 2018-05-30 14:15:52+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -54,6 +54,35 @@ msgstr ""
 #: includes/admin/class-wcs-att-admin.php:285
 #: includes/class-wcs-att-sync.php:195
 msgid "Disabled"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:286
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:246
+msgid "Inherit from product"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:287
+msgid "Inherit from chosen variation"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:288
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:247
+msgid "Override product"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:289
+msgid "Override all variations"
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:290
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:288
+msgid "Discount applied on the <strong>Regular Price</strong> of the product."
+msgstr ""
+
+#: includes/admin/class-wcs-att-admin.php:291
+msgid ""
+"Discount applied on the <strong>Regular Price</strong> of the chosen "
+"variation."
 msgstr ""
 
 #: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:65
@@ -124,53 +153,23 @@ msgstr ""
 msgid "Choose the subscription billing length."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:245
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:303
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:243
 msgid "Price"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:248
-msgid "Inherit from product"
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:249
-msgid "Override product"
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:264
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:322
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:262
 msgid "Regular Price"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:275
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:333
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:273
 msgid "Sale Price"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:289
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:347
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:287
 msgid "Discount %"
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:290
-msgid "Discount applied on the <strong>Regular Price</strong> of the product."
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:306
-msgid "Inherit from chosen variation"
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:307
-msgid "Override all variations"
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:348
-msgid ""
-"Discount applied on the <strong>Regular Price</strong> of the chosen "
-"variation."
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:416
+#: includes/admin/meta-boxes/class-wcs-att-meta-box-product-data.php:340
 msgid "Please enter positive subscription discount values, between 0-100."
 msgstr ""
 
@@ -220,16 +219,12 @@ msgstr ""
 msgid "only now"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:91
-msgid "%1$s &ndash; %2$s"
-msgstr ""
-
-#: includes/display/class-wcs-att-display-product.php:235
-#: includes/display/class-wcs-att-display-product.php:265
+#: includes/display/class-wcs-att-display-product.php:277
+#: includes/display/class-wcs-att-display-product.php:307
 msgid "Sign up"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:257
+#: includes/display/class-wcs-att-display-product.php:299
 msgid "Select options"
 msgstr ""
 
@@ -443,12 +438,12 @@ msgctxt "cart subscription selection - positive response"
 msgid "Yes, %s."
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:90
+#: includes/display/class-wcs-att-display-product.php:89
 msgctxt "product subscription selection - negative response"
 msgid "none"
 msgstr ""
 
-#: includes/display/class-wcs-att-display-product.php:133
+#: includes/display/class-wcs-att-display-product.php:131
 msgctxt "product subscription selection - positive response"
 msgid "%s"
 msgstr ""
