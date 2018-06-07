@@ -3,7 +3,7 @@
 * Plugin Name: WooCommerce Subscribe All the Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
 * Description: Mini-extension for WooCommerce Subscriptions that allows you to add subscription options to non-subscription product types.
-* Version: 2.1.1-dev
+* Version: 2.1.1
 * Author: Prospress Inc.
 * Author URI: http://prospress.com/
 *
@@ -14,7 +14,7 @@
 * Tested up to: 4.9
 *
 * WC requires at least: 3.0
-* WC tested up to: 3.3
+* WC tested up to: 3.4
 *
 * Copyright: © 2009-2018 Prospress, Inc.
 * License: GNU General Public License v3.0
@@ -34,7 +34,7 @@ require_once( 'includes/modules/abstract/class-wcs-att-abstract-module.php' );
 class WCS_ATT extends WCS_ATT_Abstract_Module {
 
 	/* Plugin version. */
-	const VERSION = '2.1.1-dev';
+	const VERSION = '2.1.1';
 
 	/* Required WC version. */
 	const REQ_WC_VERSION = '3.0.0';

@@ -1,6 +1,6 @@
 *** WooCommerce Subscribe All the Things ***
 
-2018.xx.xx - version 2.1.1
+2018.06.07 - version 2.1.1
 * Fix - Bundled product subscription schemes not inherited from parent product correctly if the schemes tied to both have identical billing schedules.
 * Fix - Wrong repository name in .pot file.
 * Fix - Edge case issues with saving newly created schemes after changing the product type.

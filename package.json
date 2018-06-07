@@ -5,7 +5,7 @@
 		"type": "git",
 		"url": "https://github.com/Prospress/woocommerce-subscribe-all-the-things.git"
 	},
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"homepage": "https://github.com/Prospress/woocommerce-subscribe-all-the-things/",
 	"main": "Gruntfile.js",
 	"devDependencies": {
