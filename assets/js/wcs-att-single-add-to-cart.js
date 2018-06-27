@@ -449,7 +449,7 @@
 			this.matching_subscriptions_view = new Matching_Subscriptions_View( { product: this, model: this.matching_subscriptions_model, el: $product_form.find( '.wcsatt-add-to-subscription-wrapper' ), $el_content: $product_form.find( '.wcsatt-add-to-subscription-options' ) } );
 
 			// Simple switching fix for https://github.com/woocommerce/woocommerce/commit/3340d5c7cc78d0a254dfed4c2c7f6f0d5645c8ba#diff-cb560f318dd3126e27d8499b80e71027
-			if ( window.location.href.indexOf( 'switch-subscription' ) && window.location.href.indexOf( 'item' ) ) {
+			if ( window.location.href.indexOf( 'switch-subscription' ) != -1 && window.location.href.indexOf( 'item' ) != -1 ) {
 				$product_form.prop( 'action', '' );
 			}
 		};
