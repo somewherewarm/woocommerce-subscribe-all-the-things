@@ -515,8 +515,8 @@ class WCS_ATT_Cart {
 			$scheme_to_apply = self::get_subscription_scheme( $cart_item );
 			$applied_scheme  = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ] );
 
-			// Handle mismatch. Remember that when renewing we are deleting all scheme data from the object and letting WCS handle everything.
-			if ( $scheme_to_apply !== $applied_scheme && ! isset( $cart_item[ 'subscription_renewal' ] ) ) {
+			// Handle mismatch. Remember that when renewing or resubscribing we are deleting all scheme data from the object and letting WCS handle everything.
+			if ( $scheme_to_apply !== $applied_scheme && ! isset( $cart_item[ 'subscription_renewal' ] ) && ! isset( $cart_item[ 'subscription_resubscribe' ] ) ) {
 
 				$available_schemes  = WCS_ATT_Product_Schemes::get_subscription_schemes( $cart_item[ 'data' ] );
 				$has_forced_schemes = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $cart_item[ 'data' ] );
