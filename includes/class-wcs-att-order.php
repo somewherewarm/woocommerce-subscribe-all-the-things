@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Order hooks for saving/restoring the subscription state of a product to/from order item data.
  *
  * @class    WCS_ATT_Order
- * @version  2.0.0
+ * @version  2.1.2
  */
 class WCS_ATT_Order {
 
@@ -101,7 +101,7 @@ class WCS_ATT_Order {
 	 * @return WC_Product
 	 */
 	public static function restore_product_from_order_item( $product, $order_item ) {
-		if ( null !== ( $scheme_key = self::get_subscription_scheme( $order_item ) ) ) {
+		if ( $product && null !== ( $scheme_key = self::get_subscription_scheme( $order_item ) ) ) {
 			WCS_ATT_Product_Schemes::set_subscription_scheme( $product, $scheme_key );
 		}
 		return $product;
