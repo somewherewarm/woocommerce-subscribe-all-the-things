@@ -8,7 +8,7 @@
  * We try to do this as little as possible, but it does happen.
  * When this occurs the version of the template file will be bumped and the readme will list any important changes.
  *
- * @version 2.1.0
+ * @version 2.1.2
  */
 
 // Exit if accessed directly.
@@ -28,14 +28,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</p>
 		<div class="wcsatt-add-cart-to-subscription-options" <?php echo $is_checked ? '' : 'style="display:none;"'; ?> >
 			<?php
-				/**
-				 * 'wcsatt_display_subscriptions_matching_cart' action.
-				 *
-				 * @since  2.1.0
-				 *
-				 * @hooked WCS_ATT_Manage_Add::display_subscriptions_matching_cart - 10
-				 */
-				do_action( 'wcsatt_display_subscriptions_matching_cart' );
+				if ( $is_checked ) {
+
+					/**
+					 * 'wcsatt_display_subscriptions_matching_cart' action.
+					 *
+					 * @since  2.1.0
+					 *
+					 * @hooked WCS_ATT_Manage_Add::display_subscriptions_matching_cart - 10
+					 */
+					do_action( 'wcsatt_display_subscriptions_matching_cart' );
+				}
 			?>
 		</div>
 	</form>
