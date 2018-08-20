@@ -35,10 +35,10 @@ class WCS_ATT_Test_Helpers_Product {
 	public static function create_simple_satt_product( $config = array() ) {
 
 		// Create a simple product.
-		$simple_product = WC_Helper_Product::create_simple_product();
+		$product = WC_Helper_Product::create_simple_product();
 
 		// Add a couple subscription schemes to it.
-		$product_id = $simple_product->get_id();
+		$product_id = $product->get_id();
 
 		// Default schemes configuration.
 		$config = wp_parse_args( $config, array(
@@ -58,7 +58,8 @@ class WCS_ATT_Test_Helpers_Product {
 				)
 			),
 
-			'force_subscription' => false
+			'force_subscription' => false,
+			'default_status'     => 'one-time'
 		) );
 
 		$scheme_data = array();
@@ -73,7 +74,63 @@ class WCS_ATT_Test_Helpers_Product {
 
 		// Store other options.
 		update_post_meta( $product_id, '_wcsatt_force_subscription', $config[ 'force_subscription' ] ? 'yes' : 'no' );
+		update_post_meta( $product_id, '_wcsatt_default_status', $config[ 'default_status' ] );
 
-		return $simple_product;
+		return $product;
+	}
+
+	/**
+	 * Create product composite.
+	 *
+	 * @since 2.1.2
+	 *
+	 * @param  array  $config
+	 * @return WC_Product
+	 */
+	public static function create_variable_satt_product( $config = array() ) {
+
+		// Create a simple product.
+		$product = WC_Helper_Product::create_variation_product();
+
+		// Add a couple subscription schemes to it.
+		$product_id = $product->get_id();
+
+		// Default schemes configuration.
+		$config = wp_parse_args( $config, array(
+
+			'scheme_data' => array(
+
+				0 => array(
+					'subscription_period_interval' => 1,
+					'subscription_period'          => 'month',
+					'subscription_length'          => 5
+				),
+
+				1 => array(
+					'subscription_period_interval' => 2,
+					'subscription_period'          => 'month',
+					'subscription_length'          => 10
+				)
+			),
+
+			'force_subscription' => false,
+			'default_status'     => 'one-time'
+		) );
+
+		$scheme_data = array();
+
+		foreach ( $config[ 'scheme_data' ] as $scheme ) {
+			$id                 = $scheme[ 'subscription_period_interval' ] . '_' . $scheme[ 'subscription_period' ] . '_' . $scheme[ 'subscription_length' ];
+			$scheme_data[ $id ] = array_merge( $scheme, array( 'id' => $id ) );
+		}
+
+		// Store schemes.
+		update_post_meta( $product_id, '_wcsatt_schemes', $scheme_data );
+
+		// Store other options.
+		update_post_meta( $product_id, '_wcsatt_force_subscription', $config[ 'force_subscription' ] ? 'yes' : 'no' );
+		update_post_meta( $product_id, '_wcsatt_default_status', $config[ 'default_status' ] );
+
+		return $product;
 	}
 }
