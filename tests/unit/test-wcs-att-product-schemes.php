@@ -160,6 +160,10 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 	 */
 	public function test_get_default_subscription_scheme() {
 
+		/*
+		 * Simple.
+		 */
+
 		$product = WCS_ATT_Test_Helpers_Product::create_simple_satt_product();
 
 		$this->assertEquals( false, WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ) );
@@ -179,6 +183,17 @@ class WCS_ATT_Product_Schemes_Tests extends WCS_ATT_Test_Case {
 		$this->assertEquals( '2_month_10', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ) );
 
 		WCS_ATT_Test_Helpers_Product::delete_simple_satt_product( $product );
+
+		/*
+		 * Variable.
+		 */
+
+		$product = WCS_ATT_Test_Helpers_Product::create_variable_satt_product( array( 'default_status' => 'subscription' ) );
+
+		$variation_ids = $product->get_children();
+		$variation     = wc_get_product( current( $variation_ids ) );
+
+		$this->assertEquals( '1_month_5', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $variation, 'key' ) );
 	}
 
 	/**
