@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Single-product template modifications.
  *
  * @class    WCS_ATT_Display_Product
- * @version  2.1.1
+ * @version  2.1.2
  */
 class WCS_ATT_Display_Product {
 
@@ -71,10 +71,13 @@ class WCS_ATT_Display_Product {
 
 		$product_id                           = WCS_ATT_Core_Compatibility::get_product_id( $product );
 		$subscription_schemes                 = WCS_ATT_Product_Schemes::get_subscription_schemes( $product );
-		$force_subscription                   = WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
-		$default_subscription_scheme_key      = apply_filters( 'wcsatt_get_default_subscription_scheme_id', WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' ), $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
+		$force_subscription                   = is_a( $parent_product, 'WC_Product' ) ? WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $parent_product ) : WCS_ATT_Product_Schemes::has_forced_subscription_scheme( $product );
+		$default_subscription_scheme_key      = is_a( $parent_product, 'WC_Product' ) ? WCS_ATT_Product_Schemes::get_default_subscription_scheme( $parent_product, 'key' ) : WCS_ATT_Product_Schemes::get_default_subscription_scheme( $product, 'key' );
 		$posted_subscription_scheme_key       = WCS_ATT_Product_Schemes::get_posted_subscription_scheme( $product_id );
 		$options                              = array();
+
+		// Filter default key.
+		$default_subscription_scheme_key = apply_filters( 'wcsatt_get_default_subscription_scheme_id', $default_subscription_scheme_key, $subscription_schemes, false === $force_subscription, $product ); // Why 'false === $force_subscription'? The answer is back-compat.
 
 		// Option selected by default.
 		if ( null !== $posted_subscription_scheme_key ) {

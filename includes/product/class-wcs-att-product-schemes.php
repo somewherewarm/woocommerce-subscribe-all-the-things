@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * API for working with the subscription schemes of subscription-enabled product objects.
  *
  * @class    WCS_ATT_Product_Schemes
- * @version  2.0.0
+ * @version  2.1.2
  */
 class WCS_ATT_Product_Schemes {
 
@@ -232,6 +232,13 @@ class WCS_ATT_Product_Schemes {
 				} else {
 
 					$default_status = $product->get_meta( '_wcsatt_default_status', true );
+
+					// Attempt to get meta from parent if undefined on variation.
+					if ( '' === $default_status && $product->is_type( 'variation' ) ) {
+
+						$parent         = wc_get_product( $product->get_parent_id() );
+						$default_status = $parent ? $parent->get_meta( '_wcsatt_default_status', true ) : '';
+					}
 
 					if ( 'subscription' === $default_status ) {
 

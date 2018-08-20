@@ -3,6 +3,7 @@
 2018.xx.xx - version 2.1.2
 * Fix - Ensure the add-to-cart form action is cleared only when switching. Resolves an issue with External product links not functioning as expected.
 * Fix - Only load matching subscriptions in the cart page when ticking "Add this cart to an existing subscription?". Resolves performance issues in the cart page on sites with lots of active subscriptions.
+* Fix - Default variable product subscription scheme not pre-selected in chosen variation details.
 
 2018.06.07 - version 2.1.1
 * Fix - Bundled product subscription schemes not inherited from parent product correctly if the schemes tied to both have identical billing schedules.
