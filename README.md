@@ -51,6 +51,7 @@ To use the plugin, you will need:
 
 ### Installation
 
+0. Download the Zip file of the latest version from [GitHub](https://github.com/Prospress/woocommerce-subscribe-all-the-things/archive/master.zip)
 1. Go to **WordPress Admin &gt; Plugins &gt; Add New**.
 2. Click **Upload Plugin** at the top.
 3. **Choose File** and select the .zip file you downloaded in Step 1.
