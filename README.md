@@ -67,6 +67,9 @@ To add subscription options to a non-subscription product:
 4. **Optional**: If applicable, define whether the product should default to a one-time or recurring purchase using the **Default to** option.
 5. **Optional**: Enter a custom **Subscription prompt** -- this is the text displayed above the subscription options on the product page.
 
+![](http://pic.pros.pr/30777652ee09/Image%2525202018-10-16%252520at%25252021.19.56.png)
+
+
 #### Subscription Discounts
 
 You can optionally offer a discounted price that's unique to each subscription option. This is a great way to provide an incentive for customers to subscribe to a product.
