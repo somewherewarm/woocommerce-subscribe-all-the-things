@@ -51,10 +51,11 @@ To use the plugin, you will need:
 
 ### Installation
 
-1. Go to **WordPress Admin &gt; Plugins &gt; Add New**.
-2. Click **Upload Plugin** at the top.
-3. **Choose File** and select the .zip file you downloaded in Step 1.
-4. Click **Install Now** and **Activate** the plugin.
+1. Download the zip from github: https://github.com/Prospress/woocommerce-subscribe-all-the-things/archive/master.zip
+2. Go to **WordPress Admin &gt; Plugins &gt; Add New**.
+3. Click **Upload Plugin** at the top.
+4. **Choose File** and select the .zip file you downloaded in Step 1.
+5. Click **Install Now** and **Activate** the plugin.
 
 ### Product Subscription Options
 
