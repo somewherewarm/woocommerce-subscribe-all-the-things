@@ -91,6 +91,9 @@
 			variation_found: function( event, variation ) {
 				this.variation = variation;
 				this.initialize( { $el_options: this.$el.find( '.wcsatt-options-wrapper' ) } );
+
+
+				this.$el.find( '.wcsatt-options-wrapper' ).slideDown();
 			},
 
 			variation_selected: function() {
@@ -98,6 +101,9 @@
 			},
 
 			reset_schemes: function() {
+
+				this.$el.find( '.wcsatt-options-wrapper' ).slideUp();
+
 				this.variation = false;
 				this.model.set_schemes( {} );
 				this.model.set_active_scheme( false );
@@ -122,7 +128,6 @@
 			},
 
 			initialize: function( options ) {
-
 				this.$el_options = options.$el_options;
 
 				this.model.set_schemes( this.find_schemes() );
@@ -736,6 +741,13 @@
 	$( '.composite_form .composite_data' ).each( function() {
 		$( this ).on( 'wc-composite-initializing', function( event, composite ) {
 			new CP_Integration( composite );
+		} );
+	} );
+
+	// Hook into Mix and Match.
+	$( '.mnm_form .mnm_cart' ).each( function() {
+		$( this ).on( 'wc-mnm-initialized', function( event, mnm ) {
+			new MNM_Integration( bundle );
 		} );
 	} );
 

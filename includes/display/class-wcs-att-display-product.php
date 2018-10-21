@@ -45,8 +45,6 @@ class WCS_ATT_Display_Product {
 		add_filter( 'woocommerce_product_add_to_cart_url', array( __CLASS__, 'add_to_cart_url' ), 10, 2 );
 		add_filter( 'woocommerce_product_supports', array( __CLASS__, 'supports_ajax_add_to_cart' ), 10, 3 );
 
-		// Replace plain variation price html with subscription options template.
-		add_filter( 'woocommerce_available_variation', array( __CLASS__, 'add_subscription_options_to_variation_data' ), 0, 3 );
 	}
 
 	/**
@@ -59,13 +57,6 @@ class WCS_ATT_Display_Product {
 	public static function get_subscription_options_content( $product, $parent_product = null ) {
 
 		if ( ! WCS_ATT_Product::supports_feature( $product, 'subscription_scheme_options_product_single' ) ) {
-			return '';
-		}
-
-		/*
-		 * Subscription options for variable products are embedded inside the variation data 'price_html' field and updated by the core variations script.
-		 */
-		if ( $product->is_type( 'variable' ) ) {
 			return '';
 		}
 

@@ -42,6 +42,10 @@ ul.wcsatt-options-product {
 	display: inline;
 }
 
+.woocommerce-variation-add-to-cart .wcsatt-options-wrapper {
+	display: none;
+}
+
 /* Cart */
 
 ul.wcsatt-options-cart {
