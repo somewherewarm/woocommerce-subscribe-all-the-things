@@ -353,7 +353,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 * @param  WC_Subscription  $subscription
 	 * @return boolean
 	 */
-	public function matches_subscription( $subscription ) {
+	public function matches_subscription( $subscription, $args = array() ) {
 
 		$period   = $subscription->get_billing_period();
 		$interval = $subscription->get_billing_interval();
@@ -363,13 +363,21 @@ class WCS_ATT_Scheme implements ArrayAccess {
 			return false;
 		}
 
+		$default = array(
+			'next_payment'      => true,
+			'upcoming_renewals' => true,
+			'payment_date'      => true
+		);
+
+		$match = wp_parse_args( $args, $default );
+
 		// The subscription must have an upcoming renewal.
-		if ( ! $subscription->get_time( 'next_payment' ) ) {
+		if ( $match[ 'payment_date' ] && ! $subscription->get_time( 'next_payment' ) ) {
 			return false;
 		}
 
 		// The scheme length must match the remaining subscription renewals.
-		if ( $this->get_length() ) {
+		if ( $match[ 'upcoming_renewals' ] && $this->get_length() ) {
 
 			$subscription_next_payment = $subscription->get_time( 'next_payment' );
 			$subscription_end          = $subscription->get_time( 'end' );
@@ -387,7 +395,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 		}
 
 		// If the scheme is synced, its payment day must match the next subscription renewal payment day.
-		if ( $this->is_synced() ) {
+		if ( $match[ 'payment_date' ] && $this->is_synced() ) {
 
 			$scheme_sync_day           = $this->get_sync_date();
 			$subscription_next_payment = $subscription->get_time( 'next_payment' );
