@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Add stuff to existing subscriptions.
  *
  * @class    WCS_ATT_Manage_Add
- * @version  2.1.0
+ * @version  2.1.2
  */
 class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 
@@ -164,7 +164,7 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 			'product_id'   => $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id(),
 			'variation_id' => $product->is_type( 'variation' ) ? $product->get_id() : 0,
 			'quantity'     => 1,
-			'variations'   => array()
+			'variation'    => array()
 		);
 
 		$parsed_args = wp_parse_args( $args, $default_args );
@@ -184,7 +184,7 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 		// Empty the cart.
 		WC()->cart->empty_cart( false );
 
-		$cart_item_key = WC()->cart->add_to_cart( $parsed_args[ 'product_id' ], $parsed_args[ 'quantity' ], $parsed_args[ 'variation_id' ], $parsed_args[ 'variations' ] );
+		$cart_item_key = WC()->cart->add_to_cart( $parsed_args[ 'product_id' ], $parsed_args[ 'quantity' ], $parsed_args[ 'variation_id' ], $parsed_args[ 'variation' ] );
 
 		// Add the product to cart.
 		if ( ! $cart_item_key ) {
@@ -415,7 +415,7 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 					$added_item_id = $subscription->add_product( $product, $quantity, array(
 						'product_id'   => $product_id,
 						'variation_id' => $variation_id,
-						'variations'   => $variation_data,
+						'variation'    => $variation_data,
 						'subtotal'     => $subtotal,
 						'total'        => $total
 					) );

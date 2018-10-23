@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Add stuff to existing subscriptions.
  *
  * @class    WCS_ATT_Manage_Add_Product
- * @version  2.1.0
+ * @version  2.1.2
  */
 class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 
@@ -395,10 +395,10 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 	 * @param  int      $product_id
 	 * @param  mixed    $quantity
 	 * @param  int      $variation_id
-	 * @param  array    $variations
+	 * @param  array    $variation_data
 	 * @return bool
 	 */
-	public static function add_to_subscription_validation( $result, $product_id, $quantity, $variation_id = 0, $variations = array() ) {
+	public static function add_to_subscription_validation( $result, $product_id, $quantity, $variation_id = 0, $variation_data = array() ) {
 
 		if ( $result ) {
 
@@ -428,7 +428,7 @@ class WCS_ATT_Manage_Add_Product extends WCS_ATT_Abstract_Module {
 				'product_id'   => $product_id,
 				'variation_id' => $variation_id,
 				'quantity'     => $quantity,
-				'variations'   => $variations
+				'variation'    => $variation_data
 			);
 		}
 
