@@ -121,7 +121,7 @@ class WCS_ATT_Display_Product {
 				}
 			}
 
-			$sub_price_html = WCS_ATT_Product_Prices::get_price_html( $product, $subscription_scheme->get_key(), $sub_price_html_args );
+			$sub_price_html = WCS_ATT_Product_Prices::get_price_html( $product, $subscription_scheme->get_key(), apply_filters( 'wcsatt_subscription_price_html_args', $sub_price_html_args, $subscription_scheme, $product ) );
 			$sub_price_html = false === $sub_price_html_args[ 'subscription_price' ] ? '<span class="subscription-details">' . $sub_price_html . '</span>' : $sub_price_html;
 			$sub_price_html = '<span class="' . $price_class . ' subscription-price">' . $sub_price_html . '</span>';
 
