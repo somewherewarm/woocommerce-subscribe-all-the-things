@@ -34,6 +34,7 @@ class WCS_ATT_Display_Product {
 
 		// Display subscription options in the single-product template.
 		add_action( 'woocommerce_before_add_to_cart_button', array( __CLASS__, 'show_subscription_options' ), 100 );
+		add_action( 'woocommerce_single_variation', array( __CLASS__, 'show_subscription_options_for_variations' ), 15 ); 
 
 		// Changes the single-product add-to-cart button text when a product with the force subscription is set.
 		add_filter( 'woocommerce_product_single_add_to_cart_text', array( __CLASS__, 'single_add_to_cart_text' ), 10, 2 );
@@ -250,6 +251,17 @@ class WCS_ATT_Display_Product {
 		global $product;
 		echo self::get_subscription_options_content( $product );
 	}
+
+
+	/**
+	 * Holder for single-product options.
+	 *
+	 * @return void
+	 */
+	public static function show_subscription_options_for_variations() {
+		echo '<div class="wcsatt-single-variation" style="display: none"></div>';
+	}
+
 
 	/**
 	 * Overrides the single-product add-to-cart button text with "Sign up".

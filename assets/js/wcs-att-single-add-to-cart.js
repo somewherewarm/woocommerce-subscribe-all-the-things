@@ -90,7 +90,7 @@
 
 			variation_found: function( event, variation ) {
 				this.variation = variation;
-				this.$el.find( '.single_variation' ).append( variation.satt_html );
+				this.$el.find( '.wcsatt-single-variation' ).html( variation.satt_html ).show();
 				this.initialize( { $el_options: this.$el.find( '.wcsatt-options-wrapper' ) } );
 			},
 
@@ -99,6 +99,7 @@
 			},
 
 			reset_schemes: function() {
+				this.$el.find( '.wcsatt-single-variation' ).hide();
 				this.variation = false;
 				this.model.set_schemes( {} );
 				this.model.set_active_scheme( false );
