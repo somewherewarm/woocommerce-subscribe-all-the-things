@@ -195,6 +195,8 @@ class WCS_ATT_Display_Product {
 				$is_single_scheme_forced_subscription = $force_subscription && sizeof( $subscription_schemes ) === 1;
 				$has_equal_variation_prices           = '' === $variation_data[ 'price_html' ];
 
+				$variation_data[ 'satt_html' ] = $subscription_options_content;
+
 				/*
 				 * When should we keep the existing price string?
 				 *
@@ -203,7 +205,7 @@ class WCS_ATT_Display_Product {
 				 */
 				if ( $is_single_scheme_forced_subscription || ( false === $price_filter_exists && $has_equal_variation_prices ) ) {
 
-					$variation_data[ 'price_html' ] = $variation_data[ 'price_html' ] . $subscription_options_content;
+					$variation_data[ 'price_html' ] = $variation_data[ 'price_html' ];
 
 				} else {
 
@@ -224,7 +226,7 @@ class WCS_ATT_Display_Product {
 					WCS_ATT_Product_Schemes::set_subscription_scheme( $variation_product, false );
 
 					// Get the price string :)
-					$variation_data[ 'price_html' ] = '<span class="price">' . $variation_product->get_price_html() . '</span>' . $subscription_options_content;
+					$variation_data[ 'price_html' ] = '<span class="price">' . $variation_product->get_price_html() . '</span>';
 
 					// Un-do.
 					WCS_ATT_Product_Schemes::set_subscription_scheme( $variation_product, $active_scheme_key );

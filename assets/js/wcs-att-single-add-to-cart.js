@@ -90,6 +90,7 @@
 
 			variation_found: function( event, variation ) {
 				this.variation = variation;
+				this.$el.find( '.single_variation' ).append( variation.satt_html );
 				this.initialize( { $el_options: this.$el.find( '.wcsatt-options-wrapper' ) } );
 			},
 
