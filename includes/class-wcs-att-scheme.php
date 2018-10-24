@@ -351,6 +351,7 @@ class WCS_ATT_Scheme implements ArrayAccess {
 	 * @since  2.1.0
 	 *
 	 * @param  WC_Subscription  $subscription
+	 * @param  array            $args
 	 * @return boolean
 	 */
 	public function matches_subscription( $subscription, $args = array() ) {
