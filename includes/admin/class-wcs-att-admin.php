@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin includes and hooks.
  *
  * @class    WCS_ATT_Admin
- * @version  2.1.1
+ * @version  2.1.2
  */
 class WCS_ATT_Admin {
 
@@ -148,9 +148,9 @@ class WCS_ATT_Admin {
 				'id'       => 'wcsatt_add_product_to_subscription',
 				'type'     => 'select',
 				'options'  => array(
-					'off'              => _x( 'Off', 'adding a product to an existing subcription', 'woocommerce-subscribe-all-the-things' ),
-					'matching_schemes' => _x( 'On For Products With Subscription Options', 'adding a product to an existing subcription', 'woocommerce-subscribe-all-the-things' ),
-					'on'               => _x( 'On', 'adding a product to an existing subcription', 'woocommerce-subscribe-all-the-things' ),
+					'off'              => _x( 'Off', 'adding a product to an existing subscription', 'woocommerce-subscribe-all-the-things' ),
+					'matching_schemes' => _x( 'On For Products With Subscription Options', 'adding a product to an existing subscription', 'woocommerce-subscribe-all-the-things' ),
+					'on'               => _x( 'On', 'adding a product to an existing subscription', 'woocommerce-subscribe-all-the-things' ),
 				),
 				'desc_tip' => true
 			),
@@ -160,8 +160,8 @@ class WCS_ATT_Admin {
 				'id'       => 'wcsatt_add_cart_to_subscription',
 				'type'     => 'select',
 				'options'  => array(
-					'off'      => _x( 'Off', 'adding a cart\'s contents to an existing subcription', 'woocommerce-subscribe-all-the-things' ),
-					'on'       => _x( 'On', 'adding a cart\'s contents to an existing subcription', 'woocommerce-subscribe-all-the-things' ),
+					'off'      => _x( 'Off', 'adding a cart\'s contents to an existing subscription', 'woocommerce-subscribe-all-the-things' ),
+					'on'       => _x( 'On', 'adding a cart\'s contents to an existing subscription', 'woocommerce-subscribe-all-the-things' ),
 				),
 				'desc_tip' => true
 			),
