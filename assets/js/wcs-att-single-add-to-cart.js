@@ -215,7 +215,7 @@
 				this.product = options.product;
 
 				var params = {
-					scheme_key: false,
+					scheme_key: '',
 					html:       false
 				};
 
