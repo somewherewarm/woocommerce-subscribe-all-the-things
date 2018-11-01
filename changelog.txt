@@ -1,6 +1,7 @@
 *** WooCommerce Subscribe All the Things ***
 
 2018.xx.xx - version 2.1.3
+* Fix - When trying to add a product with subscription schemes to an existing subscription, the matching subscriptions list in single-product pages did not always refresh correctly when the chosen scheme changed. The period of the active scheme had to change to trigger a refresh. This is now fixed.
 
 2018.10.25 - version 2.1.2
 * Fix - Ensure the add-to-cart form action is cleared only when switching. Resolves an issue with External product links not functioning as expected.

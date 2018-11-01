@@ -18,14 +18,6 @@
 				return this.previous( 'active_scheme_key' );
 			},
 
-			get_active_scheme_period: function() {
-				return this.get_scheme_prop( this.get_active_scheme_key(), 'period' );
-			},
-
-			get_last_active_scheme_period: function() {
-				return this.get_scheme_prop( this.get_last_active_scheme_key(), 'period' );
-			},
-
 			set_active_scheme: function( key_to_set ) {
 				this.set( { active_scheme_key: key_to_set !== '0' ? key_to_set : false } );
 			},
@@ -161,12 +153,12 @@
 
 			cached_responses: {},
 
-			set_period: function( period_to_set ) {
-				this.set( { period: period_to_set } );
+			set_scheme_key: function( scheme_key_to_set ) {
+				this.set( { scheme_key: scheme_key_to_set } );
 			},
 
-			get_period: function() {
-				return this.get( 'period' );
+			get_scheme_key: function() {
+				return this.get( 'scheme_key' );
 			},
 
 			get_matching_subscriptions_html: function() {
@@ -201,7 +193,7 @@
 							model.cached_responses[ data.subscription_scheme ] = response.html;
 						} else {
 							model.set( { html: false } );
-							model.attributes.period = false;
+							model.attributes.scheme_key = false;
 						}
 
 						model.trigger( 'matching_subscriptions_loaded' );
@@ -223,14 +215,14 @@
 				this.product = options.product;
 
 				var params = {
-					period: false,
-					html:   false
+					scheme_key: false,
+					html:       false
 				};
 
 				this.set( params );
 
 				this.listenTo( this.product.schemes_model, 'change:active_scheme_key', this.active_scheme_changed );
-				this.on( 'change:period', this.get_matching_subscriptions_html );
+				this.on( 'change:scheme_key', this.get_matching_subscriptions_html );
 			}
 
 		} );
@@ -271,13 +263,13 @@
 
 				if ( ! this.matching_subscriptions_visible() ) {
 
-					if ( this.model.get_period() === this.product.schemes_model.get_active_scheme_period() ) {
+					if ( this.model.get_scheme_key() === this.product.schemes_model.get_active_scheme_key() ) {
 						state_changed = this.toggle();
 					} else {
 						state_changed = true;
 						this.$el.block( this.block_params );
 						setTimeout( function() {
-							model.set_period( view.product.schemes_model.get_active_scheme_period() );
+							model.set_scheme_key( view.product.schemes_model.get_active_scheme_key() );
 						}, 200 );
 					}
 
@@ -302,7 +294,7 @@
 
 				if ( update_model ) {
 
-					if ( view.$el.hasClass( 'open' ) && view.model.get_period() !== view.product.schemes_model.get_active_scheme_period() ) {
+					if ( view.$el.hasClass( 'open' ) && view.model.get_scheme_key() !== view.product.schemes_model.get_active_scheme_key() ) {
 
 						view.$el.block( view.block_params );
 
@@ -311,7 +303,7 @@
 						}
 
 						setTimeout( function() {
-							view.model.set_period( view.product.schemes_model.get_active_scheme_period() );
+							view.model.set_scheme_key( view.product.schemes_model.get_active_scheme_key() );
 						}, 250 );
 					}
 
