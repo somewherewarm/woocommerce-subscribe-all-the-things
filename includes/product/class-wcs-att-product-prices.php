@@ -241,7 +241,9 @@ class WCS_ATT_Product_Prices {
 						}
 					}
 
-					$price_html = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', 'woocommerce-subscribe-all-the-things' ), $price_html, $suffix );
+					if ( strpos( $price_html, $suffix ) == false ) {
+						$price_html = sprintf( _x( '%1$s%2$s', 'price html sub options suffix', 'woocommerce-subscribe-all-the-things' ), $price_html, $suffix );
+					}
 				}
 			}
 		}
