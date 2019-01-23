@@ -1,6 +1,6 @@
 *** WooCommerce Subscribe All the Things ***
 
-2019.01.23 - version 2.2.0
+2019.01.23 - version 2.1.5
 * Fix - Child Bundle/Composite cart item prices not aggregated when: 1) choosing the one-off option; and 2) the container product has a blank base/static price.
 * Fix - Fatal error when adding carts to subscriptions under WC 3.5+.
 
