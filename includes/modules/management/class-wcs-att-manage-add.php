@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Add stuff to existing subscriptions.
  *
  * @class    WCS_ATT_Manage_Add
- * @version  2.1.2
+ * @version  2.1.5
  */
 class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 
@@ -224,6 +224,11 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 	 * @param  boolean          $args
 	 */
 	public static function add_cart_to_subscription( $subscription, $args = array() ) {
+
+		// Make sure recurring carts are there.
+		if ( ! did_action( 'woocommerce_after_calculate_totals' ) ) {
+			WC()->cart->calculate_totals();
+		}
 
 		if ( 1 !== sizeof( WC()->cart->recurring_carts ) ) {
 			return;
