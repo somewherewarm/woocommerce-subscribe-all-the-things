@@ -21,7 +21,7 @@ matrix:
       env: WP_VERSION=latest RUN_CODE_COVERAGE=0 WP_TESTS_DIR=/tmp/wordpress-tests-lib
 
 before_script:
-    - bash tests/bin/install.sh wcsat_test root '' localhost $WP_VERSION release/3.2
+    - bash tests/bin/install.sh wcsat_test root '' localhost $WP_VERSION tags/3.4.7
     - bash tests/bin/travis.sh before
 
 script:

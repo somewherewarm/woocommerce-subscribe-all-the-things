@@ -124,13 +124,9 @@ install_wc() {
 
 	if [ ! -d ../woocommerce ]; then
 		git clone https://github.com/woocommerce/woocommerce ../woocommerce
+		cd ../woocommerce
+		git checkout $WC_BRANCH
 	fi
-
-	cd ../woocommerce
-
-	git checkout $WC_BRANCH
-	git pull
-
 }
 
 install_wcs() {
