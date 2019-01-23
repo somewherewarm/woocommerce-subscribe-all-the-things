@@ -65,7 +65,7 @@ class WCS_ATT_Display_Cart {
 			return $price;
 		}
 
-		$is_mini_cart = did_action( 'woocommerce_before_mini_cart' ) && ! did_action( 'woocommerce_after_mini_cart' );
+        $is_mini_cart = did_action( 'woocommerce_before_mini_cart' ) !== did_action( 'woocommerce_after_mini_cart' );
 
 		// Only show options in cart.
 		if ( ! is_cart() || $is_mini_cart ) {
