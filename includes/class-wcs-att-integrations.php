@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Compatibility with other extensions.
  *
  * @class    WCS_ATT_Integrations
- * @version  2.1.1
+ * @version  2.1.5
  */
 class WCS_ATT_Integrations {
 
@@ -810,20 +810,23 @@ class WCS_ATT_Integrations {
 	 */
 	public static function filter_container_item_subtotal( $subtotal, $cart_item, $cart_item_key ) {
 
-		$is_mnm = $cart_item[ 'data' ]->is_type( 'mix-and-match' );
+		// MnM container subtotals originally modified by WCS are not overwritten by MnM.
+		if ( $cart_item[ 'data' ]->is_type( 'mix-and-match' ) ) {
+			return $subtotal;
+		}
 
-		// Note: MnM container subtotals originally modified by WCS are not overwritten by MnM.
-		if ( self::is_bundle_type_container_cart_item( $cart_item ) && false === $is_mnm && self::has_scheme_data( $cart_item ) ) {
+		if ( self::is_bundle_type_container_cart_item( $cart_item ) && self::has_scheme_data( $cart_item ) ) {
 
-			$scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ], 'object' );
+			if ( $scheme = WCS_ATT_Product_Schemes::get_subscription_scheme( $cart_item[ 'data' ], 'object' ) ) {
 
-			if ( $scheme && $scheme->is_synced() ) {
-				$subtotal = wc_price( self::calculate_container_item_subtotal( $cart_item, $scheme->get_key() ) );
+				if ( $scheme->is_synced() ) {
+					$subtotal = wc_price( self::calculate_container_item_subtotal( $cart_item, $scheme->get_key() ) );
+				}
+
+				$subtotal = WCS_ATT_Product_Prices::get_price_string( $cart_item[ 'data' ], array(
+					'price' => $subtotal
+				) );
 			}
-
-			$subtotal = WCS_ATT_Product_Prices::get_price_string( $cart_item[ 'data' ], array(
-				'price' => $subtotal
-			) );
 		}
 
 		return $subtotal;
