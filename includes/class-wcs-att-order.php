@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Order hooks for saving/restoring the subscription state of a product to/from order item data.
  *
  * @class    WCS_ATT_Order
- * @version  2.1.2
+ * @version  2.1.5
  */
 class WCS_ATT_Order {
 
@@ -76,7 +76,7 @@ class WCS_ATT_Order {
 		} else {
 
 			$default_args = array(
-				'subscription'       => false,
+				'order'              => false,
 				'match_subscription' => false,
 				'match_args'         => array(
 					'next_payment'      => false,
@@ -97,14 +97,14 @@ class WCS_ATT_Order {
 			 */
 			$args = apply_filters( 'wcsatt_restore_subscription_scheme_from_subscription_args', wp_parse_args( $args, $default_args ), $order_item );
 
-			if ( $args[ 'match_subscription' ] && wcs_is_subscription( $args[ 'subscription' ] ) ) {
+			if ( $args[ 'match_subscription' ] && wcs_is_subscription( $args[ 'match_subscription' ] ) ) {
 
 				$product = $order_item->get_product();
 
 				if ( $product && ( $subscription_schemes = WCS_ATT_Product_Schemes::get_subscription_schemes( $product ) ) ) {
 
 					foreach ( $subscription_schemes as $subscription_scheme ) {
-						if ( $subscription_scheme->matches_subscription( $args[ 'subscription' ], $args[ 'match_args' ] ) ) {
+						if ( $subscription_scheme->matches_subscription( $args[ 'match_subscription' ], $args[ 'match_args' ] ) ) {
 							$scheme_key = $subscription_scheme->get_key();
 						}
 					}
@@ -132,8 +132,7 @@ class WCS_ATT_Order {
 	public static function restore_cart_item_from_order_item( $cart_item, $order_item, $order ) {
 
 		$scheme_key = self::get_subscription_scheme( $order_item, array(
-			'subscription'       => $order,
-			'match_subscription' => true
+			'order' => $order
 		) );
 
 		if ( null !== $scheme_key ) {
