@@ -52,7 +52,8 @@ jQuery( function( $ ) {
 				$cart_totals.replaceWith( $html_totals );
 				$cart_table.replaceWith( $html_table );
 
-				$cart_wrapper.trigger( 'wcsatt_updated_cart' );
+        $cart_wrapper.trigger('wcsatt_updated_cart')
+        $('body').trigger('wcsatt_updated_subscription_scheme', [response])
 
 			} else {
 

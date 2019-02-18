@@ -97,10 +97,12 @@ class WCS_ATT_Display_Ajax {
 
 		$html = ob_get_clean();
 
-		wp_send_json( array(
-			'result' => 'success',
-			'html'   => $html
-		) );
+		wp_send_json( apply_filters( 'wcsatt_updated_subscription_scheme_success', [
+			'result'     => 'success',
+			'html'       => $html,
+			'old_scheme' => $current_scheme_key,
+			'new_scheme' => $posted_subscription_scheme_key,
+		], $current_scheme_key, $posted_subscription_scheme_key ) );
 	}
 }
 
