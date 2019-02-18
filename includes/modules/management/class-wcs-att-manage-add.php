@@ -495,7 +495,7 @@ class WCS_ATT_Manage_Add extends WCS_ATT_Abstract_Module {
 				WC()->cart->empty_cart();
 			}
 
-			wp_safe_redirect( $subscription_url );
+			wp_safe_redirect( $redirect_url );
 			exit;
 		}
 	}
