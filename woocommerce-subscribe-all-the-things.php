@@ -42,6 +42,12 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 	/* Required WC version. */
 	const REQ_WCS_VERSION = '2.1.0';
 
+	/* Mac WC version. */
+	const MAX_WC_VERSION = '3.5.100';
+
+	/* Max WC version. */
+	const MAX_WCS_VERSION = '2.5.100';
+
 	/* Text domain. */
 	const TEXT_DOMAIN = 'woocommerce-subscribe-all-the-things';
 
@@ -123,7 +129,7 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 
 		global $woocommerce;
 
-		// Subs 2.1+ check.
+		// WCS 2.1+ check.
 		if ( ! class_exists( 'WC_Subscriptions' ) || version_compare( WC_Subscriptions::$version, self::REQ_WCS_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wcs_admin_notice' ) );
 			return false;
@@ -133,6 +139,16 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 		if ( version_compare( $woocommerce->version, self::REQ_WC_VERSION ) < 0 ) {
 			add_action( 'admin_notices', array( $this, 'wc_admin_notice' ) );
 			return false;
+		}
+
+		// WCS < 2.6 check.
+		if ( version_compare( WC_Subscriptions::$version, self::MAX_WCS_VERSION ) >= 0 ) {
+			add_action( 'admin_notices', array( $this, 'wcs_apfs_admin_notice' ) );
+		}
+
+		// WC < 3.6 check.
+		if ( version_compare( $woocommerce->version, self::MAX_WC_VERSION ) >= 0 ) {
+			add_action( 'admin_notices', array( $this, 'wc_apfs_admin_notice' ) );
 		}
 
 		$this->includes();
@@ -215,23 +231,43 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 	}
 
 	/**
-	 * Display a warning message if Subs version check fails.
+	 * Display a warning message if WCS min version check fails.
 	 *
 	 * @return void
 	 */
 	public function wc_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WC_VERSION ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> requires at least WooCommerce %s in order to function. Please upgrade WooCommerce.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
-	 * Display a warning message if WC version check fails.
+	 * Display a warning message if WC min version check fails.
 	 *
 	 * @return void
 	 */
 	public function wcs_admin_notice() {
 
-	    echo '<div class="error"><p>' . sprintf( __( 'WooCommerce Subscribe All the Things requires WooCommerce Subscriptions version %s+.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WCS_VERSION ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> requires WooCommerce Subscriptions version %s+.', 'woocommerce-subscribe-all-the-things' ), self::REQ_WCS_VERSION ) . '</p></div>';
+	}
+
+	/**
+	 * Display a warning message if WCS max version check fails.
+	 *
+	 * @return void
+	 */
+	public function wcs_apfs_admin_notice() {
+
+		echo '<div class="notice notice-warning"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> has not been tested with the version of WooCommerce Subscriptions found on your system. Please consider upgrading to <a href="https://woocommerce.com/products/all-products-for-woocommerce-subscriptions/">All Products For WooCommerce Subscriptions</a>, the officially supported version of Subscribe All The Things.', 'woocommerce-subscribe-all-the-things' ), self::MAX_WCS_VERSION ) . '</p></div>';
+	}
+
+	/**
+	 * Display a warning message if WC max version check fails.
+	 *
+	 * @return void
+	 */
+	public function wc_apfs_admin_notice() {
+
+		echo '<div class="notice notice-warning"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> has not been tested with the version of WooCommerce found on your system. Please consider upgrading to <a href="https://woocommerce.com/products/all-products-for-woocommerce-subscriptions/">All Products For WooCommerce Subscriptions</a>, the officially supported version of Subscribe All The Things.', 'woocommerce-subscribe-all-the-things' ), self::MAX_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -311,7 +347,7 @@ endif;
  * Returns the main instance of WCS_ATT to prevent the need to use globals.
  *
  * @since  1.0.0
- * @return WooCommerce Subscribe All the Things
+ * @return WooCommerce Subscribe All The Things
  */
 function WCS_ATT() {
   return WCS_ATT::instance();
