@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce Subscribe All The Things 2.1.5\n"
 "Report-Msgid-Bugs-To: "
 "https://github.com/Prospress/woocommerce-subscribe-all-the-things/issues\n"
-"POT-Creation-Date: 2019-03-29 16:14:47+00:00\n"
+"POT-Creation-Date: 2019-03-29 21:08:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -325,28 +325,48 @@ msgstr ""
 msgid "Choose a subscription plan:"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:78
-#: woocommerce-subscribe-all-the-things.php:87
+#: woocommerce-subscribe-all-the-things.php:84
+#: woocommerce-subscribe-all-the-things.php:93
 msgid "Foul!"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:224
+#: woocommerce-subscribe-all-the-things.php:240
 msgid ""
-"WooCommerce Subscribe All the Things requires at least WooCommerce %s in "
-"order to function. Please upgrade WooCommerce."
+"<strong>Subscribe All The Things</strong> requires at least WooCommerce %s "
+"in order to function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:234
+#: woocommerce-subscribe-all-the-things.php:250
 msgid ""
-"WooCommerce Subscribe All the Things requires WooCommerce Subscriptions "
-"version %s+."
+"<strong>Subscribe All The Things</strong> requires WooCommerce "
+"Subscriptions version %s+."
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:300
+#: woocommerce-subscribe-all-the-things.php:260
+msgid ""
+"<strong>Subscribe All The Things</strong> has not been tested with the "
+"version of WooCommerce Subscriptions found on your system. Please consider "
+"upgrading to <a "
+"href=\"https://woocommerce.com/products/all-products-for-woocommerce-"
+"subscriptions/\">All Products For WooCommerce Subscriptions</a>, the "
+"officially supported version of Subscribe All The Things."
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:270
+msgid ""
+"<strong>Subscribe All The Things</strong> has not been tested with the "
+"version of WooCommerce found on your system. Please consider upgrading to "
+"<a "
+"href=\"https://woocommerce.com/products/all-products-for-woocommerce-"
+"subscriptions/\">All Products For WooCommerce Subscriptions</a>, the "
+"officially supported version of Subscribe All The Things."
+msgstr ""
+
+#: woocommerce-subscribe-all-the-things.php:336
 msgid "By %s"
 msgstr ""
 
-#: woocommerce-subscribe-all-the-things.php:300
+#: woocommerce-subscribe-all-the-things.php:336
 msgid "%s and %s"
 msgstr ""
 
@@ -361,7 +381,7 @@ msgstr ""
 #. Description of the plugin/theme
 msgid ""
 "Mini-extension for WooCommerce Subscriptions that allows you to add "
-"subscription options to non-subscription product types."
+"subscription plans to non-subscription product types."
 msgstr ""
 
 #. Author of the plugin/theme
