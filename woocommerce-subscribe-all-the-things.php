@@ -257,7 +257,7 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 	 */
 	public function wcs_apfs_admin_notice() {
 
-		echo '<div class="notice notice-warning"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> has not been tested with the version of WooCommerce Subscriptions found on your system. Please consider upgrading to <a href="https://woocommerce.com/products/all-products-for-woocommerce-subscriptions/">All Products For WooCommerce Subscriptions</a>, the officially supported version of Subscribe All The Things.', 'woocommerce-subscribe-all-the-things' ), self::MAX_WCS_VERSION ) . '</p></div>';
+		echo '<div class="notice notice-warning"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> has not been tested with the version of WooCommerce Subscriptions found on your system. Please consider upgrading to <a href="https://woocommerce.com/products/all-products-for-woocommerce-subscriptions/">All Products For WooCommerce Subscriptions</a>, the WooCommerce.com successor of Subscribe All The Things.', 'woocommerce-subscribe-all-the-things' ), self::MAX_WCS_VERSION ) . '</p></div>';
 	}
 
 	/**
@@ -267,7 +267,7 @@ class WCS_ATT extends WCS_ATT_Abstract_Module {
 	 */
 	public function wc_apfs_admin_notice() {
 
-		echo '<div class="notice notice-warning"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> has not been tested with the version of WooCommerce found on your system. Please consider upgrading to <a href="https://woocommerce.com/products/all-products-for-woocommerce-subscriptions/">All Products For WooCommerce Subscriptions</a>, the officially supported version of Subscribe All The Things.', 'woocommerce-subscribe-all-the-things' ), self::MAX_WC_VERSION ) . '</p></div>';
+		echo '<div class="notice notice-warning"><p>' . sprintf( __( '<strong>Subscribe All The Things</strong> has not been tested with the version of WooCommerce found on your system. Please consider upgrading to <a href="https://woocommerce.com/products/all-products-for-woocommerce-subscriptions/">All Products For WooCommerce Subscriptions</a>, the WooCommerce.com successor of Subscribe All The Things.', 'woocommerce-subscribe-all-the-things' ), self::MAX_WC_VERSION ) . '</p></div>';
 	}
 
 	/**
