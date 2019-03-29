@@ -2,7 +2,7 @@
 /*
 * Plugin Name: WooCommerce Subscribe All The Things
 * Plugin URI: https://github.com/Prospress/woocommerce-subscribe-to-all-the-things
-* Description: Mini-extension for WooCommerce Subscriptions that allows you to add subscription options to non-subscription product types.
+* Description: Mini-extension for WooCommerce Subscriptions that allows you to add subscription plans to non-subscription product types.
 * Version: 2.1.5
 * Author: SomewhereWarm
 * Author URI: https://somewherewarm.gr/
