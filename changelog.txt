@@ -1,4 +1,4 @@
-*** WooCommerce Subscribe All the Things ***
+*** WooCommerce Subscribe All The Things ***
 
 2019.02.05 - version 2.1.5
 * Important - Modified 'wcsatt_restore_subscription_scheme_from_subscription_args' filter params.
