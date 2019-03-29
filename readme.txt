@@ -10,7 +10,7 @@ WC tested up to: 3.5
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Attach subscription options to existing WooCommerce products.
+Add subscription plans to existing WooCommerce products.
 
 == Description ==
 
