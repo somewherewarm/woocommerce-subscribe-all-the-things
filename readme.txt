@@ -14,7 +14,7 @@ Add subscription plans to existing WooCommerce products.
 
 == Description ==
 
-WooCommerce Subscribe All The Things was an experimental mini-extension for [WooCommerce Subscriptions](http://woocommerce.com/products/woocommerce-subscriptions/) that explored the possibility of adding subscription plans to non-subscription product types, such as Simple and Variable products.
+WooCommerce Subscribe All The Things was an experimental mini-extension for [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) that explored the possibility of adding subscription plans to non-subscription product types, such as Simple and Variable products.
 
 The project was developed and maintained as a collaboration between the teams at [Prospress](https://prospress.com/) and [SomewhereWarm](https://somewherewarm.gr/).
 
